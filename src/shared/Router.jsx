@@ -25,7 +25,7 @@ function Router() {
         <Route path="/listpage" element={<ListPage />} />
         <Route path="/missionpage" element={<MissionPage />} />
         <Route path="/intro" element={<IntroPage />} />
-        <Route path="/login/:id" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/edituserinfo" element={<EditUserInfo />} />
         <Route path="/mypage" element={<Mypage />} />
