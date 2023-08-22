@@ -1,18 +1,18 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Main from '../pages/Main';
-import Mypage from '../pages/user/Mypage';
-import IntroPage from '../pages/IntroPage';
-import NotFoundPage from '../pages/NotFoundPage';
-import AddBoard from '../pages/board/AddBoard';
-import DetailPage from '../pages/board/DetailPage';
-import EditBoard from '../pages/board/EditBoard';
-import ListPage from '../pages/board/ListPage';
-import MissionPage from '../pages/MissionPage/MissionPage';
-import Signup from '../pages/user/Signup';
-import EditUserInfo from '../pages/user/EditUserInfo';
-import Login from '../pages/user/Login';
-import Layout from './Layout';
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Main from '../pages/Main'
+import Mypage from '../pages/user/Mypage'
+import IntroPage from '../pages/IntroPage'
+import NotFoundPage from '../pages/NotFoundPage'
+import AddBoard from '../pages/board/AddBoard'
+import DetailPage from '../pages/board/DetailPage'
+import EditBoard from '../pages/board/EditBoard'
+import ListPage from '../pages/board/ListPage'
+import MissionPage from '../pages/MissionPage/MissionPage'
+import Signup from '../pages/user/Signup'
+import EditUserInfo from '../pages/user/EditUserInfo'
+import Login from '../pages/user/Login'
+import Layout from './Layout'
 
 function Router() {
   return (
@@ -32,7 +32,7 @@ function Router() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
-  );
+  )
 }
 
-export default Router;
+export default Router

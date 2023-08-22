@@ -1,8 +1,8 @@
-import { QueryClient, QueryClientProvider } from 'react-query';
-import Router from './shared/Router';
-import './App.css';
-import { createGlobalStyle } from 'styled-components';
-import reset from 'styled-reset';
+import { QueryClient, QueryClientProvider } from 'react-query'
+import Router from './shared/Router'
+import './App.css'
+import { createGlobalStyle } from 'styled-components'
+import reset from 'styled-reset'
 
 // 전역으로 reset CSS
 
@@ -23,15 +23,15 @@ const GlobalStyle = createGlobalStyle`
     }
 
   
-`;
-const queryClient = new QueryClient();
+`
+const queryClient = new QueryClient()
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <GlobalStyle />
       <Router />
     </QueryClientProvider>
-  );
+  )
 }
 
-export default App;
+export default App

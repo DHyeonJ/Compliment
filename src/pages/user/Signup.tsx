@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 function Signup() {
   return (
@@ -8,7 +8,6 @@ function Signup() {
         <div>회원프로필사진</div>
       </div>
     </>
-  );
+  )
 }
-
-export default Signup;
+export default Signup
