@@ -3,7 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ['standard-with-typescript', 'plugin:react/recommended'],
+  extends: ['standard-with-typescript', 'plugin:react/recommended', 'eslint-config-prettier'],
   overrides: [
     {
       env: {
@@ -15,6 +15,7 @@ module.exports = {
       },
     },
   ],
+
   parserOptions: {
     ecmaVersion: 'latest',
     sourceType: 'module',
