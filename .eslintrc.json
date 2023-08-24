@@ -1,0 +1,17 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["standard-with-typescript", "plugin:react/recommended", "eslint-config-prettier"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": ["./tsconfig.json"]
+  },
+  "plugins": ["react"],
+  "rules": {
+    // "quotes": [2, "double", { "avoidEscape": false }], 따옴표설정
+    "@typescript-eslint/explicit-function-return-type": "off"
+  }
+}
