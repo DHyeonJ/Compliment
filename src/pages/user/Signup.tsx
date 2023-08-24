@@ -9,7 +9,7 @@ function Signup(): JSX.Element {
       </div>
       <SignupArea>
         <SignupImg />
-        <button>프로필이미지등록</button>
+        <button>프로필이미지등록gg</button>
         <div>
           <div>
             <SignForm>
