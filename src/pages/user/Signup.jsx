@@ -7,7 +7,7 @@ function Signup() {
   console.log(auth)
   const navigate = useNavigate()
 
-  // 회원가입시 필요한 정보들
+  // 회원가입시 필요한 정보
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
