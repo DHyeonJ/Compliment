@@ -39,7 +39,6 @@
 //     ]
 //   }
 // }
-
 {
   "env": {
     "browser": true,
@@ -54,6 +53,7 @@
   "plugins": ["react"],
   "rules": {
     // "quotes": [2, "double", { "avoidEscape": false }],
-    "@typescript-eslint/explicit-function-return-type": "off"
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-misused-promises": "error"
   }
 }

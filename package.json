@@ -19,18 +19,13 @@
     "eslint": "^8.47.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "firebase": "^10.2.0",
-<<<<<<< HEAD
-    "firebase-tools": "^12.5.1",
     "global": "^4.4.0",
-    "npm": "^9.8.1",
-=======
->>>>>>> 7f8dd529fb710c15073738a373380ad617d1422c
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.15.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "redux": "^4.2.1",
     "styled-components": "^6.0.7",
     "styled-reset": "^4.5.1",
