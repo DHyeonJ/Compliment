@@ -151,12 +151,19 @@ const SignupArea = styled.div`
 `
 
 const SignupImg = styled.div`
-  width: 300 px;
-  height: 300 px;
-  fill: #f4f1e9;
-  stroke-width: 2px;
-  stroke: rgba(106, 106, 106, 0.5);
-  background-color: gray;
+  margin-left: 308px;
+  margin-right: 308px;
+  width: 36px;
+  height: 26;
+  display: flex;
+  width: 120px;
+  height: 75px;
+  padding: 24px 43px 25px 41px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  background: #d9d9d9;
+  margin-bottom: 10px;
 `
 
 const SignForm = styled.form`
