@@ -1,23 +1,38 @@
 import React from 'react'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { styled } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSquareGithub } from '@fortawesome/free-brands-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
 
 function Layout(): JSX.Element {
+  const navigator = useNavigate()
+
   const openGitHub = (): void => {
     window.open('https://github.com/NB-Last-PJ/Compliment', '_blank')
   }
+
+  const mainPageMove = () => {
+    navigator('/')
+  }
+
+  const loginPageMove = () => {
+    navigator('/login')
+  }
+
+  const signUpPageMove = () => {
+    navigator('/signup')
+  }
+
   return (
-    <>
+    <LayOutBox>
       <HeaderBox>
         <LogoTitleBox>
-          <LogoBox>logo</LogoBox>
+          <LogoBox onClick={mainPageMove}>logo</LogoBox>
           <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
         </LogoTitleBox>
         <ButtonsBox>
-          <LoginButton>로그인</LoginButton>
-          <SignUpButton>회원가입</SignUpButton>
+          <LoginButton onClick={loginPageMove}>로그인</LoginButton>
+          <SignUpButton onClick={signUpPageMove}>회원가입</SignUpButton>
         </ButtonsBox>
       </HeaderBox>
       <Outlet />
@@ -28,28 +43,33 @@ function Layout(): JSX.Element {
             <FooterTitleBox>칭구</FooterTitleBox>
             <MakeTeamBox>Copyright 2023. 팀 해보조 all rights reserved.</MakeTeamBox>
           </InfoBox>
-          <GitHubIcon icon={faSquareGithub} onClick={openGitHub} />
+          <GitHubIcon icon={faGithub} onClick={openGitHub} />
         </ContentBox>
       </FooterBox>
-    </>
+    </LayOutBox>
   )
 }
 
 export default Layout
-
+const LayOutBox = styled.div`
+  width: 100vw;
+  height: 92.3125rem;
+`
 const HeaderBox = styled.div`
   display: flex;
-  justify-content: end;
+  justify-content: right;
   align-items: center;
-
-  width: 100vw;
   height: 5rem;
+  margin: 0 3.5rem;
 `
 const LogoTitleBox = styled.div`
   display: flex;
-  gap: 10px;
-
-  width: calc(100% / 3);
+  justify-content: center;
+  position: absolute;
+  width: 100vw;
+  align-items: center;
+  gap: 0.625rem;
+  flex: 1;
 `
 const LogoBox = styled.div`
   display: flex;
@@ -63,33 +83,31 @@ const LogoBox = styled.div`
   cursor: pointer;
 `
 const TitleSpan = styled.span`
+  font-family: 'LINE SEED Sans KR';
   font-weight: bold;
   color: #404040;
-  font-size: 20px;
+  font-size: 1.25rem;
 `
 
 const ButtonsBox = styled.div`
   display: flex;
   justify-content: right;
   align-items: center;
-  gap: 10px;
-
-  width: calc(100% / 3);
-
-  margin-right: 10px;
+  gap: 0.625rem;
 `
 
 const LoginButton = styled.button`
   width: 6.125rem;
   height: 2.75rem;
 
-  background-color: #6a6a6a;
+  background-color: #69535f;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 
   color: #ffffff;
-  font-size: 16px;
+  font-size: 1rem;
+  font-family: 'pretendard';
 
   cursor: pointer;
 `
@@ -99,11 +117,12 @@ const SignUpButton = styled.button`
 
   background-color: #ffffff;
 
-  border: 1px solid #666666;
-  border-radius: 8px;
+  border: 0.0625rem solid #69535f;
+  border-radius: 0.5rem;
 
-  color: #666666;
-  font-size: 16px;
+  color: #69535f;
+  font-size: 1rem;
+  font-family: 'pretendard';
 
   cursor: pointer;
 `
@@ -112,10 +131,10 @@ const FooterBox = styled.div`
   justify-content: center;
   align-items: center;
 
-  background-color: #f5f5f5;
+  background-color: #f4f1e9;
 
   width: 100vw;
-  height: 19.25rem;
+  height: 18.5rem;
 `
 
 const ContentBox = styled.div`
@@ -123,8 +142,6 @@ const ContentBox = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
-
-  height: 140px;
 `
 const FooterLogoBox = styled.div`
   display: flex;
@@ -138,32 +155,38 @@ const FooterLogoBox = styled.div`
 
   color: #999999;
 
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
 `
 const FooterTitleBox = styled.div`
   display: flex;
   justify-content: center;
 
   color: #999999;
-
-  margin-bottom: 12px;
+  font-weight: 500;
+  font-family: 'pretendard';
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
 `
 
 const InfoBox = styled.div`
   width: 17.5rem;
   height: 2.75rem;
 
-  font-size: 14px;
+  font-size: 0.875rem;
 `
 
 const MakeTeamBox = styled.div`
   color: #999999;
+  font-weight: 500;
+  font-family: 'pretendard';
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
 `
 
 const GitHubIcon = styled(FontAwesomeIcon)`
-  margin-top: 12px;
+  margin-top: 0.75rem;
   width: 1.5rem;
   height: 1.5rem;
-
+  color: #999999;
   cursor: pointer;
 `
