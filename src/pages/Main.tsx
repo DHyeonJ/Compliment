@@ -70,12 +70,10 @@ function Main() {
         <RankInfo>
           <RankTitleBox>이번 달도 잘 했어</RankTitleBox>
           <RankUserBox>
-            <div style={{ height: '210px', backgroundColor: 'none', zIndex: '50', position: 'absolute', width: '1440px', display: 'flex', justifyContent: 'space-between', flexDirection: 'row' }}>
-              <div
-                style={{ height: '210px', zIndex: '50', width: '120px', backgroundColor: 'linear-gradient(to right, to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 1) 90%, rgba(255, 255, 255, 0) 100%)' }}
-              ></div>
+            {/* <BlurBox>
+              <RightBox></RightBox>
               <LeftBox></LeftBox>
-            </div>
+            </BlurBox> */}
             {userData.map((item, index) => {
               return (
                 <RankUserInfo key={index}>
@@ -107,12 +105,28 @@ function Main() {
 
 export default Main
 
-const LeftBox = styled.div`
-  height: 210px;
-  background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 10%, rgba(255, 255, 255, 1) 90%, rgba(255, 255, 255, 0) 100%);
-  z-index: 50;
-  width: 120px;
-`
+// const BlurBox = styled.div`
+//   height: 210px;
+//   background-color: none;
+//   z-index: 50;
+//   position: absolute;
+//   width: 1440px;
+//   display: flex;
+//   justify-content: space-between;
+//   flex-direction: row;
+// `
+// const RightBox = styled.div`
+//   height: 210px;
+//   background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0.8) 95%, rgba(255, 255, 255, 0) 100%);
+//   z-index: 50;
+//   width: 100px;
+// `
+// const LeftBox = styled.div`
+//   height: 210px;
+//   background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 5%, rgba(255, 255, 255, 1) 95%, rgba(255, 255, 255, 0) 100%);
+//   z-index: 50;
+//   width: 100px;
+// `
 
 const MainBox = styled.div`
   display: flex;
@@ -151,16 +165,16 @@ const RankUserBox = styled.div`
   margin-top: 16px;
   border-radius: 8px;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
-  gap: 48px;
+  /* gap: 48px; */
 `
 
 const RankUserInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  /* width: 100px; */
   height: 134px;
   flex-direction: column;
 `
@@ -173,7 +187,7 @@ const RankProFileBox = styled.div<{ isOdd: boolean }>`
   height: 100px;
   background-color: #d9d9d9;
   border-radius: 50%;
-  margin-right: 8px;
+  /* margin-right: 8px; */
   border: 4px solid ${(props) => (props.isOdd ? '#F6B000' : '#D9876D')};
 `
 
@@ -181,7 +195,7 @@ const RankNickName = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100px;
+  /* width: 100px; */
   height: 17px;
   margin-top: 12px;
   font-size: 14px;
@@ -200,6 +214,7 @@ const ListPageBox = styled.div`
   width: 704px;
   height: 240px;
   background-color: #feedcd;
+  box-shadow: 5px 5px 5px -5px #333;
   border-radius: 20px;
 `
 const ListContentBox = styled.div`
@@ -235,6 +250,7 @@ const MissionPageBox = styled.div`
   height: 240px;
   border-radius: 20px;
   background-color: #f5f6cd;
+  box-shadow: 5px 5px 5px -5px #333;
 `
 
 const MissionContentBox = styled.div`
