@@ -29,6 +29,9 @@ function Layout(): JSX.Element {
     navigator('/signup')
   }
 
+  const myPageMove = () => {
+    navigator('/mypage')
+  }
   const [currentUser, setCurrentUser] = ReactUseState<string | null>(null)
 
   const handleLogout = async () => {
@@ -62,10 +65,11 @@ function Layout(): JSX.Element {
           {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
           {currentUser ? (
             <>
-              <div>{currentUser}</div>
               {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
-              <div onClick={() => navigator('/myPage')}>마이페이지</div>
-              <button onClick={handleLogout}>로그아웃</button>
+              <MypageBtn onClick={myPageMove}>
+                <div>{currentUser}</div>
+              </MypageBtn>
+              <LogoutBtn onClick={handleLogout}>로그아웃</LogoutBtn>
             </>
           ) : (
             <>
@@ -230,7 +234,30 @@ const GitHubIcon = styled(FontAwesomeIcon)`
   color: #999999;
   cursor: pointer;
 `
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function useState(arg0: null): [any, any] {
-  throw new Error('Function not implemented.')
-}
+const MypageBtn = styled.button`
+  display: inline-flex;
+  height: 44px;
+  padding: 14px 28px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid #69535f;
+  color: #69535f;
+  cursor: pointer;
+`
+
+const LogoutBtn = styled.button`
+  display: inline-flex;
+  height: 44px;
+  padding: 14px 28px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid #69535f;
+  color: #69535f;
+  cursor: pointer;
+`
