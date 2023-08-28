@@ -1,8 +1,13 @@
-import React from 'react'
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+/* eslint-disable @typescript-eslint/no-redeclare */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-confusing-void-expression */
+import React, { useState as ReactUseState, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { styled } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { signOut } from 'firebase/auth'
 import { auth } from '../firebase.js'
 
 function Layout(): JSX.Element {
@@ -24,23 +29,50 @@ function Layout(): JSX.Element {
     navigator('/signup')
   }
 
-  // 현재 로그인된 사용자의 정보를 가져옵니다.
+  const [currentUser, setCurrentUser] = ReactUseState<string | null>(null)
 
-  const user = auth.currentUser
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  const loggedinUserEmail = user ? user.email : null
+  const handleLogout = async () => {
+    const confirmLogout = window.confirm('로그아웃하시겠습니까?')
+    if (confirmLogout) {
+      await signOut(auth)
+      setCurrentUser(null)
+      navigator('/')
+    }
+  }
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      if (user) {
+        setCurrentUser(user.email)
+      } else {
+        setCurrentUser(null)
+      }
+    })
+  }, [])
 
   return (
     <LayOutBox>
       <HeaderBox>
         <LogoTitleBox>
-          <div>{loggedinUserEmail}</div>
           <LogoBox onClick={mainPageMove}>logo</LogoBox>
           <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
         </LogoTitleBox>
         <ButtonsBox>
-          <LoginButton onClick={loginPageMove}>로그인</LoginButton>
-          <SignUpButton onClick={signUpPageMove}>회원가입</SignUpButton>
+          {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
+          {currentUser ? (
+            <>
+              <div>{currentUser}</div>
+              {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
+              <div onClick={() => navigator('/myPage')}>마이페이지</div>
+              <button onClick={handleLogout}>로그아웃</button>
+            </>
+          ) : (
+            <>
+              <LoginButton onClick={loginPageMove}>로그인</LoginButton>
+              <SignUpButton onClick={signUpPageMove}>회원가입</SignUpButton>
+            </>
+          )}
         </ButtonsBox>
       </HeaderBox>
       <Outlet />
@@ -198,3 +230,7 @@ const GitHubIcon = styled(FontAwesomeIcon)`
   color: #999999;
   cursor: pointer;
 `
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function useState(arg0: null): [any, any] {
+  throw new Error('Function not implemented.')
+}
