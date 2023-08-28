@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom'
 import { styled } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { auth } from '../firebase.js'
 
 function Layout(): JSX.Element {
   const navigator = useNavigate()
@@ -23,10 +24,17 @@ function Layout(): JSX.Element {
     navigator('/signup')
   }
 
+  // 현재 로그인된 사용자의 정보를 가져옵니다.
+
+  const user = auth.currentUser
+  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  const loggedinUserEmail = user ? user.email : null
+
   return (
     <LayOutBox>
       <HeaderBox>
         <LogoTitleBox>
+          <div>{loggedinUserEmail}</div>
           <LogoBox onClick={mainPageMove}>logo</LogoBox>
           <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
         </LogoTitleBox>
