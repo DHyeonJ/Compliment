@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable @typescript-eslint/no-misused-promises */
@@ -66,10 +67,13 @@ function Layout(): JSX.Element {
           {currentUser ? (
             <>
               {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
-              <MypageBtn onClick={myPageMove}>
-                <div>{currentUser}</div>
-              </MypageBtn>
-              <LogoutBtn onClick={handleLogout}>로그아웃</LogoutBtn>
+              <DropDown>
+                <DropBtn>{currentUser}님</DropBtn>
+                <DropdownContents>
+                  <DropdownContent onClick={myPageMove}>마이페이지 </DropdownContent>
+                  <DropdownContent onClick={handleLogout}> 로그아웃 </DropdownContent>
+                </DropdownContents>
+              </DropDown>
             </>
           ) : (
             <>
@@ -234,30 +238,48 @@ const GitHubIcon = styled(FontAwesomeIcon)`
   color: #999999;
   cursor: pointer;
 `
-const MypageBtn = styled.button`
-  display: inline-flex;
-  height: 44px;
-  padding: 14px 28px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  border: 1px solid #69535f;
-  color: #69535f;
-  cursor: pointer;
+
+// 드롭다운박스 영역
+const DropdownContents = styled.div`
+  display: none;
+  position: absolute;
+  z-index: 1;
+  font-weight: 400;
+  background-color: #f9f9f9;
+  min-width: 200px;
 `
 
-const LogoutBtn = styled.button`
-  display: inline-flex;
-  height: 44px;
-  padding: 14px 28px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 8px;
-  border: 1px solid #69535f;
-  color: #69535f;
+const DropDown = styled.div`
+  position: relative;
+  display: inline-block;
+
+  &:hover ${DropdownContents} {
+    display: block;
+  }
+`
+
+const DropBtn = styled.button`
+  border: 1px solid rgb(37, 37, 37);
+  border-radius: 4px;
+  background-color: #f5f5f5;
+  font-weight: 400;
+  color: rgb(37, 37, 37);
+  padding: 12px;
+  width: 200px;
+  text-align: center;
   cursor: pointer;
+  font-size: 12px;
+`
+
+const DropdownContent = styled.div`
+  display: block;
+  text-decoration: none;
+  color: rgb(37, 37, 37);
+  font-size: 12px;
+  padding: 12px 20px;
+  text-align: center;
+
+  &:hover {
+    background-color: lightgray;
+  }
 `
