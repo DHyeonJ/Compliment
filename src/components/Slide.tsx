@@ -31,14 +31,23 @@ function Slide(): JSX.Element {
   ]
 
   const handlePrev = () => {
-    setActiveSlide((prev) => Math.max(prev - 1, 0))
+    if (Number(activeSlide) === 0) {
+      setActiveSlide(2)
+    } else {
+      setActiveSlide((prev) => Math.max(prev - 1, 0))
+    }
   }
 
   const handleNext = () => {
-    setActiveSlide((prev) => Math.min(prev + 1, data.length - 1))
+    console.log(Number(activeSlide))
+    if (Number(activeSlide) === 2) {
+      setActiveSlide(0)
+    } else {
+      setActiveSlide((prev) => Math.min(prev + 1, data.length - 1))
+    }
   }
 
-  const translateValue: number = -activeSlide * 200
+  const translateValue: number = -activeSlide * 100
 
   return (
     <CarouselContainer>
@@ -54,11 +63,9 @@ function Slide(): JSX.Element {
                 <SlideContentBox>{item.middeleTitle}</SlideContentBox>
                 <SlideContentBox>{item.content}</SlideContentBox>
               </ContentBox>
-              <ImgBox>
-                <SlideImgBox>
-                  <img src={item.img} alt={`Slide ${index + 1}`} />
-                </SlideImgBox>
-              </ImgBox>
+              <SlideImgBox>
+                <img style={{ width: '640px' }} src={item.img} alt={`Slide ${index + 1}`} />
+              </SlideImgBox>
             </SlideBox>
           ))}
         </SlideContainerBox>
@@ -109,19 +116,22 @@ const ContentBox = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  width: 565px;
+  height: 261px;
 `
 const SlideContentBox = styled.div`
   flex: 1;
   text-align: center;
 `
-const ImgBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
+// const ImgBox = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 590px;
+// `
 
 const SlideImgBox = styled.div`
-  flex: 1;
+  width: 100vw;
 `
 
 const Buttons = styled.button`
@@ -134,17 +144,6 @@ const Buttons = styled.button`
   background-color: #ffffff;
   border: none;
   cursor: pointer;
-
-  /* &:hover {
-    width: 100px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: lightgray;
-
-    & > div {
-      color: #ffffff;
-    }
-  } */
 `
 
 const ArrowIcon = styled.img`
