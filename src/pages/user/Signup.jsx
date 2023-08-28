@@ -222,6 +222,7 @@ const SignupBtn = styled.button`
   font-weight: 500;
   line-height: normal;
   letter-spacing: -0.64px;
+  cursor: pointer;
 `
 const SignWithGoogleArea = styled.div`
   margin-left: 128px;
@@ -256,4 +257,5 @@ const SignWithGoogleBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: 110%; /* 17.6px */
+  cursor: pointer;
 `

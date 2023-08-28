@@ -1,7 +1,92 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { styled } from 'styled-components'
-
+import { auth } from '../../firebase.js'
+import 'firebase/firestore'
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom'
 function Login() {
+  const navigate = useNavigate()
+
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [googleUserData, setGoogleUserData] = useState(null)
+
+  function handleGoogleLogin() {
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        setGoogleUserData(data.user)
+      })
+      .catch((err) => {
+        alert(err)
+      })
+  }
+
+  const onChange = (event) => {
+    const {
+      target: { name, value },
+    } = event
+    if (name === 'email') {
+      setEmail(value)
+    }
+    if (name === 'password') {
+      setPassword(value)
+    }
+  }
+
+  const emptyEmailError = () => {
+    alert('이메일을 입력해주세요.')
+  }
+
+  const emptyPWError = () => {
+    alert('비밀번호를 입력해주세요.')
+  }
+
+  const userNotFound = () => {
+    alert('사용자를 찾을 수 없습니다.')
+  }
+
+  const invalidEmail = () => {
+    alert('유효하지 않은 이메일 주소입니다.')
+  }
+
+  const worngPassword = () => {
+    alert('비밀번호가 잘못되었습니다.')
+  }
+
+  const failedError = () => {
+    alert('로그인에 실패하였습니다.')
+  }
+
+  const Signin = async (e) => {
+    e.preventDefault()
+
+    if (email.length === 0) {
+      emptyEmailError()
+    } else if (password.length === 0) {
+      emptyPWError()
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      navigate('/')
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        userNotFound()
+      } else if (error.code === 'auth/invalid-email') {
+        invalidEmail()
+      } else if (error.code === 'auth/wrong-password') {
+        worngPassword()
+      } else {
+        failedError()
+      }
+    }
+    setEmail('')
+    setPassword('')
+  }
+
   return (
     <>
       <LoginArea>
@@ -12,15 +97,17 @@ function Login() {
         <LoginForm>
           <LoginInputArea>
             <LoginInputLabel>아이디</LoginInputLabel>
-            <LoginInput placeholder="아이디를 입력해주세요" type="email" name="email" />
+            <LoginInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
           </LoginInputArea>
           <LoginInputArea>
             <LoginInputLabel>비밀번호</LoginInputLabel>
-            <LoginInput placeholder="비밀번호를 입력해주세요 " type="password" name="password" />
+            <LoginInput placeholder="비밀번호를 입력해주세요 " type="password" name="password" value={password} onChange={onChange} />
           </LoginInputArea>
-          <LoginBtn>로그인하기</LoginBtn>
+          {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+          <LoginBtn onClick={Signin}>로그인하기</LoginBtn>
         </LoginForm>
-        <SignWithGoogleBtn>Google로 로그인하기</SignWithGoogleBtn>
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <SignWithGoogleBtn onClick={handleGoogleLogin}>Google로 로그인하기</SignWithGoogleBtn>
         <LoginTextArea>
           <LoginText>아이디/ 비밀번호 찾기</LoginText>
           <LoginText> │ 회원가입</LoginText>
@@ -121,6 +208,7 @@ const LoginBtn = styled.button`
   font-weight: 500;
   line-height: normal;
   letter-spacing: -0.64px;
+  cursor: pointer;
 `
 
 const SignWithGoogleBtn = styled.button`
@@ -141,6 +229,7 @@ const SignWithGoogleBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: 110%; /* 17.6px */
+  cursor: pointer;
 `
 const LoginTextArea = styled.div`
   display: block;
