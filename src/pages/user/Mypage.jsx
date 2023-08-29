@@ -1,17 +1,15 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React, { useState } from 'react'
-import styled from 'styled-components'
+import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-
+import { auth } from '../../firebase'
 function Mypage() {
   const navigator = useNavigate()
-
   const [highlightedButton, setHighlightedButton] = useState('detail')
-
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
-
+  const user = auth.currentUser
+  const loggedInUserEmail = user ? user.email : null
   return (
     <>
       <div>
@@ -20,7 +18,7 @@ function Mypage() {
             <ProfileImage alt="프로필 이미지" />
             <TextBox>
               <NicknameTextBox>
-                OOO 님 <br />
+                {loggedInUserEmail} 님 <br />
                 안녕하세요.
               </NicknameTextBox>
               <SignEditBox onClick={EditUserpageMove}>회원정보 수정</SignEditBox>
@@ -45,9 +43,7 @@ function Mypage() {
     </>
   )
 }
-
 export default Mypage
-
 const MypageBox = styled.div`
   display: flex;
   height: 100vh;
@@ -55,7 +51,6 @@ const MypageBox = styled.div`
   flex-direction: column;
   align-items: center;
 `
-
 const ProfileBox = styled.div`
   display: flex;
   width: 784px;
@@ -66,7 +61,6 @@ const ProfileBox = styled.div`
   gap: 64px;
   flex-shrink: 0;
 `
-
 const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
@@ -78,14 +72,12 @@ const ProfileImage = styled.img`
   border: 1px solid black;
   gap: 16px;
 `
-
 const TextBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   flex: 1 0 0;
 `
-
 const NicknameTextBox = styled.div`
   color: #404040;
   font-family: LINE Seed Sans KR;
@@ -94,7 +86,6 @@ const NicknameTextBox = styled.div`
   font-weight: 700;
   line-height: normal;
 `
-
 const SignEditBox = styled.div`
   color: #666;
   text-align: center;
@@ -105,7 +96,6 @@ const SignEditBox = styled.div`
   line-height: normal;
   margin-top: 14px;
 `
-
 const RateBox = styled.div`
   display: flex;
   width: 688px;
@@ -114,31 +104,24 @@ const RateBox = styled.div`
   align-items: flex-start;
   margin-top: 36px;
 `
-
 const RateTitle = styled.div`
   color: #333;
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 10px;
 `
-
 const GaugeContainer = styled.div`
   width: 100%;
   height: 20px;
   background-color: #f0f0f0;
   border-radius: 10px;
 `
-
-const GaugeFill =
-  styled.div <
-  { percentage: number } >
-  `
+const GaugeFill = styled.div`
   width: ${(props) => props.percentage}%;
   height: 100%;
   background-color: #4caf50;
   border-radius: 10px;
 `
-
 const ListBox = styled.div`
   display: flex;
   width: 864px;
@@ -148,7 +131,6 @@ const ListBox = styled.div`
   gap: 32px;
   margin-top: 48px;
 `
-
 const DetailListBox = styled.button`
   display: flex;
   height: 56px;
@@ -166,19 +148,16 @@ const DetailListBox = styled.button`
   outline: none;
   background-color: white;
   cursor: pointer;
-
   &.highlighted {
     /* text-decoration: underline; */
     border-bottom: 2px solid black;
-    /* background-color: #f0f0f0; */
+    /* background-color: #F0F0F0; */
   }
-
   &:hover {
     /* text-decoration: underline; */
-    /* background-color: #f0f0f0; */
+    /* background-color: #F0F0F0; */
   }
 `
-
 const CommentListBox = styled.button`
   display: flex;
   height: 56px;
@@ -196,15 +175,13 @@ const CommentListBox = styled.button`
   outline: none;
   background-color: white;
   cursor: pointer;
-
   &.highlighted {
     /* text-decoration: underline; */
     border-bottom: 2px solid black;
-    /* background-color: #f0f0f0; */
+    /* background-color: #F0F0F0; */
   }
-
   &:hover {
     /* text-decoration: underline; */
-    /* background-color: #f0f0f0; */
+    /* background-color: #F0F0F0; */
   }
 `
