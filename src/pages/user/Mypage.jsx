@@ -1,7 +1,14 @@
-import React from 'react'
-
+import React, { useState, useEffect } from 'react'
+import { auth } from '../../firebase'
 function Mypage() {
-  return <div>Mypage</div>
+  const user = auth.currentUser
+  const loggedInUserEmail = user ? user.email : null
+
+  return (
+    <>
+      <div>{loggedInUserEmail}님</div>
+    </>
+  )
 }
 
 export default Mypage
