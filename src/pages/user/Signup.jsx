@@ -65,12 +65,12 @@ function Signup() {
   }
   return (
     <>
-      <SignupDiv>
+      <SignupBox>
         <div>
           <SignupH1>회원가입 </SignupH1>
           <SignupText>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupText>
         </div>
-        <SignupArea>
+        <SignupAreaBox>
           <SignupImg />
           <button>프로필이미지등록</button>
           <div>
@@ -103,15 +103,15 @@ function Signup() {
               <SignWithGoogleBtn>Google로 시작하기 </SignWithGoogleBtn>
             </SignWithGoogleArea>
           </div>
-        </SignupArea>
-      </SignupDiv>
+        </SignupAreaBox>
+      </SignupBox>
     </>
   )
 }
 
 export default Signup
 
-const SignupDiv = styled.div`
+const SignupBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -140,7 +140,7 @@ const SignupH1 = styled.div`
   margin-bottom: 15px;
 `
 
-const SignupArea = styled.div`
+const SignupAreaBox = styled.div`
   display: flex;
   height: 975 px;
   width: 736px;
