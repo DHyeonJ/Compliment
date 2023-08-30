@@ -1,7 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Main from '../pages/Main'
-import Mypage from '../pages/user/Mypage'
 import IntroPage from '../pages/IntroPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import AddBoard from '../pages/board/AddBoard'
@@ -13,6 +12,7 @@ import Signup from '../pages/user/Signup'
 import EditUserInfo from '../pages/user/EditUserInfo'
 import Login from '../pages/user/Login'
 import Layout from './Layout'
+import Mypage from '../pages/user/Mypage'
 
 function Router() {
   return (
