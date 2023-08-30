@@ -33,14 +33,21 @@ const Search = ({ handleSearchClick }) => {
 export default Search
 
 const SearchBox = styled.div`
-  width: 400px;
+  /* width: 400px;
   height: 48px;
   border-radius: 20px;
   border: solid 1px rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-right: 70px;
+  margin-right: 70px; */
+  display: flex;
+  width: 400px;
+  padding: 0px 8px;
+  align-items: flex-start;
+  flex-shrink: 0;
+  border-radius: 20px;
+  border: 1px solid #d9d9d9;
 `
 const SearchIcon = styled(FontAwesomeIcon)`
   width: 32px;
@@ -56,6 +63,16 @@ const KeywordInput = styled.input`
   font-size: 15px;
   z-index: 1;
   position: relative;
+  text-align: left;
+  margin: auto;
+  /* display: flex;
+  width: 328px;
+  height: 48px;
+  padding: 8px;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 20px; */
   &::placeholder {
     color: #999999;
     padding-left: 8px;
