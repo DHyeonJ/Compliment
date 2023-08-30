@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 function Signup() {
-  console.log(auth)
   const navigate = useNavigate()
 
   // 회원가입시 필요한 정보

@@ -36,6 +36,7 @@ function MissionPage() {
   }
   // 미션 카드 불러오기
   const [missionCards, setMissionCards] = useState([])
+  console.log(missionCards)
   useEffect(() => {
     // async function fetchData() {
     //   try {

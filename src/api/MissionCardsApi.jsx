@@ -3,7 +3,6 @@ import { db } from '../firebase'
 
 const getMissionCards = async () => {
   const querySnapShot = await getDocs(collection(db, 'mission'))
-  // console.log(querySnapShot)
   const fetchedData = querySnapShot.docs.map((doc) => ({
     ...doc.data(),
     id: doc.id,
