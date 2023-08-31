@@ -1,174 +1,252 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-import React, { useState, useEffect } from 'react'
-import { auth, firestore } from '../../firebase'
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import { getMissionCards } from '../../api/MissionCardsApi'
-import { useQuery } from 'react-query'
+import Logo from '../../components/Logo'
+import MenuNav from '../../components/MenuNav'
+import { getMissionCards, updateMissionCard, setMissionCard } from '../../api/MissionCardsApi'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { auth } from '../../firebase'
 
-function MissionPage() {
-  const user = auth.currentUser
-  const loggedInUserEmail = user ? user.email : null
+const MissionPage = () => {
+  const { data: missionData, isLoading } = useQuery('missionContents', getMissionCards)
+  const [randomCards, setRandomCards] = useState([]) // 랜덤하게 선택된 미션 카드 상태
+  const [selectedCardId, setSelectedCardId] = useState([]) // 클릭한 미션 카드의 ID 상태
+  //
+  const [prevDate, setPrevDate] = useState(new Date())
 
-  const [selectedValues, setSelectedValues] = useState([])
-  const [missions, setMissions] = useState([])
+  //
+  const [doneMission, setDoneMission] = useState(0)
 
-  const updateMissionCardInFirestore = async (value, isChecked) => {
-    await updateMissionCard({
-      targetId: value,
-      editedMissionCard: { status: isChecked },
-    })
-  }
+  //
+  const queryClient = useQueryClient()
 
-  const handleCheckboxChange = (event) => {
-    const value = event.target.value
-    const isChecked = event.target.checked
+  const mutation = useMutation(updateMissionCard, {
+    onSuccess: () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      queryClient.invalidateQueries('missionContents')
+    },
+  })
 
-    if (isChecked) {
-      setSelectedValues([...selectedValues, value])
-    } else {
-      setSelectedValues(selectedValues.filter((item) => item !== value))
-    }
-
-    updateMissionCardInFirestore(value, isChecked).catch((error) => {
-      console.error('Error updating mission card:', error)
-    })
-  }
-
-  const handleGetCheckboxValue = () => {
-    const result = selectedValues.join(', ') // 선택된 값들을 쉼표와 공백으로 연결
-    alert(result) // 선택된 값들을 알림으로 보기
-    setSelectedValues([]) // 선택된 값들을 초기화하여 unchecked 상태로 변경-> 불가 툴킷으로 구현하기
-  }
-
-  const [missionCardData, setMissionCardData] = useState([])
-  const { data: missionCard, isLoading } = useQuery('missionCards', getMissionCards)
-  console.log(missionCard)
-  const a = () => {
-    const missionCardDatas = [...missionCard]
-    setMissionCardData(missionCardDatas)
-  }
-  // 미션 카드 불러오기
-  const [missionCards, setMissionCards] = useState([])
   useEffect(() => {
-    // async function fetchData() {
-    //   try {
-    //     const fetchedMissionCards = await getMissionCards()
-    //     setMissionCards(fetchedMissionCards)
-    //   } catch (error) {
-    //     console.error('Error fetching mission cards:', error)
-    //   }
-    // }
-    // fetchData()
-    if (missionCard) {
-      a()
+    const updateMissionCards = async () => {
+      const newMissionData = await getMissionCards()
+      const newRandomCards = []
+      while (newRandomCards.length < 4) {
+        const randomIndex = Math.floor(Math.random() * newMissionData.length)
+        const randomCard = newMissionData[randomIndex]
+        if (!newRandomCards.some((card) => card.id === randomCard.id)) {
+          newRandomCards.push(randomCard)
+        }
+      }
+      setRandomCards(newRandomCards)
     }
-  }, [missionCard])
 
-  if (isLoading) {
-    return <div>is Loading...</div>
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    updateMissionCards()
+
+    // 매일 자정마다 상태 초기화
+    const resetSelectedCards = async () => {
+      setSelectedCardId([])
+      const newMissionData = await getMissionCards()
+      const newRandomCards = []
+      while (newRandomCards.length < 4) {
+        const randomIndex = Math.floor(Math.random() * newMissionData.length)
+        const randomCard = newMissionData[randomIndex]
+        if (!newRandomCards.some((card) => card.id === randomCard.id)) {
+          newRandomCards.push(randomCard)
+        }
+      }
+      setRandomCards(newRandomCards)
+    }
+
+    const now = new Date()
+    // const timeUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now
+    // const resetInterval = setInterval(resetSelectedCards, timeUntilMidnight)
+    const resetInterval = setInterval(resetSelectedCards, 10000000000)
+
+    // Cleanup function to clear the interval
+    return () => clearInterval(resetInterval)
+  }, [])
+
+  const handleCardClick = async (cardId) => {
+    const userInfo = auth.currentUser
+    if (selectedCardId.includes(cardId)) {
+      setSelectedCardId(selectedCardId.filter((id) => id !== cardId))
+      setDoneMission(selectedCardId.length - 1) // 선택한 카드 수 감소
+    } else {
+      setSelectedCardId([...selectedCardId, cardId])
+      setDoneMission(selectedCardId.length + 1) // 선택한 카드 수 증가
+    }
+    mutation.mutate({ targetId: userInfo.uid, editedMissionCard: doneMission })
   }
 
   return (
-    <>
-      <div>MissionPage</div>
-      <MissionTextAreaBox>
-        <MissionTitleBox>미션도착!</MissionTitleBox>
-        <MissionTextBox>매일 칭찬 미션이 도착합니다. 미션을 수행하면서, 칭찬에 대한 영감을 얻고 긍정의 에너지를 나눠보세요.</MissionTextBox>
-      </MissionTextAreaBox>
-
-      <div>
-        미션 카드 박스 영역
-        <MissionCardList>
-          <MissionCard>
-            <input type="checkbox" name="mission" value="mission1" onChange={handleCheckboxChange} />
-            미션1
-          </MissionCard>
-          <MissionCard>
-            <input type="checkbox" name="mission" value="mission2" onChange={handleCheckboxChange} />
-            미션2
-          </MissionCard>
-          <MissionCard>
-            <input type="checkbox" name="mission" value="mission3" onChange={handleCheckboxChange} />
-            미션3
-          </MissionCard>
-          <MissionCard>
-            <input type="checkbox" name="mission" value="mission4" onChange={handleCheckboxChange} />
-            미션4
-          </MissionCard>
-          <button onClick={handleGetCheckboxValue}>제출하기</button>
-        </MissionCardList>
-      </div>
-
-      <MissionCardList>
-        {missionCard.map((card) => {
-          const [mission, status] = Object.entries(card)[0]
-          return (
-            <MissionCard key={card.id}>
-              <input type="checkbox" name="mission" value="mission1" onChange={handleCheckboxChange} />
-              <p>
-                {mission}: {status.toString()}
-              </p>
-            </MissionCard>
-          )
-        })}
-      </MissionCardList>
-    </>
+    <div>
+      <MenuNav />
+      <Hug>
+        <BannerBox>
+          <BannerContainer>
+            <BannerTitle>미션 도착!</BannerTitle>
+            <BannerContent>
+              매일 칭찬 미션이 도착합니다. <br /> 수행하면서, 칭찬에 대한 영감을 얻고 긍정의 에너지를 나눠보세요.
+            </BannerContent>
+          </BannerContainer>
+        </BannerBox>
+        <MissionCardBox>
+          <DailyMissionBox>
+            <DailyMission>오늘의 미션!</DailyMission>
+          </DailyMissionBox>
+          <MissionCards>
+            {randomCards?.map((item) => {
+              return (
+                <MissionCard key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={selectedCardId.includes(item.id)}>
+                  <MissionCardFrame>
+                    <MissionCardTitle>{item.title}</MissionCardTitle>
+                    <LogoBox>
+                      <Logo></Logo>
+                    </LogoBox>
+                    <MissionCardContents>{item.content}</MissionCardContents>
+                  </MissionCardFrame>
+                </MissionCard>
+              )
+            })}
+          </MissionCards>
+        </MissionCardBox>
+      </Hug>
+    </div>
   )
 }
 
 export default MissionPage
 
-const MissionTextAreaBox = styled.div`
-  width: 1440px;
-  height: 240px;
-  padding: 48px 72px 48px 46px;
-  align-items: center;
-  align-self: stretch;
-  border-radius: 20px;
-  background: #fffaec;
-  color: #000000;
-  margin-left: 240px;
-  margin-right: 240px;
-  margin-top: 16px;
-  margin-bottom: 48px;
-  padding: 48px 75px 48px 46px;
+const LogoBox = styled.div`
+  /* width: 111px;
+  height: 78px; */
+  padding: 18px;
 `
-const MissionTitleBox = styled.div`
-  color: #000;
+
+const MissionCardContents = styled.div`
+  color: #69535f;
+  text-align: center;
   font-family: LINE Seed Sans KR;
-  font-size: 48px;
+  font-size: 14px;
   font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  margin-bottom: 16px;
+  font-weight: 400;
+  line-height: 148%; /* 20.72px */
+  margin: 0px 47px 50px 47px;
 `
-const MissionTextBox = styled.div`
-  color: #000;
+
+const MissionCardTitle = styled.div`
+  color: #69535f;
+  text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 20px;
   font-style: normal;
-  font-weight: 400;
-  line-height: 32px; /* 160% */
+  font-weight: 700;
+  line-height: 160%; /* 32px */
+  margin: 51px 65px 0px 51px;
 `
-
-const MissionCardList = styled.div`
+const MissionCardFrame = styled.div`
+  flex: 1 0 0;
+  align-self: stretch;
+  border-radius: 16px;
+  border: 2px solid #c5b2bc;
   display: flex;
-  width: 1386px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
+const MissionCard = styled.div`
+  display: flex;
+  width: 256px;
+  height: 368px;
+  padding: 8px;
+  justify-content: space-between;
   align-items: flex-start;
-  gap: 48px;
-  margin-left: 240px;
-  margin-right: 240px;
-  margin-top: 16px;
-  margin-bottom: 48px;
-  padding: 48px 75px 48px 46px;
+  border-radius: 20px;
+  border: 2px solid #f5f1e6;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
+  /* background: #fefbf3; */
+  background: ${(props) => (props.isSelected ? 'green' : '#fefbf3')};
 `
 
-const MissionCard = styled.label`
-  width: 309px;
-  height: 463px;
-  flex-shrink: 0;
+const MissionCards = styled.div`
+  display: flex;
+  padding: 0px 64px;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-self: stretch;
+`
+
+const DailyMission = styled.div`
+  color: #000;
+  font-family: LINE Seed Sans KR;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 160%; /* 25.6px */
+`
+
+const DailyMissionBox = styled.div`
+  display: flex;
+  height: 48px;
+  padding: 0px 64px;
+  align-items: flex-start;
+  gap: 56px;
+  align-self: stretch;
+`
+
+const MissionCardBox = styled.div`
+  display: flex;
+  padding-bottom: 0px;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  border: 1px solid red;
+`
+
+const BannerContent = styled.div`
+  color: #404040;
+  font-family: LINE Seed Sans KR;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px; /* 150% */
+`
+
+const BannerTitle = styled.div`
+  color: #404040;
+  font-family: LINE Seed Sans KR;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`
+
+const BannerContainer = styled.div`
+  display: flex;
+  width: 1328px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  border: 1px solid green;
+`
+
+const Hug = styled.div`
+  display: flex;
+  padding: 16px 240px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border: 2px solid green;
+`
+const BannerBox = styled.div`
+  display: flex;
+  width: 1440px;
+  padding: 48px 56px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
   border-radius: 20px;
-  border: 1px solid #000;
-  background: #fff;
-  align-items: center;
+  background: #fcfbe6;
 `
