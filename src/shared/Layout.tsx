@@ -9,7 +9,7 @@ import { styled } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { signOut } from 'firebase/auth'
-import { auth } from '../firebase.js'
+import { auth, storage } from '../firebase.js'
 
 function Layout(): JSX.Element {
   const navigator = useNavigate()

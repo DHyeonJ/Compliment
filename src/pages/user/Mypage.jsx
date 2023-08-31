@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { auth } from '../../firebase'
+import { auth, storage } from '../../firebase'
 function Mypage() {
   const navigator = useNavigate()
   const [highlightedButton, setHighlightedButton] = useState('detail')
@@ -10,6 +10,8 @@ function Mypage() {
   }
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
+
+  console.log(user.uid)
   return (
     <>
       <div>

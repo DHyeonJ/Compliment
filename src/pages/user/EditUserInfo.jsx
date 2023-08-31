@@ -1,18 +1,20 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useState } from 'react'
 import { styled } from 'styled-components'
-import { auth, storage } from '../../firebase'
+import { auth, storage, db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 import { getAuth, updatePassword } from 'firebase/auth'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { doc, updateDoc } from 'firebase/firestore'
+
 function EditUserInfo() {
   const navigate = useNavigate()
 
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
-
-  const [profileImage, setProfileImage] = useState(null)
-  const [imageUrl, setImageUrl] = useState(null)
 
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
@@ -47,40 +49,57 @@ function EditUserInfo() {
       }
     }
   }
+  // 프로필설정하기
+  const [imageUrl, setImageUrl] = useState(null)
+  const [error, setError] = useState(null)
 
-  // 이미지 선택 시 호출되는 함수로, 선택한 이미지를 프로필 이미지로 설정합니다.
-  const handleImageChange = (event) => {
-    const selectedImage = event.target.files[0]
-    if (selectedImage) {
-      const reader = new FileReader()
-      reader.onload = () => {
-        setProfileImage(reader.result)
-      }
-      reader.readAsDataURL(selectedImage)
+  const handleImageUpload = async (event) => {
+    const file = event.target.files[0]
+    const storageRef = ref(storage, `profileImages/${user.uid}/${user.uid}`)
+
+    try {
+      const uploadTask = uploadBytesResumable(storageRef, file)
+
+      // Listen for state changes
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          // Get task progress by calling snapshot.bytesTransferred / snapshot.totalBytes * 100%
+          console.log(`Upload is ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}% done`)
+        },
+        (error) => {
+          console.error('Error uploading image:', error)
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            setImageUrl(downloadURL)
+            console.log('File available at', downloadURL)
+          })
+        },
+      )
+    } catch (error) {
+      console.error('Error uploading image:', error)
+    }
+  }
+  const handleSave = async () => {
+    try {
+      const updateInfoRef = doc(db, 'profileImages', user.uid)
+
+      await updateDoc(updateInfoRef, {
+        name: loggedInUserEmail,
+        imgfile: imageUrl, // 여기서 변경됨.
+      })
+      setError(null)
+
+      // 프로필 정보 저장 로직
+      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
+      window.alert('프로필 정보를 저장했습니다.')
+    } catch (error) {
+      console.error('프로필 정보 저장 실패:', error.message)
+      setError('프로필 정보 저장에 실패했습니다. 다시 시도해주세요.')
     }
   }
 
-  // 이미지 업로드를 처리하는 함수입니다.
-  const handleImageUpload = async () => {
-    if (profileImage) {
-      try {
-        const storageRef = storage.ref(`files/${profileImage.name}`)
-        const imageRef = storageRef.child(`profileImages/${loggedInUserEmail}`)
-
-        // 이미지 업로드
-        const snapshot = await imageRef.putString(profileImage, 'data_url', { contentType: 'image/jpeg' })
-
-        console.log('이미지 업로드 성공:', snapshot)
-
-        // 업로드한 이미지의 다운로드 URL을 가져와 imageUrl 상태에 설정합니다.
-        const downloadURL = await snapshot.ref.getDownloadURL()
-        setImageUrl(downloadURL)
-      } catch (error) {
-        console.error('이미지 업로드 오류:', error)
-      }
-    }
-  }
-  console.log('2', user.reauthenticateWithCredential)
   return (
     <>
       <EditUserInfoBox>
@@ -89,9 +108,10 @@ function EditUserInfo() {
           <EditTextBox>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요.</EditTextBox>
         </div>
         <ProfileImageBox>
-          <ProfileImagePreview src={imageUrl || profileImage} alt="프로필 미리보기" />
-          <ProfileImageInput onChange={handleImageChange} placeholder="프로필사진 등록하기" type="file" accept="image/jpeg" />
-          <ProfileImageBtn onClick={handleImageUpload}>이미지 업로드</ProfileImageBtn>
+          <ProfileImagePreview src={imageUrl} alt="이미지 미리보기" />
+          <ProfileImageInput placeholder="프로필사진 등록하기" type="file" accept="image/*" onChange={handleImageUpload} />
+          <ProfileImageBtn onClick={handleSave}>이미지 업로드</ProfileImageBtn>
+          {error && <p>{error}</p>}
         </ProfileImageBox>
         <EditForm onSubmit={handlePasswordUpdate}>
           <EditInputAreaBox>
@@ -159,10 +179,14 @@ const EditTextBox = styled.div`
   line-height: normal;
 `
 const ProfileImagePreview = styled.img`
-  max-width: 100px;
-  max-height: 100px;
-  margin-top: 10px;
-  border-radius: 60px;
+  width: 100px;
+  height: 100px;
+  max-width: 150px;
+  max-height: 150px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  border-radius: 100px;
+  border: 5px solid #dad7d7;
 `
 
 const ProfileImageBox = styled.div`
@@ -183,7 +207,7 @@ const ProfileImageInput = styled.input`
 `
 
 const ProfileImageBtn = styled.button`
-  display: block;
+  display: none;
   border-left-width: 0;
   border-right-width: 0;
   border-top-width: 0;
