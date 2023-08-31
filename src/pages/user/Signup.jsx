@@ -44,6 +44,7 @@ function Signup() {
         // 로그인이 완료되었을 때 사용자 정보 확인
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
+
         setEmail('')
         setPassword('')
         setConfirmPassword('')

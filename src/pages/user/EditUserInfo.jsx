@@ -37,10 +37,10 @@ function EditUserInfo() {
 
       await updatePassword(user, newPassword)
 
-      alert('비밀번호 업데이트 성공')
+      alert('회원 정보 변경 완료')
       navigate('/')
     } catch (error) {
-      console.error('비밀번호 업데이트 오류:', error)
+      console.error('회원 정보 변경 오류:', error)
 
       if (error.code === 'auth/requires-recent-login') {
         alert('비밀번호 변경을 위해선 재로그인이 필요합니다.')
