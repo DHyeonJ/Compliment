@@ -36,7 +36,7 @@ function EditUserInfo() {
       await updatePassword(user, newPassword)
 
       alert('비밀번호 업데이트 성공')
-      navigate('/') // Navigate to the home page after password change
+      navigate('/')
     } catch (error) {
       console.error('비밀번호 업데이트 오류:', error)
 
