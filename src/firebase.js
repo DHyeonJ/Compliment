@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app'
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
-import { getStorage } from 'firebase/storage'
+import { getStorage, ref, getDownloadURL } from 'firebase/storage'
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FB_API_KEY,
@@ -26,4 +26,4 @@ const firebaseSignUp = async ({ name, email, password, photo }) => {
 }
 
 // 'firestore'를 export
-export { app, auth, db, storage, firebaseSignUp }
+export { app, auth, db, storage, firebaseSignUp, ref, getDownloadURL }

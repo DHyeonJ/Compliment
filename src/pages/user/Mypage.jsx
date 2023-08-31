@@ -1,28 +1,46 @@
-import React, { useState } from 'react'
+/* eslint-disable @typescript-eslint/no-floating-promises */
+import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { auth, storage } from '../../firebase'
+import { auth, getStorage, ref, getDownloadURL } from '../../firebase'
+import defaultProfileImage from '../../img/user.png'
 function Mypage() {
   const navigator = useNavigate()
+
   const [highlightedButton, setHighlightedButton] = useState('detail')
+  const [imageUrl, setImageUrl] = useState('')
+
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
 
-  console.log(user.uid)
+  useEffect(() => {
+    const fetchImageUrl = async () => {
+      if (auth.currentUser) {
+        try {
+          const userUid = auth.currentUser.uid
+          const path = `profileImages/${userUid}/${userUid}`
+          const storageRef = ref(storage, path)
+          const url = await getDownloadURL(storageRef)
+          setImageUrl(url || defaultProfileImage)
+        } catch (error) {
+          console.log('Error fetching image URL:', error)
+        }
+      }
+    }
+
+    fetchImageUrl()
+  }, [])
   return (
     <>
       <div>
         <MypageBox>
           <ProfileBox>
-            <ProfileImage alt="프로필 이미지" />
+            <ProfileImage alt="프로필 이미지" src={imageUrl || defaultProfileImage} />
             <TextBox>
-              <NicknameTextBox>
-                {loggedInUserEmail} 님 <br />
-                안녕하세요.
-              </NicknameTextBox>
+              <NicknameTextBox>{loggedInUserEmail} 님 안녕하세요.</NicknameTextBox>
               <SignEditBox onClick={EditUserpageMove}>회원정보 수정</SignEditBox>
             </TextBox>
           </ProfileBox>
@@ -67,11 +85,11 @@ const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 150px;
-  height: 150px;
+  width: 100px;
+  height: 100px;
+  box-shadow: 5px 3px 7px 3px #c4c4c4;
   border-radius: 50%;
   margin-right: 10px;
-  border: 1px solid black;
   gap: 16px;
 `
 const TextBox = styled.div`
