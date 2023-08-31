@@ -20,7 +20,7 @@ const MissionPage = () => {
   //
   const queryClient = useQueryClient()
 
-  const mutation = useMutation(updateMissionCard, {
+  const { mutateAsync } = useMutation(updateMissionCard, {
     onSuccess: () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       queryClient.invalidateQueries('missionContents')
@@ -62,7 +62,7 @@ const MissionPage = () => {
     const now = new Date()
     // const timeUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now
     // const resetInterval = setInterval(resetSelectedCards, timeUntilMidnight)
-    const resetInterval = setInterval(resetSelectedCards, 10000000000)
+    const resetInterval = setInterval(resetSelectedCards, 1000000000)
 
     // Cleanup function to clear the interval
     return () => clearInterval(resetInterval)
@@ -70,14 +70,25 @@ const MissionPage = () => {
 
   const handleCardClick = async (cardId) => {
     const userInfo = auth.currentUser
+    let resultCount
+
     if (selectedCardId.includes(cardId)) {
+      resultCount = selectedCardId.length - 1
       setSelectedCardId(selectedCardId.filter((id) => id !== cardId))
       setDoneMission(selectedCardId.length - 1) // 선택한 카드 수 감소
     } else {
+      resultCount = selectedCardId.length + 1
       setSelectedCardId([...selectedCardId, cardId])
       setDoneMission(selectedCardId.length + 1) // 선택한 카드 수 증가
     }
-    mutation.mutate({ targetId: userInfo.uid, editedMissionCard: doneMission })
+    // setter 뒤에 update된 state는 쓰면 안됨
+
+    // 결과값 바로 전달
+    try {
+      await mutateAsync({ targetId: userInfo.uid, editedMissionCard: resultCount })
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   return (
@@ -121,7 +132,7 @@ export default MissionPage
 
 const LogoBox = styled.div`
   /* width: 111px;
-  height: 78px; */
+height: 78px; */
   padding: 18px;
 `
 
@@ -142,6 +153,7 @@ const MissionCardTitle = styled.div`
   font-family: LINE Seed Sans KR;
   font-size: 20px;
   font-style: normal;
+
   font-weight: 700;
   line-height: 160%; /* 32px */
   margin: 51px 65px 0px 51px;

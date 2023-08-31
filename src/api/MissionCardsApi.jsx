@@ -14,7 +14,7 @@ const getMissionCards = async () => {
 
 // 회원가입 시에 set해줌!!!
 const setMissionCard = async (id) => {
-  const setMission = await setDoc(doc(db, 'mission', id))
+  const setMission = await setDoc(doc(db, 'mission', id), {})
   return setMission
 }
 
@@ -29,11 +29,11 @@ const deleteMissionCard = async (targetId) => {
 
 const updateMissionCard = async ({ targetId, editedMissionCard }) => {
   console.log('check', targetId, editedMissionCard)
-  await updateDoc(doc(db, 'mission', targetId), editedMissionCard)
+  await updateDoc(doc(db, 'mission', targetId), { doneMission: editedMissionCard })
 }
 
 // const updateMissionCard = async ({ editedMissionCard }) => {
-//   await updateDoc(doc(db, 'mission'), editedMissionCard)
+// await updateDoc(doc(db, 'mission'), editedMissionCard)
 // }
 
 export { getMissionCards, addMissionCard, deleteMissionCard, updateMissionCard, setMissionCard }
