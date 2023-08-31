@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { signOut } from 'firebase/auth'
 import { auth, storage } from '../firebase.js'
+import logoImg from '../img/logo.png'
 
 function Layout(): JSX.Element {
   const navigator = useNavigate()
@@ -57,32 +58,35 @@ function Layout(): JSX.Element {
 
   return (
     <LayOutBox>
-      <HeaderBox>
-        <LogoTitleBox>
-          <LogoBox onClick={mainPageMove}>logo</LogoBox>
-          <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
-        </LogoTitleBox>
-        <ButtonsBox>
-          {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
-          {currentUser ? (
-            <>
-              {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
-              <DropDown>
-                <DropBtn>{currentUser}님</DropBtn>
-                <DropdownContents>
-                  <DropdownContent onClick={myPageMove}>마이페이지 </DropdownContent>
-                  <DropdownContent onClick={handleLogout}> 로그아웃 </DropdownContent>
-                </DropdownContents>
-              </DropDown>
-            </>
-          ) : (
-            <>
-              <LoginButton onClick={loginPageMove}>로그인</LoginButton>
-              <SignUpButton onClick={signUpPageMove}>회원가입</SignUpButton>
-            </>
-          )}
-        </ButtonsBox>
-      </HeaderBox>
+      <HeaderAllBox>
+        <HeaderBox>
+          <LogoTitleBox>
+            <ImgBox onClick={mainPageMove}>
+              <Logo src={logoImg}></Logo>
+            </ImgBox>
+            <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
+          </LogoTitleBox>
+        </HeaderBox>
+        {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
+        {currentUser ? (
+          <ButtonsBox>
+            {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
+
+            <DropDown>
+              <DropBtn>{currentUser}님</DropBtn>
+              <DropdownContents>
+                <DropdownContent onClick={myPageMove}>마이페이지 </DropdownContent>
+                <DropdownContent onClick={handleLogout}> 로그아웃 </DropdownContent>
+              </DropdownContents>
+            </DropDown>
+          </ButtonsBox>
+        ) : (
+          <ButtonsBox>
+            <LoginButton onClick={loginPageMove}>로그인</LoginButton>
+            <SignUpButton onClick={signUpPageMove}>회원가입</SignUpButton>
+          </ButtonsBox>
+        )}
+      </HeaderAllBox>
       <Outlet />
       <FooterBox>
         <ContentBox>
@@ -99,36 +103,58 @@ function Layout(): JSX.Element {
 }
 
 export default Layout
+const ButtonsBox = styled.div`
+  display: flex;
+  position: absolute;
+  right: 180px;
+  top: 30px;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+`
+
 const LayOutBox = styled.div`
   width: 100vw;
-  height: 92.3125rem;
+  height: 100vh;
+`
+const HeaderAllBox = styled.div`
+  display: flex;
+  /* width: 100vw; */
+  height: 80px;
+  padding: 12px 0px;
+  margin: 0 56px;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  position: relative;
 `
 const HeaderBox = styled.div`
+  /* width: 100vw; */
+  height: 56px;
+  flex-shrink: 0;
+  background: #fff;
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
-  height: 5rem;
-  margin: 0 3.5rem;
 `
 const LogoTitleBox = styled.div`
-  display: flex;
+  width: 207.66px;
+  display: inline-flex;
   justify-content: center;
-  position: absolute;
-  width: 100vw;
   align-items: center;
-  gap: 0.625rem;
-  flex: 1;
+  gap: 12px;
 `
-const LogoBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 2.25rem;
-  height: 1.5rem;
 
-  background-color: #d0d0d0;
+const ImgBox = styled.div`
+  width: 39.66px;
+  height: 27.496px;
+  flex-shrink: 0;
+  fill: #ad7d83;
+`
 
-  cursor: pointer;
+const Logo = styled.img`
+  width: 39.66px;
+  height: 28px;
 `
 const TitleSpan = styled.span`
   font-family: 'LINE SEED Sans KR';
@@ -137,41 +163,50 @@ const TitleSpan = styled.span`
   font-size: 1.25rem;
 `
 
-const ButtonsBox = styled.div`
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  gap: 0.625rem;
-`
+// const ButtonsBox = styled.div`
+//   display: flex;
+//   justify-content: right;
+//   align-items: center;
+//   gap: 0.625rem;
+// `
 
 const LoginButton = styled.button`
-  width: 6.125rem;
-  height: 2.75rem;
-
-  background-color: #69535f;
-
-  border: none;
-  border-radius: 0.5rem;
-
-  color: #ffffff;
-  font-size: 1rem;
-  font-family: 'pretendard';
+  display: inline-flex;
+  height: 44px;
+  padding: 14px 28px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #69535f;
+  color: #fff;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 
   cursor: pointer;
 `
 const SignUpButton = styled.button`
-  width: 6.125rem;
-  height: 2.75rem;
-
-  background-color: #ffffff;
-
-  border: 0.0625rem solid #69535f;
-  border-radius: 0.5rem;
-
+  display: inline-flex;
+  height: 44px;
+  padding: 14px 28px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  border: 1px solid #69535f;
+  flex-shrink: 0;
   color: #69535f;
-  font-size: 1rem;
-  font-family: 'pretendard';
-
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
   cursor: pointer;
 `
 const FooterBox = styled.div`

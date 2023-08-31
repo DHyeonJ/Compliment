@@ -70,10 +70,6 @@ function Main() {
         <RankInfo>
           <RankTitleBox>이번 달도 잘 했어</RankTitleBox>
           <RankUserBox>
-            {/* <BlurBox>
-              <RightBox></RightBox>
-              <LeftBox></LeftBox>
-            </BlurBox> */}
             {userData.map((item, index) => {
               return (
                 <RankUserInfo key={index}>
@@ -104,29 +100,6 @@ function Main() {
 }
 
 export default Main
-
-// const BlurBox = styled.div`
-//   height: 210px;
-//   background-color: none;
-//   z-index: 50;
-//   position: absolute;
-//   width: 1440px;
-//   display: flex;
-//   justify-content: space-between;
-//   flex-direction: row;
-// `
-// const RightBox = styled.div`
-//   height: 210px;
-//   background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 5%, rgba(255, 255, 255, 0.8) 95%, rgba(255, 255, 255, 0) 100%);
-//   z-index: 50;
-//   width: 100px;
-// `
-// const LeftBox = styled.div`
-//   height: 210px;
-//   background: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 5%, rgba(255, 255, 255, 1) 95%, rgba(255, 255, 255, 0) 100%);
-//   z-index: 50;
-//   width: 100px;
-// `
 
 const MainBox = styled.div`
   display: flex;
