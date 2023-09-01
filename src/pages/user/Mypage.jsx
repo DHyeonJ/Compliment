@@ -16,6 +16,7 @@ function Mypage() {
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
 
+  // 스토리지선언확인하기 ,
   useEffect(() => {
     const fetchImageUrl = async () => {
       if (auth.currentUser) {
@@ -30,7 +31,6 @@ function Mypage() {
         }
       }
     }
-
     fetchImageUrl()
   }, [])
   return (

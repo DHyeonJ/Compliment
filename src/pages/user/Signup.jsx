@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo.png'
+import google from '../../img/google.png'
+
 function Signup() {
   const navigate = useNavigate()
 
@@ -63,6 +65,20 @@ function Signup() {
       }
     }
   }
+
+  const [googleUserData, setGoogleUserData] = useState(null)
+
+  function handleGoogleLogin() {
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        setGoogleUserData(data.user)
+      })
+      .catch((err) => {
+        alert(err)
+      })
+  }
+
   return (
     <>
       <SignupBox>
@@ -100,7 +116,9 @@ function Signup() {
             </div>
             <SignWithGoogleArea>
               <SignLine> ㅡ OR ㅡ </SignLine>
-              <SignWithGoogleBtn>Google로 시작하기 </SignWithGoogleBtn>
+              <SignWithGoogleBtn onClick={handleGoogleLogin}>
+                <GoogleLogoImg src={google}></GoogleLogoImg>Google로 시작하기
+              </SignWithGoogleBtn>
             </SignWithGoogleArea>
           </div>
         </SignupAreaBox>
@@ -240,6 +258,7 @@ const SignLine = styled.div`
   gap: 10px;
   justify-content: center;
   color: #666666;
+  margin-top: -17px;
 `
 
 const SignWithGoogleBtn = styled.button`
@@ -261,4 +280,8 @@ const SignWithGoogleBtn = styled.button`
   font-weight: 500;
   line-height: 110%; /* 17.6px */
   cursor: pointer;
+`
+const GoogleLogoImg = styled.img`
+  width: 25px;
+  height: 25px;
 `
