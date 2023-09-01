@@ -3,6 +3,7 @@ import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import logoImg from '../../img/logo.png'
 function Signup() {
   const navigate = useNavigate()
 
@@ -44,7 +45,6 @@ function Signup() {
         // 로그인이 완료되었을 때 사용자 정보 확인
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
-
         setEmail('')
         setPassword('')
         setConfirmPassword('')
@@ -71,7 +71,7 @@ function Signup() {
           <SignupText>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupText>
         </div>
         <SignupAreaBox>
-          <SignupImg />
+          <SignupImg src={logoImg} />
           <button>프로필이미지등록</button>
           <div>
             <div>
@@ -166,7 +166,6 @@ const SignupImg = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  background: #d9d9d9;
   margin-bottom: 10px;
 `
 
