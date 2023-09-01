@@ -25,5 +25,11 @@ const firebaseSignUp = async ({ name, email, password, photo }) => {
   return { name: user.displayName, email: user.email, photoURL: user.photoURL }
 }
 
+const useAuth = () => {
+  return getAuth(app)
+}
+
+export { useAuth }
+
 // 'firestore'를 export
 export { app, auth, db, storage, firebaseSignUp, ref, getDownloadURL }

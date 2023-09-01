@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
-import { getDocs, collection } from 'firebase/firestore'
-import { db } from '../firebase'
-import { useParams } from 'react-router-dom'
+import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore'
+import { db, useAuth } from '../firebase'
+import { useParams, useNavigate } from 'react-router-dom'
 
 function Detail() {
   const [data, setData] = useState([])
   const { id } = useParams()
+  const auth = useAuth()
+  const navigate = useNavigate()
+
+  const admin = 'admin@admin.com'
 
   //   id 값이 일치하는 데이터만 가져오는 함수
   const getDetailData = (id) => {
@@ -35,6 +39,54 @@ function Detail() {
     })
   }, [])
 
+  // 삭제 기능
+  const handleDelete = async () => {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+      try {
+        await deleteDoc(doc(db, 'lists', id))
+        console.log('문서가 성공적으로 삭제되었습니다!')
+        // 삭제 후 추가적인 정리 작업 또는 네비게이션 로직을 처리합니다.
+        navigate('/listpage') // 삭제 후에 /listpage로 이동
+      } catch (error) {
+        console.error('문서 삭제 중 오류: ', error)
+      }
+    } else {
+      alert('이 게시물을 삭제할 권한이 없습니다.')
+    }
+  }
+
+  const handleDeleteClick = () => {
+    const shouldDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
+
+    if (shouldDelete) {
+      handleDelete().catch((error) => {
+        console.error('오류 발생: ', error)
+      })
+    }
+  }
+
+  // 수정 페이지 이동
+  const handleEditMove = () => {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+      navigate(`/editboard/${detailItem.id}`)
+    } else {
+      alert('게시물을 수정할 권한이 없습니다.')
+    }
+  }
+
+  // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
+  const renderEditDeleteButtons = () => {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+      return (
+        <ButtonBox>
+          <Button onClick={handleEditMove}>수정</Button>
+          <Button onClick={handleDeleteClick}>삭제</Button>
+        </ButtonBox>
+      )
+    }
+    return null
+  }
+
   return (
     <>
       {data.length > 0 && (
@@ -49,7 +101,7 @@ function Detail() {
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>
-                <EditButton>수정</EditButton>
+                {renderEditDeleteButtons()}
               </MidleTitleBox>
             </HeaderContentBox>
           </HeaderBox>
@@ -73,6 +125,18 @@ function Detail() {
                 <DateBox>작성일 {detailItem.Date}</DateBox>
               </CommentBodyBox>
             </CommentBox>
+            <CommentInputAreaBox>
+              <CommentInputMedleBox>
+                <UserBox>
+                  <UserImg src="" alt="" />
+                  <UserName>{detailItem.userEmail}</UserName>
+                </UserBox>
+                <CommentInputBox />
+                <ButtonBox>
+                  <Button>등록</Button>
+                </ButtonBox>
+              </CommentInputMedleBox>
+            </CommentInputAreaBox>
           </CommentAreaBox>
         </DetailContentsBox>
       )}
@@ -90,7 +154,7 @@ const DetailContentsBox = styled.div`
   margin: 32px 240px 48px;
   /* width: 1440px; */
   /* height: 2068px; */
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const HeaderBox = styled.div`
@@ -98,7 +162,7 @@ const HeaderBox = styled.div`
   padding: 0px 270px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const HeaderContentBox = styled.div`
@@ -128,14 +192,14 @@ const MidleTitleBox = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   align-self: stretch;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const UserBox = styled.div`
   display: flex;
   align-items: center;
   gap: 24px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const UserImg = styled.img`
@@ -162,7 +226,12 @@ const DateBox = styled.div`
   line-height: 28px;
 `
 
-const EditButton = styled.button`
+const ButtonBox = styled.div`
+  display: flex;
+  gap: 10px;
+`
+
+const Button = styled.button`
   display: flex;
   width: 96px;
   height: 36px;
@@ -173,6 +242,7 @@ const EditButton = styled.button`
   border-radius: 8px;
   border: 1px solid #d9d9d9;
   background: #fff;
+  cursor: pointer;
 `
 
 const ContentBodyBox = styled.div`
@@ -181,7 +251,7 @@ const ContentBodyBox = styled.div`
   padding: 0px 270px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const ContentImgBox = styled.img`
@@ -206,7 +276,7 @@ const CommentAreaBox = styled.div`
   padding: 0px 270px;
   flex-direction: column;
   align-items: center;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 `
 
 const CommentHeaderBox = styled.div`
@@ -240,4 +310,37 @@ const CommentBodyBox = styled.div`
   align-items: flex-start;
   gap: 8px;
   align-self: stretch;
+`
+
+const CommentInputAreaBox = styled.div`
+  display: flex;
+  width: 912px;
+  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+`
+
+const CommentInputMedleBox = styled.div`
+  display: flex;
+  min-width: 800px;
+  max-width: 1440px;
+  padding: 16px 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+`
+
+const CommentInputBox = styled.input`
+  display: flex;
+  min-width: 560px;
+  max-width: 1194px;
+  padding: 24px 0px;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1 0 0;
 `
