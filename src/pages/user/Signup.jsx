@@ -2,8 +2,11 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import logoImg from '../../img/logo.png'
+import google from '../../img/google.png'
 import { setMissionCard } from '../../api/MissionCardsApi.jsx'
+import { current } from '@reduxjs/toolkit'
 function Signup() {
   const navigate = useNavigate()
 
@@ -11,7 +14,6 @@ function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  // const [nickname, setNickname] = useState('')
   const onChange = (event) => {
     const {
       target: { name, value },
@@ -50,7 +52,6 @@ function Signup() {
 
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
-
         setEmail('')
         setPassword('')
         setConfirmPassword('')
@@ -70,6 +71,20 @@ function Signup() {
       }
     }
   }
+
+  const [googleUserData, setGoogleUserData] = useState(null)
+
+  function handleGoogleLogin() {
+    const provider = new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        setGoogleUserData(data.user)
+      })
+      .catch((err) => {
+        alert(err)
+      })
+  }
+
   return (
     <>
       <SignupBox>
@@ -78,7 +93,7 @@ function Signup() {
           <SignupText>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupText>
         </div>
         <SignupAreaBox>
-          <SignupImg />
+          <SignupImg src={logoImg} />
           <button>프로필이미지등록</button>
           <div>
             <div>
@@ -107,7 +122,9 @@ function Signup() {
             </div>
             <SignWithGoogleArea>
               <SignLine> ㅡ OR ㅡ </SignLine>
-              <SignWithGoogleBtn>Google로 시작하기 </SignWithGoogleBtn>
+              <SignWithGoogleBtn onClick={handleGoogleLogin}>
+                <GoogleLogoImg src={google}></GoogleLogoImg>Google로 시작하기
+              </SignWithGoogleBtn>
             </SignWithGoogleArea>
           </div>
         </SignupAreaBox>
@@ -173,7 +190,6 @@ const SignupImg = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  background: #d9d9d9;
   margin-bottom: 10px;
 `
 
@@ -222,7 +238,7 @@ const SignupBtn = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   border: none;
-  background: #6a6a6a;
+  background: #69535f;
   margin-top: 48px;
   margin-bottom: 48px;
   color: #fff;
@@ -248,6 +264,7 @@ const SignLine = styled.div`
   gap: 10px;
   justify-content: center;
   color: #666666;
+  margin-top: -17px;
 `
 
 const SignWithGoogleBtn = styled.button`
@@ -269,4 +286,8 @@ const SignWithGoogleBtn = styled.button`
   font-weight: 500;
   line-height: 110%; /* 17.6px */
   cursor: pointer;
+`
+const GoogleLogoImg = styled.img`
+  width: 25px;
+  height: 25px;
 `

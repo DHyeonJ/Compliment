@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
-//
+import defaultProfileImage from '../../src/img/user.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
-  const [profileImageUrls, setProfileImageUrls] = useState({})
-  //
 
   return (
     <>
@@ -24,7 +22,7 @@ const Lists = ({ data }) => {
               <Contents>
                 <ListContent>
                   <User>
-                    <UserImg src={profileImageUrls[item.userEmail] || ''} alt="" />
+                    <UserImg src={item.photoUrl ?? defaultProfileImage} alt="" />
                     <span>{item.userEmail}</span>
                   </User>
 
@@ -147,7 +145,8 @@ const UserImg = styled.img`
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  background: url(<path-to-image>), lightgray -7.077px -8.248px / 136.752% 205.106% no-repeat;
+  background-image: url(${(props) => props.src}); // Use the src prop as the background image URL
+  background-size: cover; // Adjust background properties as needed
   border-radius: 50%;
   margin-right: 8px;
 `

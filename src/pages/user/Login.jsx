@@ -4,8 +4,13 @@ import { auth } from '../../firebase.js'
 import 'firebase/firestore'
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
+import logoImg from '../../img/logo_big.png'
+import google from '../../img/google.png'
 function Login() {
   const navigate = useNavigate()
+  const signUpPageMove = () => {
+    navigate('/signup')
+  }
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -91,8 +96,8 @@ function Login() {
     <>
       <LoginArea>
         <div>
-          <Logo>Logo</Logo>
-          <LogoText>칭찬을 구해요, 칭구</LogoText>
+          <LogoImg src={logoImg}></LogoImg>
+          <LogoTextBox>칭찬을 구해요, 칭구</LogoTextBox>
         </div>
         <LoginForm>
           <LoginInputArea>
@@ -107,10 +112,12 @@ function Login() {
           <LoginBtn onClick={Signin}>로그인하기</LoginBtn>
         </LoginForm>
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-        <SignWithGoogleBtn onClick={handleGoogleLogin}>Google로 로그인하기</SignWithGoogleBtn>
+        <SignWithGoogleBtn onClick={handleGoogleLogin}>
+          <GoogleLogoImg src={google}></GoogleLogoImg>Google로 로그인하기
+        </SignWithGoogleBtn>
         <LoginTextArea>
           <LoginText>아이디/ 비밀번호 찾기</LoginText>
-          <LoginText> │ 회원가입</LoginText>
+          <LoginText onClick={signUpPageMove}> │ 회원가입</LoginText>
         </LoginTextArea>
       </LoginArea>
       <LoginBlank></LoginBlank>
@@ -126,11 +133,10 @@ const LoginArea = styled.div`
   align-items: center;
   justify-content: center;
 `
-const Logo = styled.div`
+const LogoImg = styled.img`
   margin-left: 308px;
   margin-right: 308px;
   width: 36px;
-  height: 26;
   display: flex;
   width: 120px;
   height: 75px;
@@ -138,9 +144,8 @@ const Logo = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  background: #d9d9d9;
 `
-const LogoText = styled.div`
+const LogoTextBox = styled.div`
   margin-left: 275px;
   margin-right: 275px;
   margin-top: 20px;
@@ -198,7 +203,7 @@ const LoginBtn = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   border: none;
-  background: #6a6a6a;
+  background: #69535f;
   margin-top: 56px;
   color: #fff;
   text-align: center;
@@ -245,8 +250,14 @@ const LoginTextArea = styled.div`
 const LoginText = styled.div`
   display: inline-block;
   margin-left: 10px;
+  cursor: pointer;
 `
 const LoginBlank = styled.div`
   height: 95px;
   margin-bottom: 48px;
+`
+
+const GoogleLogoImg = styled.img`
+  width: 25px;
+  height: 25px;
 `
