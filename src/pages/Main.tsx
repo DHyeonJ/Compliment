@@ -3,7 +3,8 @@ import { styled } from 'styled-components'
 import Slide from '../components/Slide'
 import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, limit, query } from 'firebase/firestore' // query 함수 불러오기 추가
-import { db } from '../firebase.js'
+import { db, auth } from '../firebase.js'
+import defaultProfileImage from '../img/user.png'
 
 interface Images {
   id: string
@@ -13,7 +14,6 @@ interface Images {
 
 function Main() {
   const [images, setImages] = useState<Images[]>([])
-
   useEffect(() => {
     // 'lists' 컬렉션에서 칭찬순으로 상위 10개의 데이터 가져오기
     const fetchData = async () => {
@@ -27,7 +27,7 @@ function Main() {
         const querySnapshot = await getDocs(q)
         const data = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          image: doc.data().image,
+          image: doc.data().photoUrl,
           nickname: doc.data().nickname,
         }))
         setImages(data)
@@ -60,7 +60,7 @@ function Main() {
               console.log(item)
               return (
                 <RankUserInfo key={item.id}>
-                  <RankProFileBox isOdd={index % 2 !== 0} src={item.image}></RankProFileBox>
+                  <RankProFileBox isOdd={index % 2 !== 0} src={item.image ?? defaultProfileImage}></RankProFileBox>
                   {/* <RankNickName>{item.useId}</RankNickName> */}
                 </RankUserInfo>
               )

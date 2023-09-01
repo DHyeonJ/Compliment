@@ -12,6 +12,12 @@ import { signOut } from 'firebase/auth'
 import { auth, storage } from '../firebase.js'
 import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
+import defaultProfileImage from '../img/user.png'
+
+interface User {
+  email: string | null
+  photoURL: string | null
+}
 
 function Layout(): JSX.Element {
   const navigator = useNavigate()
@@ -36,6 +42,10 @@ function Layout(): JSX.Element {
     navigator('/mypage')
   }
   const [currentUser, setCurrentUser] = ReactUseState<string | null>(null)
+
+  const user = auth.currentUser
+  const loggedInUserEmail: string | null = user ? user.email : null
+  const photoURL: string | null = user?.photoURL ?? null
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm('로그아웃하시겠습니까?')
@@ -74,7 +84,10 @@ function Layout(): JSX.Element {
             {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
 
             <DropDown>
-              <DropBtn>{currentUser}님</DropBtn>
+              <DropBtn>
+                <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
+                {currentUser}님
+              </DropBtn>
               <DropdownContents>
                 <DropdownContent onClick={myPageMove}>마이페이지 </DropdownContent>
                 <DropdownContent onClick={handleLogout}> 로그아웃 </DropdownContent>
@@ -274,6 +287,18 @@ const DropdownContents = styled.div`
   font-weight: 400;
   background-color: #f9f9f9;
   min-width: 200px;
+`
+
+const ProfileImage = styled.img`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  height: 100px;
+  box-shadow: 5px 3px 7px 3px #c4c4c4;
+  border-radius: 50%;
+  margin-right: 10px;
+  gap: 16px;
 `
 
 const DropDown = styled.div`

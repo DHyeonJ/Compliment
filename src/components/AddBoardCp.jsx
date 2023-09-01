@@ -27,7 +27,7 @@ const AddBoardCp = () => {
       },
     },
   )
-
+  console.log(item)
   const handleSaveClick = async (e) => {
     // e.preventDefault()
 
@@ -56,6 +56,7 @@ const AddBoardCp = () => {
         Date: nowTime,
         image: imgUrl,
         fileName,
+        photoUrl: imgUrl,
       })
       // setModalMessage('게시물이 작성되었습니다.')
       // setIsModalOpen(true)
