@@ -1,7 +1,14 @@
 import React from 'react'
+import MenuNav from '../../components/MenuNav'
+import Edit from '../../components/Edit'
 
 function EditBoard() {
-  return <div>EditBoard</div>
+  return (
+    <>
+      <MenuNav />
+      <Edit />
+    </>
+  )
 }
 
 export default EditBoard
