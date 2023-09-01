@@ -1,7 +1,6 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import Main from '../pages/Main'
-import IntroPage from '../pages/IntroPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import AddBoard from '../pages/board/AddBoard'
 import DetailPage from '../pages/board/DetailPage'
@@ -24,7 +23,6 @@ function Router() {
         <Route path="/editboard/:id" element={<EditBoard />} />
         <Route path="/listpage" element={<ListPage />} />
         <Route path="/missionpage" element={<MissionPage />} />
-        <Route path="/intro" element={<IntroPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/edituserinfo" element={<EditUserInfo />} />

@@ -3,6 +3,7 @@ import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { setMissionCard } from '../../api/MissionCardsApi.jsx'
 function Signup() {
   const navigate = useNavigate()
 
@@ -39,9 +40,14 @@ function Signup() {
     if (password === confirmPassword) {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+        // The provider which was used to authenticate the user.
+        await setMissionCard(userCredential.user.uid)
+
         alert('회원가입에 성공했습니다.')
 
         // 로그인이 완료되었을 때 사용자 정보 확인
+
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
 
@@ -58,6 +64,7 @@ function Signup() {
         } else if (error.code === 'auth/invalid-email') {
           alert('이메일 형식을 확인 해주세요.')
         } else {
+          console.log(error)
           alert('회원가입에 실패 했습니다.')
         }
       }
