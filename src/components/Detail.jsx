@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore'
-import { db, useAuth } from '../firebase'
+import { db, useAuth, auth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
+import defaultProfileImage from '../img/user.png'
 
 function Detail() {
   const [data, setData] = useState([])
   const { id } = useParams()
   const auth = useAuth()
   const navigate = useNavigate()
+  const user = auth.currentUser
   const [isLiked, setIsLiked] = useState(false)
-
+  const photoURL = user.photoURL
   const admin = 'admin@admin.com'
 
   // 좋아요 기능
@@ -60,6 +62,7 @@ function Detail() {
   }
 
   const detailItem = getDetailData(id)
+  console.log(detailItem)
 
   useEffect(() => {
     // Firestore에서 데이터 가져오기
@@ -139,7 +142,7 @@ function Detail() {
               <TitleBox>{detailItem.title}</TitleBox>
               <MidleTitleBox>
                 <UserBox>
-                  <UserImg src={detailItem.photoUrl} alt="" />
+                  <UserImg src={photoURL ?? defaultProfileImage} alt="" />
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>
