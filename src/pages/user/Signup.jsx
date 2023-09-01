@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { setMissionCard } from '../../api/MissionCardsApi.jsx'
 function Signup() {
-  console.log(auth)
   const navigate = useNavigate()
 
   // 회원가입시 필요한 정보
@@ -40,11 +40,17 @@ function Signup() {
     if (password === confirmPassword) {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+        // The provider which was used to authenticate the user.
+        await setMissionCard(userCredential.user.uid)
+
         alert('회원가입에 성공했습니다.')
 
         // 로그인이 완료되었을 때 사용자 정보 확인
+
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
+
         setEmail('')
         setPassword('')
         setConfirmPassword('')
@@ -58,6 +64,7 @@ function Signup() {
         } else if (error.code === 'auth/invalid-email') {
           alert('이메일 형식을 확인 해주세요.')
         } else {
+          console.log(error)
           alert('회원가입에 실패 했습니다.')
         }
       }
@@ -65,12 +72,12 @@ function Signup() {
   }
   return (
     <>
-      <SignupDiv>
+      <SignupBox>
         <div>
           <SignupH1>회원가입 </SignupH1>
           <SignupText>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupText>
         </div>
-        <SignupArea>
+        <SignupAreaBox>
           <SignupImg />
           <button>프로필이미지등록</button>
           <div>
@@ -103,15 +110,15 @@ function Signup() {
               <SignWithGoogleBtn>Google로 시작하기 </SignWithGoogleBtn>
             </SignWithGoogleArea>
           </div>
-        </SignupArea>
-      </SignupDiv>
+        </SignupAreaBox>
+      </SignupBox>
     </>
   )
 }
 
 export default Signup
 
-const SignupDiv = styled.div`
+const SignupBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -140,7 +147,7 @@ const SignupH1 = styled.div`
   margin-bottom: 15px;
 `
 
-const SignupArea = styled.div`
+const SignupAreaBox = styled.div`
   display: flex;
   height: 975 px;
   width: 736px;

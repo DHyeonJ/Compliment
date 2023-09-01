@@ -13,12 +13,12 @@ const firebaseConfig = {
 }
 
 // Initialize Firebase
-export const app = initializeApp(firebaseConfig)
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+const app = initializeApp(firebaseConfig)
+const auth = getAuth(app)
+const db = getFirestore(app)
+const storage = getStorage(app)
 
-export const firebaseSignUp = async ({ name, email, password, photo }) => {
+const firebaseSignUp = async ({ name, email, password, photo }) => {
   // 2. email, password로 유저를 만든다.
   const { user } = await createUserWithEmailAndPassword(auth, email, password)
   await updateProfile(auth.currentUser, { displayName: name, photoURL: photo })
@@ -30,3 +30,6 @@ const useAuth = () => {
 }
 
 export { useAuth }
+
+// 'firestore'를 export
+export { app, auth, db, storage, firebaseSignUp }

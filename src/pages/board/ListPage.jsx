@@ -10,8 +10,12 @@ import { getLists } from '../../api/ListsApi'
 import { useQuery } from 'react-query'
 
 function ListPage() {
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const itemsPerPage = 10; // 원하는 숫자로 변경하세요
+  //
+
   const navigate = useNavigate()
-  const { data: listsData, isLoading } = useQuery('lists', getLists)
+  const { data: listsData, isLoading } = useQuery(['lists'], getLists)
   const [showButtons, setShowButtons] = useState('')
 
   // 칭찬순, 최신순이 active할 때를 만들어주는 state
@@ -21,12 +25,14 @@ function ListPage() {
   const [searchTerm, setSearchTerm] = useState(listsData)
 
   // state 하나로 관리
-  const [displayData, setDisplayData] = useState()
+  const [displayData, setDisplayData] = useState([])
 
   //
+  const [page, setPage] = useState(1)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const searchFiltered = (keyword) => {
     if (keyword.trim() === '') {
-      setDisplayData([])
+      setDisplayData(displayData)
     } else {
       const filtered = listsData ? listsData.filter((item) => item.comments.toLowerCase().includes(keyword.toLowerCase())) : []
       setDisplayData(filtered)
@@ -49,6 +55,18 @@ function ListPage() {
     })
   }
 
+  const loadMoreData = () => {
+    setIsLoadingMore(true)
+    // Simulate loading more data for demonstration purposes
+    setTimeout(() => {
+      if (listsData) {
+        const newData = listsData.slice((page - 1) * 10, page * 10)
+        setDisplayData((prevData) => [...prevData, ...newData])
+        setIsLoadingMore(false)
+        setPage(page + 1)
+      }
+    }, 1000)
+  }
   const likesSort = () => {
     setActiveSort('likes')
     const likesData = [...listsData]?.sort((a, b) => b.likes - a.likes)
@@ -57,7 +75,8 @@ function ListPage() {
 
   const latestSort = () => {
     setActiveSort('latest')
-    const orderedData = [...listsData]?.sort((a, b) => Date.parse(b.time) - Date.parse(a.time))
+    const orderedData = [...listsData]?.sort((a, b) => Date.parse(b.Date) - Date.parse(a.Date))
+    console.log(orderedData)
     setDisplayData(orderedData)
   }
 
@@ -68,20 +87,24 @@ function ListPage() {
       const documentHeight = document.documentElement.scrollHeight
 
       setShowButtons(scrollPosition > windowHeight / 2 && scrollPosition + windowHeight < documentHeight - 200)
-      return () => window.removeEventListener('scroll', handleScroll)
+      if (scrollPosition + windowHeight >= documentHeight - 300) {
+        loadMoreData()
+      }
     }
 
     window.addEventListener('scroll', handleScroll)
-
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [displayData])
+  useEffect(() => {
     if (listsData) {
       latestSort()
     }
   }, [listsData])
-
-  if (isLoading) {
-    return <div>is Loading...</div>
-  }
-
+  // if (isLoading) {
+  //   return <div>is Loading...</div>
+  // }
   return (
     <ListPageBox>
       <MenuNav />
@@ -99,44 +122,74 @@ function ListPage() {
           </BannerBox>
           <ChoiceBox>
             <FilterBox>
-              <NewSpan onClick={latestSort} active={displayData === 'latest'}>
+              <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
                 최신순
               </NewSpan>
               <BlockBox />
-              <RankingSpan onClick={likesSort} active={displayData === 'likes'}>
+              <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
                 칭찬순
               </RankingSpan>
             </FilterBox>
             <Search handleSearchClick={handleSearchClick} />
           </ChoiceBox>
-          <Lists data={displayData} />
+          <ListContainer>
+            <Lists data={displayData} />
+          </ListContainer>
         </ContentBox>
       </ListBox>
-      <button
-        onClick={() => {
-          navigate(`/addboard`)
-        }}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
-          <path d="M6 16.2H30V19.2H6V16.2Z" fill="#69535F" />
-          <path d="M16.5 30L16.5 6L19.5 6V30H16.5Z" fill="#69535F" />
-        </svg>
-      </button>
 
-      {/* 
-      <ButtonBox>
+      <ButtonBox showButtons={showButtons}>
         <PlusButtonBox>
           <PlusButton icon={faPlus} onClick={createBoardPageMove} />
         </PlusButtonBox>
         <TopButtonBox>
           <TopButton icon={faArrowUp} onClick={scrollToTop} />
         </TopButtonBox>
-      </ButtonBox> */}
+      </ButtonBox>
     </ListPageBox>
   )
 }
 
 export default ListPage
+
+const LoadMoreButton = styled.button`
+  background-color: #f4f1e9;
+  border: none;
+  border-radius: 8px;
+  color: #69535f;
+  font-size: 16px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #69535f;
+    color: #f4f1e9;
+  }
+`
+
+const ListContainer = styled.div`
+  height: 1660px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  overflow-y: auto;
+  max-height: 70%;
+  &::-webkit-scrollbar {
+    width: 10px; /* 스크롤바의 너비 */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    height: 30%;
+    background: rgba(153, 153, 153, 0.4); /* 원하는 색상으로 변경 */
+    border-radius: 20px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(153, 153, 153, 0.1); /*스크롤바 뒷 배경 색상*/
+  }
+`
 
 const ListPageBox = styled.div`
   display: flex;
@@ -145,7 +198,6 @@ const ListPageBox = styled.div`
   width: 100vw;
   height: 2332px;
   flex-direction: column;
-  border: 1px solid red;
 `
 
 const ListBox = styled.div`
@@ -154,19 +206,13 @@ const ListBox = styled.div`
   justify-content: center;
   flex-direction: column;
   width: calc(100vw - 120px);
-  /* width: 1920px; */
   height: 2238px;
-  border: 1px solid blue;
 `
 
 const ContentBox = styled.div`
   width: 1520px;
   height: 2100px;
-  /* width: calc(100vw - 120px); */
   flex-direction: column;
-  /* :hover {
-    background: rgba(105, 83, 95, 0.2);
-  } */
   gap: 42px 0;
 `
 const BannerBox = styled.div`
@@ -180,13 +226,6 @@ const BannerBox = styled.div`
   background: #fffaec;
 `
 const ChoiceBox = styled.div`
-  /* display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 64px;
-  margin-bottom: 64px;
-  width: 100%;
-  height: 50px; */
   display: flex;
   width: 1440px;
   padding-left: 0px;
@@ -205,17 +244,11 @@ const FilterBox = styled.div`
 const NewSpan = styled.span`
   color: ${(props) => (props.active ? '#69535f' : '#797979')};
   font-weight: ${(props) => (props.active ? '700' : '400')};
-  /* color: #69535f;
-  font-family: 'LINE Seed Sans KR';
-  font-size: 20px;
-  font-weight: 400;
-  cursor: pointer; */
   display: flex;
   width: 144px;
   justify-content: center;
   align-items: center;
   &:hover {
-    /* color: #69535f; */
     color: ${(props) => (props.active ? '#69535f' : '#69535f')}; /* 수정된 부분 */
     font-weight: 700;
   }
@@ -229,27 +262,15 @@ const RankingSpan = styled.span`
   color: ${(props) => (props.active ? '#69535f' : '#797979')};
   font-weight: ${(props) => (props.active ? '700' : '400')};
 
-  /* color: #797979;
-  font-family: 'LINE Seed Sans KR';
-  font-size: 20px;
-  font-weight: 400;
-  cursor: pointer; */
   display: flex;
   width: 144px;
   justify-content: center;
   align-items: center;
   &:hover {
-    /* color: #69535f; */
     color: ${(props) => (props.active ? '#69535f' : '#69535f')}; /* 수정된 부분 */
     font-weight: 700;
   }
 `
-
-// const BannerDataBox = styled.div`
-//   /* width: 483px;
-//   height: 152px;
-//   margin-left: 72px; */
-// `
 
 const BannerTitleSpan = styled.span`
   color: #000;
@@ -267,7 +288,6 @@ const BannerContentBox = styled.span`
   font-style: normal;
   font-weight: 600;
   line-height: 24px; /* 150% */
-  //
 `
 const ButtonBox = styled.div`
   position: fixed;
