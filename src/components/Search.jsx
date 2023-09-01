@@ -65,14 +65,6 @@ const KeywordInput = styled.input`
   position: relative;
   text-align: left;
   margin: auto;
-  /* display: flex;
-  width: 328px;
-  height: 48px;
-  padding: 8px;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  border-radius: 20px; */
   &::placeholder {
     color: #999999;
     padding-left: 8px;

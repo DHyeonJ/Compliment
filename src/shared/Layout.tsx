@@ -11,6 +11,7 @@ import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { signOut } from 'firebase/auth'
 import { auth, storage } from '../firebase.js'
 import logoImg from '../img/logo.png'
+import footerLogoImg from '../img/footer_logo.png'
 
 function Layout(): JSX.Element {
   const navigator = useNavigate()
@@ -90,7 +91,7 @@ function Layout(): JSX.Element {
       <Outlet />
       <FooterBox>
         <ContentBox>
-          <FooterLogoBox>logo</FooterLogoBox>
+          <FooterLogo src={footerLogoImg}></FooterLogo>
           <InfoBox>
             <FooterTitleBox>칭구</FooterTitleBox>
             <MakeTeamBox>Copyright 2023. 팀 해보조 all rights reserved.</MakeTeamBox>
@@ -106,7 +107,7 @@ export default Layout
 const ButtonsBox = styled.div`
   display: flex;
   position: absolute;
-  right: 180px;
+  right: 56px;
   top: 30px;
   gap: 12px;
   justify-content: center;
@@ -119,14 +120,16 @@ const LayOutBox = styled.div`
 `
 const HeaderAllBox = styled.div`
   display: flex;
-  /* width: 100vw; */
   height: 80px;
+  width: 100vw;
   padding: 12px 0px;
-  margin: 0 56px;
   justify-content: center;
   align-items: center;
   background: #fff;
   position: relative;
+  border-bottom: 1px solid #feedcd;
+  background: #fff;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
 `
 const HeaderBox = styled.div`
   /* width: 100vw; */
@@ -162,13 +165,6 @@ const TitleSpan = styled.span`
   color: #404040;
   font-size: 1.25rem;
 `
-
-// const ButtonsBox = styled.div`
-//   display: flex;
-//   justify-content: right;
-//   align-items: center;
-//   gap: 0.625rem;
-// `
 
 const LoginButton = styled.button`
   display: inline-flex;
@@ -226,17 +222,13 @@ const ContentBox = styled.div`
   align-items: center;
   flex-direction: column;
 `
-const FooterLogoBox = styled.div`
+const FooterLogo = styled.img`
   display: flex;
   justify-content: center;
   align-items: center;
 
-  width: 4rem;
-  height: 3rem;
-
-  background-color: #d0d0d0;
-
-  color: #999999;
+  width: 67.99px;
+  height: 48px;
 
   margin-bottom: 0.75rem;
 `

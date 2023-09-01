@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
+//
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
+  const [profileImageUrls, setProfileImageUrls] = useState({})
+  //
+
   return (
     <>
       {data?.map((item) => {
@@ -20,7 +24,7 @@ const Lists = ({ data }) => {
               <Contents>
                 <ListContent>
                   <User>
-                    <UserImg src="" alt="" />
+                    <UserImg src={profileImageUrls[item.userEmail] || ''} alt="" />
                     <span>{item.userEmail}</span>
                   </User>
 

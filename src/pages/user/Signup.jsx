@@ -2,10 +2,15 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
+<<<<<<< HEAD
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo.png'
 import google from '../../img/google.png'
 
+=======
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { setMissionCard } from '../../api/MissionCardsApi.jsx'
+>>>>>>> d0b76a521c69c27783d13a5d573af4024aa744ab
 function Signup() {
   const navigate = useNavigate()
 
@@ -42,9 +47,14 @@ function Signup() {
     if (password === confirmPassword) {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+        // The provider which was used to authenticate the user.
+        await setMissionCard(userCredential.user.uid)
+
         alert('회원가입에 성공했습니다.')
 
         // 로그인이 완료되었을 때 사용자 정보 확인
+
         const user = userCredential.user
         console.log('로그인된 사용자 이메일:', user.email)
         setEmail('')
@@ -60,6 +70,7 @@ function Signup() {
         } else if (error.code === 'auth/invalid-email') {
           alert('이메일 형식을 확인 해주세요.')
         } else {
+          console.log(error)
           alert('회원가입에 실패 했습니다.')
         }
       }
