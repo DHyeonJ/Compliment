@@ -10,6 +10,8 @@ function Detail() {
   const auth = useAuth()
   const navigate = useNavigate()
 
+  const admin = 'admin@admin.com'
+
   //   id 값이 일치하는 데이터만 가져오는 함수
   const getDetailData = (id) => {
     return data.find((item) => item.id === id)
@@ -39,7 +41,7 @@ function Detail() {
 
   // 삭제 기능
   const handleDelete = async () => {
-    if (auth.currentUser && detailItem.userEmail === auth.currentUser.email) {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
       try {
         await deleteDoc(doc(db, 'lists', id))
         console.log('문서가 성공적으로 삭제되었습니다!')
@@ -65,11 +67,24 @@ function Detail() {
 
   // 수정 페이지 이동
   const handleEditMove = () => {
-    if (auth.currentUser && detailItem.userEmail === auth.currentUser.email) {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
       navigate(`/editboard/${detailItem.id}`)
     } else {
       alert('게시물을 수정할 권한이 없습니다.')
     }
+  }
+
+  // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
+  const renderEditDeleteButtons = () => {
+    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+      return (
+        <ButtonBox>
+          <Button onClick={handleEditMove}>수정</Button>
+          <Button onClick={handleDeleteClick}>삭제</Button>
+        </ButtonBox>
+      )
+    }
+    return null
   }
 
   return (
@@ -86,10 +101,7 @@ function Detail() {
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>
-                <ButtonBox>
-                  <Button onClick={handleEditMove}>수정</Button>
-                  <Button onClick={handleDeleteClick}>삭제</Button>
-                </ButtonBox>
+                {renderEditDeleteButtons()}
               </MidleTitleBox>
             </HeaderContentBox>
           </HeaderBox>
