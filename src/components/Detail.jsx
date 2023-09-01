@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
-import { getDocs, collection, deleteDoc, doc } from 'firebase/firestore'
+import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 
@@ -9,8 +9,50 @@ function Detail() {
   const { id } = useParams()
   const auth = useAuth()
   const navigate = useNavigate()
+  const [isLiked, setIsLiked] = useState(false)
 
   const admin = 'admin@admin.com'
+
+  // 좋아요 기능
+  const toggleLike = async () => {
+    if (auth.currentUser) {
+      const userId = auth.currentUser.uid
+      const itemId = detailItem.id
+
+      try {
+        // Firestore에서 문서 가져오기
+        const itemDoc = doc(db, 'lists', itemId)
+        const itemData = (await getDoc(itemDoc)).data()
+
+        // 사용자가 이미 "좋아요"를 누른 경우
+        if (itemData.likes.includes(userId)) {
+          // "좋아요"를 취소하도록 Firestore 문서 업데이트
+          await updateDoc(itemDoc, {
+            likes: itemData.likes.filter((uid) => uid !== userId),
+          })
+        } else {
+          // 사용자가 아직 "좋아요"를 누르지 않은 경우
+          // Firestore 문서 업데이트하여 사용자의 UID를 "likes" 배열에 추가
+          await updateDoc(itemDoc, {
+            likes: [...itemData.likes, userId],
+          })
+        }
+
+        // "좋아요" 상태를 토글합니다.
+        setIsLiked((prevIsLiked) => !prevIsLiked)
+      } catch (error) {
+        console.error('좋아요 토글 중 오류:', error)
+      }
+    } else {
+      // 사용자가 인증되지 않았을 경우 처리
+      // 예를 들어 로그인 프롬프트를 표시하거나 다르게 처리할 수 있습니다.
+      alert('이 항목을 좋아하려면 로그인하세요.')
+    }
+  }
+
+  const handleLikeButtonClick = async () => {
+    await toggleLike()
+  }
 
   //   id 값이 일치하는 데이터만 가져오는 함수
   const getDetailData = (id) => {
@@ -111,6 +153,10 @@ function Detail() {
             <ContentImgBox src={detailItem.image} alt="" />
             <BodyContent>{detailItem.comments}</BodyContent>
           </ContentBodyBox>
+
+          {/* "좋아요" 버튼 추가 */}
+          <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
+          <span>{detailItem.likes}</span>
 
           {/* 댓글 영역 */}
           <CommentAreaBox>
