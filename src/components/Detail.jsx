@@ -10,11 +10,8 @@ function Detail() {
   const { id } = useParams()
   const auth = useAuth()
   const navigate = useNavigate()
-  const user = auth.currentUser
   const [isLiked, setIsLiked] = useState(false)
-  const photoURL = user.photoURL
   const admin = 'admin@admin.com'
-
   // 좋아요 기능
   const toggleLike = async () => {
     if (auth.currentUser) {
@@ -62,7 +59,6 @@ function Detail() {
   }
 
   const detailItem = getDetailData(id)
-  console.log(detailItem)
 
   useEffect(() => {
     // Firestore에서 데이터 가져오기
@@ -79,9 +75,7 @@ function Detail() {
       }
     }
 
-    fetchData().catch((error) => {
-      console.error('Error in fetchData:', error)
-    })
+    fetchData()
   }, [])
 
   // 삭제 기능
@@ -142,7 +136,7 @@ function Detail() {
               <TitleBox>{detailItem.title}</TitleBox>
               <MidleTitleBox>
                 <UserBox>
-                  <UserImg src={photoURL ?? defaultProfileImage} alt="" />
+                  <UserImg src={detailItem.photoUrl ?? defaultProfileImage} alt="" />
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>
