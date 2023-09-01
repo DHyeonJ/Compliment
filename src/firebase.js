@@ -24,3 +24,9 @@ export const firebaseSignUp = async ({ name, email, password, photo }) => {
   await updateProfile(auth.currentUser, { displayName: name, photoURL: photo })
   return { name: user.displayName, email: user.email, photoURL: user.photoURL }
 }
+
+const useAuth = () => {
+  return getAuth(app)
+}
+
+export { useAuth }
