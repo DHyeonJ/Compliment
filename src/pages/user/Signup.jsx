@@ -2,15 +2,11 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-<<<<<<< HEAD
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo.png'
 import google from '../../img/google.png'
-
-=======
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { setMissionCard } from '../../api/MissionCardsApi.jsx'
->>>>>>> d0b76a521c69c27783d13a5d573af4024aa744ab
+import { current } from '@reduxjs/toolkit'
 function Signup() {
   const navigate = useNavigate()
 
@@ -18,7 +14,6 @@ function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  // const [nickname, setNickname] = useState('')
   const onChange = (event) => {
     const {
       target: { name, value },
@@ -243,7 +238,7 @@ const SignupBtn = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   border: none;
-  background: #6a6a6a;
+  background: #69535f;
   margin-top: 48px;
   margin-bottom: 48px;
   color: #fff;

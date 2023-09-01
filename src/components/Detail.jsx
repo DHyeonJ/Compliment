@@ -45,7 +45,7 @@ function Detail() {
               <TitleBox>{detailItem.title}</TitleBox>
               <MidleTitleBox>
                 <UserBox>
-                  <UserImg src="" alt="" />
+                  <UserImg src={detailItem.photoUrl} alt="" />
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>

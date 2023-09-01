@@ -203,7 +203,7 @@ const LoginBtn = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   border: none;
-  background: #6a6a6a;
+  background: #69535f;
   margin-top: 56px;
   color: #fff;
   text-align: center;

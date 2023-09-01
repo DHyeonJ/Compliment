@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { auth, getStorage, ref, getDownloadURL } from '../../firebase'
+import { auth, storage, ref, getDownloadURL } from '../../firebase'
 import defaultProfileImage from '../../img/user.png'
 function Mypage() {
   const navigator = useNavigate()
@@ -15,30 +15,34 @@ function Mypage() {
   }
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
-
-  // 스토리지선언확인하기 ,
+  const photoURL = user.photoURL
   useEffect(() => {
     const fetchImageUrl = async () => {
       if (auth.currentUser) {
         try {
           const userUid = auth.currentUser.uid
-          const path = `profileImages/${userUid}/${userUid}`
+          const path = `profileImages/${userUid}/photoURL`
           const storageRef = ref(storage, path)
+
+          // 스토리지 참조를 생성한 후에 다운로드 URL을 가져옵니다.
           const url = await getDownloadURL(storageRef)
+          console.log(url)
           setImageUrl(url || defaultProfileImage)
         } catch (error) {
           console.log('Error fetching image URL:', error)
+          setImageUrl(defaultProfileImage)
         }
       }
     }
     fetchImageUrl()
   }, [])
+
   return (
     <>
       <div>
         <MypageBox>
           <ProfileBox>
-            <ProfileImage alt="프로필 이미지" src={imageUrl || defaultProfileImage} />
+            <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
             <TextBox>
               <NicknameTextBox>{loggedInUserEmail} 님 안녕하세요.</NicknameTextBox>
               <SignEditBox onClick={EditUserpageMove}>회원정보 수정</SignEditBox>

@@ -1,24 +1,28 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React, { useState } from 'react'
+import React, { useState, u } from 'react'
 import { styled } from 'styled-components'
 import { auth, storage, db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
-import { getAuth, updatePassword } from 'firebase/auth'
+import { updatePassword, updateProfile } from 'firebase/auth'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { doc, updateDoc } from 'firebase/firestore'
 
 function EditUserInfo() {
   const navigate = useNavigate()
 
+  const [error, setError] = useState(null)
   const user = auth.currentUser
+  const photoURL = user.photoURL
   const loggedInUserEmail = user ? user.email : null
-
+  const [imageUrl, setImageUrl] = useState(null)
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
 
+  console.log(user)
   const handlePasswordUpdate = async (event) => {
     event.preventDefault()
 
@@ -28,8 +32,6 @@ function EditUserInfo() {
     }
 
     try {
-      const user = auth.currentUser
-
       if (!user) {
         alert('사용자 정보를 가져올 수 없습니다.')
         return
@@ -49,51 +51,65 @@ function EditUserInfo() {
       }
     }
   }
-  // 프로필설정하기
-  const [imageUrl, setImageUrl] = useState(null)
-  const [error, setError] = useState(null)
-
   const handleImageUpload = async (event) => {
     const file = event.target.files[0]
-    const storageRef = ref(storage, `profileImages/${user.uid}/${user.uid}`)
+    if (!file) {
+      return // 파일을 선택하지 않았을 경우 아무 작업도 수행하지 않습니다.
+    }
 
+    const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
     try {
       const uploadTask = uploadBytesResumable(storageRef, file)
-
-      // Listen for state changes
       uploadTask.on(
         'state_changed',
         (snapshot) => {
-          // Get task progress by calling snapshot.bytesTransferred / snapshot.totalBytes * 100%
-          console.log(`Upload is ${(snapshot.bytesTransferred / snapshot.totalBytes) * 100}% done`)
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          console.log(`Upload is ${progress}% done`)
         },
         (error) => {
           console.error('Error uploading image:', error)
         },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+        async () => {
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
             setImageUrl(downloadURL)
-            console.log('File available at', downloadURL)
-          })
+
+            // Upload successful, now update the user profile.
+            if (user) {
+              await updateProfile(user, { photoURL: downloadURL })
+              console.log('User profile updated.')
+            }
+
+            console.log('이미지주소', downloadURL)
+          } catch (downloadError) {
+            console.error('Error getting download URL:', downloadError)
+          }
         },
       )
-    } catch (error) {
-      console.error('Error uploading image:', error)
+    } catch (uploadError) {
+      console.error('Error uploading image:', uploadError)
     }
   }
+
   const handleSave = async () => {
+    if (!imageUrl) {
+      setError('프로필 이미지를 업로드해주세요.')
+      return
+    }
+
     try {
       const updateInfoRef = doc(db, 'profileImages', user.uid)
 
       await updateDoc(updateInfoRef, {
         name: loggedInUserEmail,
-        imgfile: imageUrl, // 여기서 변경됨.
+        imgfile: imageUrl,
       })
+
       setError(null)
 
-      // 프로필 정보 저장 로직
       console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
       window.alert('프로필 정보를 저장했습니다.')
+      console.log(photoURL)
     } catch (error) {
       console.error('프로필 정보 저장 실패:', error.message)
       setError('프로필 정보 저장에 실패했습니다. 다시 시도해주세요.')
