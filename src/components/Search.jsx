@@ -33,16 +33,8 @@ const Search = ({ handleSearchClick }) => {
 export default Search
 
 const SearchBox = styled.div`
-  /* width: 400px;
-  height: 48px;
-  border-radius: 20px;
-  border: solid 1px rgba(0, 0, 0, 0.3);
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 70px; */
-  display: flex;
-  width: 400px;
+  width: 320px;
   padding: 0px 8px;
   align-items: flex-start;
   flex-shrink: 0;

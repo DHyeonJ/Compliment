@@ -3,7 +3,6 @@ import MenuNav from '../../components/MenuNav'
 import Lists from '../../components/Lists'
 import { styled } from 'styled-components'
 import Search from '../../components/Search'
-import { faPlus, faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists } from '../../api/ListsApi'
@@ -16,7 +15,6 @@ function ListPage() {
 
   const navigate = useNavigate()
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
-  const [showButtons, setShowButtons] = useState('')
 
   // 칭찬순, 최신순이 active할 때를 만들어주는 state
   const [activeSort, setActiveSort] = useState('latest')
@@ -48,13 +46,6 @@ function ListPage() {
     navigate('/addboard')
   }
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
-  }
-
   const loadMoreData = () => {
     setIsLoadingMore(true)
     // Simulate loading more data for demonstration purposes
@@ -81,44 +72,22 @@ function ListPage() {
   }
 
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY
-      const windowHeight = window.innerHeight
-      const documentHeight = document.documentElement.scrollHeight
-
-      setShowButtons(scrollPosition > windowHeight / 2 && scrollPosition + windowHeight < documentHeight - 200)
-      if (scrollPosition + windowHeight >= documentHeight - 300) {
-        loadMoreData()
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [displayData])
-  useEffect(() => {
     if (listsData) {
       latestSort()
     }
   }, [listsData])
-  // if (isLoading) {
-  //   return <div>is Loading...</div>
-  // }
   return (
     <ListPageBox>
       <MenuNav />
       <ListBox>
         <ContentBox>
           <BannerBox>
-            {/* <BannerDataBox> */}
             <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
             <BannerContentBox>
               오늘 하루는 모두에게 어떤 일이 있었을까요?
               <br />
               일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
             </BannerContentBox>
-            {/* </BannerDataBox> */}
           </BannerBox>
           <ChoiceBox>
             <FilterBox>
@@ -130,52 +99,29 @@ function ListPage() {
                 칭찬순
               </RankingSpan>
             </FilterBox>
-            <Search handleSearchClick={handleSearchClick} />
+            <SerchPlusAreaBox>
+              <Search handleSearchClick={handleSearchClick} />
+              <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
+            </SerchPlusAreaBox>
           </ChoiceBox>
           <ListContainer>
             <Lists data={displayData} />
           </ListContainer>
         </ContentBox>
       </ListBox>
-
-      <ButtonBox showButtons={showButtons}>
-        <PlusButtonBox>
-          <PlusButton icon={faPlus} onClick={createBoardPageMove} />
-        </PlusButtonBox>
-        <TopButtonBox>
-          <TopButton icon={faArrowUp} onClick={scrollToTop} />
-        </TopButtonBox>
-      </ButtonBox>
     </ListPageBox>
   )
 }
 
 export default ListPage
 
-const LoadMoreButton = styled.button`
-  background-color: #f4f1e9;
-  border: none;
-  border-radius: 8px;
-  color: #69535f;
-  font-size: 16px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #69535f;
-    color: #f4f1e9;
-  }
-`
-
 const ListContainer = styled.div`
-  height: 1660px;
+  height: 1750px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
   overflow-y: auto;
-  max-height: 70%;
   &::-webkit-scrollbar {
     width: 10px; /* 스크롤바의 너비 */
   }
@@ -196,7 +142,7 @@ const ListPageBox = styled.div`
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: 2332px;
+  height: 2168px;
   flex-direction: column;
 `
 
@@ -207,6 +153,7 @@ const ListBox = styled.div`
   flex-direction: column;
   width: calc(100vw - 120px);
   height: 2238px;
+  margin-top: 16px;
 `
 
 const ContentBox = styled.div`
@@ -228,17 +175,16 @@ const BannerBox = styled.div`
 const ChoiceBox = styled.div`
   display: flex;
   width: 1440px;
-  padding-left: 0px;
+  padding: 0px 32px 0px 24px;
   justify-content: space-between;
   align-items: center;
-  margin-top: 88px;
-  margin-bottom: 34px;
+  margin-top: 48px;
+  margin-bottom: 24px;
 `
 
 const FilterBox = styled.div`
   display: flex;
   gap: 34px;
-  margin-left: 70px;
 `
 
 const NewSpan = styled.span`
@@ -277,7 +223,7 @@ const BannerTitleSpan = styled.span`
   font-family: LINE Seed Sans KR;
   font-size: 36px;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 700;
   line-height: normal;
 `
 const BannerContentBox = styled.span`
@@ -286,55 +232,34 @@ const BannerContentBox = styled.span`
   font-family: LINE Seed Sans KR;
   font-size: 16px;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 24px; /* 150% */
 `
-const ButtonBox = styled.div`
-  position: fixed;
-  bottom: 0px;
-  right: 40px;
+
+const PlusButton = styled.div`
+  display: flex;
+  width: 140px;
+  height: 44px;
+  padding: 0px 48px;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  background: #69535f;
+  color: #fff;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+`
+const SerchPlusAreaBox = styled.div`
+  display: flex;
+  width: 500px;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
   gap: 16px;
-  width: 80px;
-  height: 176px;
-  z-index: 1;
-  display: ${(props) => (props.showButtons ? 'flex' : 'none')};
-`
-
-const PlusButtonBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: #f4f1e9;
-  border: none;
-`
-const PlusButton = styled(FontAwesomeIcon)`
-  width: 32px;
-  height: 32px;
-  color: #69535f;
-`
-
-const TopButtonBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background-color: #f4f1e9;
-  border: none;
-`
-
-const TopButton = styled(FontAwesomeIcon)`
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  color: #69535f;
-  background-color: #f4f1e9;
-  border: none;
 `

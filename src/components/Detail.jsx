@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore'
-import { db, useAuth } from '../firebase'
+import { db, useAuth, auth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
+import defaultProfileImage from '../img/user.png'
 
 function Detail() {
   const [data, setData] = useState([])
@@ -10,9 +11,7 @@ function Detail() {
   const auth = useAuth()
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
-
   const admin = 'admin@admin.com'
-
   // 좋아요 기능
   const toggleLike = async () => {
     if (auth.currentUser) {
@@ -76,9 +75,7 @@ function Detail() {
       }
     }
 
-    fetchData().catch((error) => {
-      console.error('Error in fetchData:', error)
-    })
+    fetchData()
   }, [])
 
   // 삭제 기능
@@ -139,7 +136,7 @@ function Detail() {
               <TitleBox>{detailItem.title}</TitleBox>
               <MidleTitleBox>
                 <UserBox>
-                  <UserImg src={detailItem.photoUrl} alt="" />
+                  <UserImg src={detailItem.photoUrl ?? defaultProfileImage} alt="" />
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>

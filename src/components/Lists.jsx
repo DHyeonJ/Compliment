@@ -96,11 +96,6 @@ const Date = styled.div`
 `
 
 const HandClapBox = styled.div`
-  /* display: flex;
-  width: 118px;
-  align-items: flex-end;
-  gap: 8px;
-  align-self: stretch; */
   padding-left: 24px;
   display: flex;
   align-items: center;
@@ -108,24 +103,6 @@ const HandClapBox = styled.div`
 `
 
 const List = styled.div`
-  /* display: flex;
-width: 1440px;
-height: 204px;
-min-width: 800px;
-max-width: 1440px;
-padding-bottom: 0px;
-flex-direction: column;
-align-items: flex-start;
-gap: 16px;
-border-bottom: 1px solid #D9D9D9;
-background: #FFF; */
-  /* display: flex;
-  height: 252px;
-  border-bottom: 1px solid #d9d9d9; */
-  /* :hover {
-    background: rgba(105, 83, 95, 0.2);
-  } */
-  /* padding: 64px; */
   display: flex;
   min-width: 800px;
   max-width: 1440px;
@@ -137,28 +114,15 @@ background: #FFF; */
   border-bottom: 1.2px solid #d9d9d9;
 `
 const UserImg = styled.img`
-  /* width: 68px;
-  height: 68px;
-  margin-right: 10px;
-  border-radius: 50%;
-  background-color: #d9d9d9; */
-  width: 32px;
   height: 32px;
   flex-shrink: 0;
-  background-image: url(${(props) => props.src}); // Use the src prop as the background image URL
-  background-size: cover; // Adjust background properties as needed
+  background-image: url(${(props) => props.src});
+  background-size: cover;
   border-radius: 50%;
   margin-right: 8px;
 `
 
 const User = styled.div`
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
-  font-size: 16px;
-  font-family: 'Pretandard';
-  font-weight: 600; */
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
@@ -172,11 +136,6 @@ const User = styled.div`
 `
 
 const ListTitle = styled.h1`
-  /* font-size: 36px;
-  font-weight: 400;
-  margin-bottom: 24px;
-  font-family: 'Line Seed Sans KR';
-  margin-bottom: 16px; */
   width: 884px;
   color: var(--text-01404040, #404040);
   font-family: LINE Seed Sans KR;
@@ -191,11 +150,6 @@ const ListTitle = styled.h1`
 `
 
 const ListComments = styled.p`
-  /* height: 56px;
-  font-size: 20px;
-  font-family: 'Pretandard';
-  font-weight: 600;
-  margin-bottom: 16px; */
   width: 1000px;
   height: 44px;
   align-self: stretch;
@@ -211,9 +165,6 @@ const ListComments = styled.p`
   text-overflow: ellipsis;
 `
 const ListDate = styled.p`
-  /* font-weight: 600;
-  font-size: 20px;
-  font-family: 'Pretandard'; */
   color: #999;
   text-align: right;
   font-family: Pretendard;
@@ -224,13 +175,6 @@ const ListDate = styled.p`
 `
 
 const ListContent = styled.div`
-  /* display: flex;
-  padding: 16px 24px;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex: 1 0 0;
-  align-self: stretch; */
   display: flex;
   width: 1192px;
   height: 120px;
@@ -241,12 +185,7 @@ const ListContent = styled.div`
   border-radius: 20px;
   margin-bottom: 8px;
 `
-const HandsIcon = styled.img
 const Thumbnail = styled.img`
-  /* width: 250px;
-  height: 250px;
-  border-radius: 8px;
-  background: #d9d9d9; */
   width: 160px;
   height: 160px;
   border-radius: 8px;

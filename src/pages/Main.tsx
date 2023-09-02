@@ -61,7 +61,7 @@ function Main() {
               return (
                 <RankUserInfo key={item.id}>
                   <RankProFileBox isOdd={index % 2 !== 0} src={item.image ?? defaultProfileImage}></RankProFileBox>
-                  {/* <RankNickName>{item.useId}</RankNickName> */}
+                  {/* <RankNickName>{item.userNickName}</RankNickName> */}
                 </RankUserInfo>
               )
             })}
@@ -103,8 +103,6 @@ const ContentBox = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
-  /* width: 1440px;
-  height: 328px; */
 `
 
 const RankInfo = styled.div`
@@ -143,6 +141,7 @@ const RankProFileBox = styled.img<{ isOdd: boolean }>`
   background-color: #d9d9d9;
   border-radius: 50%;
   border: 4px solid ${(props) => (props.isOdd ? '#F6B000' : '#D9876D')};
+  cursor: pointer;
 `
 
 const RankNickName = styled.div`
@@ -152,7 +151,11 @@ const RankNickName = styled.div`
   height: 17px;
   margin-top: 12px;
   font-size: 14px;
-  color: #000000;
+  color: #000;
+  font-family: Pretendard;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 `
 const LinkPageBox = styled.div`
   display: flex;
@@ -171,6 +174,7 @@ const ListPageBox = styled.div`
   border-radius: 20px;
   background: #feedcd;
   box-shadow: 5px 5px 5px -5px #333;
+  cursor: pointer;
 `
 
 const ListTitle = styled.h2`
@@ -198,6 +202,7 @@ const MissionPageBox = styled.div`
   border-radius: 20px;
   background-color: #f5f6cd;
   box-shadow: 5px 5px 5px -5px #333;
+  cursor: pointer;
 `
 
 const MissionContentBox = styled.div`

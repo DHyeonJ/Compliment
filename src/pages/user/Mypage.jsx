@@ -4,6 +4,9 @@ import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 import { auth, storage, ref, getDownloadURL } from '../../firebase'
 import defaultProfileImage from '../../img/user.png'
+import ProgressBar from '../../components/ProgressBar'
+import Tab from '../../components/Tab'
+import userInfoEdit from '../../img/userInfoEdit.png'
 function Mypage() {
   const navigator = useNavigate()
 
@@ -44,23 +47,20 @@ function Mypage() {
           <ProfileBox>
             <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
             <TextBox>
-              <NicknameTextBox>{loggedInUserEmail} 님 안녕하세요.</NicknameTextBox>
-              <SignEditBox onClick={EditUserpageMove}>회원정보 수정</SignEditBox>
+              <NicknameTextBox>
+                <Bold>{loggedInUserEmail}</Bold> 님 <br /> 안녕하세요.
+              </NicknameTextBox>
+              <SignEditBox onClick={EditUserpageMove}>
+                회원정보 수정
+                <UserButton src={userInfoEdit}></UserButton>
+              </SignEditBox>
             </TextBox>
           </ProfileBox>
           <RateBox>
-            <RateTitle>달성률</RateTitle>
-            <GaugeContainer>
-              <GaugeFill percentage={75} />
-            </GaugeContainer>
+            <ProgressBar />
           </RateBox>
           <ListBox>
-            <DetailListBox className={highlightedButton === 'detail' ? 'highlighted' : ''} onClick={() => setHighlightedButton('detail')}>
-              나의 칭구들
-            </DetailListBox>
-            <CommentListBox className={highlightedButton === 'comment' ? 'highlighted' : ''} onClick={() => setHighlightedButton('comment')}>
-              내가 작성한 댓글
-            </CommentListBox>
+            <Tab />
           </ListBox>
         </MypageBox>
       </div>
@@ -120,35 +120,28 @@ const SignEditBox = styled.div`
   line-height: normal;
   margin-top: 14px;
 `
+const Bold = styled.p`
+  font-weight: 700;
+`
+const UserButton = styled.img`
+  display: flex;
+  width: 20px;
+  height: 20px;
+  justify-content: center;
+  align-items: center;
+`
 const RateBox = styled.div`
   display: flex;
-  width: 688px;
+  width: 880px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   margin-top: 36px;
 `
-const RateTitle = styled.div`
-  color: #333;
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 10px;
-`
-const GaugeContainer = styled.div`
-  width: 100%;
-  height: 20px;
-  background-color: #f0f0f0;
-  border-radius: 10px;
-`
-const GaugeFill = styled.div`
-  width: ${(props) => props.percentage}%;
-  height: 100%;
-  background-color: #4caf50;
-  border-radius: 10px;
-`
 const ListBox = styled.div`
   display: flex;
-  width: 864px;
+  width: 880px;
+  height: 812px;
   padding: 0px 88px;
   justify-content: center;
   align-items: flex-start;

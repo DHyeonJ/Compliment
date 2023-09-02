@@ -27,7 +27,6 @@ const AddBoardCp = () => {
       },
     },
   )
-  console.log(item)
   const handleSaveClick = async (e) => {
     // e.preventDefault()
 
