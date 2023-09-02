@@ -9,11 +9,12 @@ import { styled } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { signOut } from 'firebase/auth'
-import { auth, storage } from '../firebase.js'
+import { auth } from '../firebase.js'
 import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
-
+import logoutImage from '../img/logout.png'
+import mypageImage from '../img/mypage.png'
 interface User {
   email: string | null
   photoURL: string | null
@@ -78,19 +79,29 @@ function Layout(): JSX.Element {
             <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
           </LogoTitleBox>
         </HeaderBox>
-        {/* eslint-disable-next-line @typescript-eslint/strict-boolean-expressions */}
         {currentUser ? (
           <ButtonsBox>
-            {/* // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression */}
-
             <DropDown>
-              <DropBtn>
-                <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
-                {currentUser}님
-              </DropBtn>
+              <UserNameBox>
+                {currentUser}
+                <Bold>&nbsp;님</Bold>
+              </UserNameBox>
+              <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
+
               <DropdownContents>
-                <DropdownContent onClick={myPageMove}>마이페이지 </DropdownContent>
-                <DropdownContent onClick={handleLogout}> 로그아웃 </DropdownContent>
+                <DropdownContent onClick={myPageMove}>
+                  <DropdownImgBox>
+                    <img src={mypageImage} />
+                  </DropdownImgBox>
+                  <MypageBox>마이페이지</MypageBox>
+                </DropdownContent>
+                <LineBox />
+                <DropdownContent onClick={handleLogout}>
+                  <DropdownImgBox>
+                    <img src={logoutImage} />{' '}
+                  </DropdownImgBox>
+                  <MypageBox>로그아웃</MypageBox>
+                </DropdownContent>
               </DropdownContents>
             </DropDown>
           </ButtonsBox>
@@ -108,6 +119,7 @@ function Layout(): JSX.Element {
           <InfoBox>
             <FooterTitleBox>칭구</FooterTitleBox>
             <MakeTeamBox>Copyright 2023. 팀 해보조 all rights reserved.</MakeTeamBox>
+            <CopyRightBox>Illustration in first home banner slide Designed by Freepik.</CopyRightBox>
           </InfoBox>
           <GitHubIcon icon={faGithub} onClick={openGitHub} />
         </ContentBox>
@@ -121,8 +133,9 @@ const ButtonsBox = styled.div`
   display: flex;
   position: absolute;
   right: 56px;
-  top: 30px;
   gap: 12px;
+  width: 220px;
+  height: 44px;
   justify-content: center;
   align-items: center;
 `
@@ -133,7 +146,7 @@ const LayOutBox = styled.div`
 `
 const HeaderAllBox = styled.div`
   display: flex;
-  height: 80px;
+  height: 56px;
   width: 100vw;
   padding: 12px 0px;
   justify-content: center;
@@ -145,7 +158,6 @@ const HeaderAllBox = styled.div`
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
 `
 const HeaderBox = styled.div`
-  /* width: 100vw; */
   height: 56px;
   flex-shrink: 0;
   background: #fff;
@@ -166,6 +178,7 @@ const ImgBox = styled.div`
   height: 27.496px;
   flex-shrink: 0;
   fill: #ad7d83;
+  cursor: pointer;
 `
 
 const Logo = styled.img`
@@ -190,6 +203,7 @@ const LoginButton = styled.button`
   border-radius: 8px;
   background: #69535f;
   color: #fff;
+  border: none;
   text-align: center;
   font-family: Pretendard;
   font-size: 16px;
@@ -240,35 +254,49 @@ const FooterLogo = styled.img`
   justify-content: center;
   align-items: center;
 
-  width: 67.99px;
-  height: 48px;
+  width: 57px;
+  height: 40px;
 
-  margin-bottom: 0.75rem;
+  margin-bottom: 12px;
 `
 const FooterTitleBox = styled.div`
   display: flex;
   justify-content: center;
 
-  color: #999999;
+  color: #999;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
   font-weight: 500;
-  font-family: 'pretendard';
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
+  line-height: 160%; /* 22.4px */
 `
 
 const InfoBox = styled.div`
-  width: 17.5rem;
-  height: 2.75rem;
+  width: 368px;
+  height: 66px;
 
-  font-size: 0.875rem;
+  /* font-size: 0.875rem; */
 `
 
 const MakeTeamBox = styled.div`
-  color: #999999;
+  color: #999;
+  font-family: Pretendard;
+  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 160%;
+`
+const CopyRightBox = styled.div`
+  color: #999;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
   font-weight: 500;
-  font-family: 'pretendard';
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
+  line-height: 160%; /* 22.4px */
 `
 
 const GitHubIcon = styled(FontAwesomeIcon)`
@@ -286,52 +314,87 @@ const DropdownContents = styled.div`
   z-index: 1;
   font-weight: 400;
   background-color: #f9f9f9;
-  min-width: 200px;
+  flex-direction: column;
+  width: 136px;
+  height: 117px;
+  align-items: center;
+  border-radius: 8px;
+  margin-top: 200px;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
 `
-
+const UserNameBox = styled.div`
+  display: flex;
+  height: 44px;
+  padding: 14px 24px;
+  justify-content: center;
+  align-items: center;
+  color: #404040;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  width: 115px;
+  line-height: normal;
+`
+const Bold = styled.p`
+  color: #404040;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`
 const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100px;
-  height: 100px;
+  width: 44px;
+  height: 44px;
   box-shadow: 5px 3px 7px 3px #c4c4c4;
   border-radius: 50%;
-  margin-right: 10px;
-  gap: 16px;
 `
-
 const DropDown = styled.div`
   position: relative;
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: 220px;
+  height: 44px;
+  cursor: pointer;
 
   &:hover ${DropdownContents} {
-    display: block;
+    display: flex;
   }
 `
-
-const DropBtn = styled.button`
-  border: 1px solid rgb(37, 37, 37);
-  border-radius: 4px;
-  background-color: #f5f5f5;
-  font-weight: 400;
-  color: rgb(37, 37, 37);
-  padding: 12px;
-  width: 200px;
-  text-align: center;
-  cursor: pointer;
-  font-size: 12px;
+const DropdownImgBox = styled.div`
+  display: flex;
+  padding-right: 0px;
+  align-items: center;
+  gap: 6px;
 `
-
+const MypageBox = styled.div`
+  color: rgba(105, 83, 95, 0.7);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`
 const DropdownContent = styled.div`
-  display: block;
-  text-decoration: none;
-  color: rgb(37, 37, 37);
-  font-size: 12px;
-  padding: 12px 20px;
-  text-align: center;
-
-  &:hover {
-    background-color: lightgray;
-  }
+  display: flex;
+  width: 104px;
+  height: 20px;
+  padding: 22px 16px 16px 16px;
+  justify-content: center;
+  align-items: flex-end;
+  cursor: pointer;
+  border-radius: 8px 8px 0px 0px;
+`
+const LineBox = styled.div`
+  width: 112px;
+  border: 1px solid rgba(105, 83, 95, 0.3);
 `

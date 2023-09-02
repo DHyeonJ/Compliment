@@ -15,12 +15,9 @@ function Slide() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    // arrows: true,
     draggable: false,
     autoplay: true, // 자동 스크롤 사용 여부
     autoplaySpeed: 10000, // 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
-    // prevArrow: "<button type='button' class='slick-prev'>Previous</button>", // 이전 화살표 모양 설정
-    // nextArrow: "<button type='button' class='slick-next'>Next</button>",
     responsive: [
       // 반응형 웹 구현 옵션
       {
@@ -109,11 +106,9 @@ const StyledSlider = styled(Slider)`
     text-align: center;
   }
   .slick-dots li button {
-    background-color: #ffffff;
     width: 10px;
     height: 10px;
     border-radius: 70%;
-    /* background-image: url('custom-dot-icon.png'); */
     background-size: cover;
     :active {
       background-color: #000;

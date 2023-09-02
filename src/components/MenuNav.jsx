@@ -29,18 +29,23 @@ export default function MenuNav() {
   )
 }
 const NavBox = styled.div`
-  width: 100vw;
+  width: calc(100vw - 1456px);
   display: flex;
   height: 52px;
   align-items: center;
+  padding: 4px 726px 0px 730px;
   justify-content: center;
-  gap: 223px;
+  gap: 200px;
 `
 
 const NavLinkSpan = styled.span`
+  color: #404040;
+  text-align: center;
+  font-family: LINE Seed Sans KR;
   font-size: 16px;
-  font-weight: 400;
-  font-family: 'LINE Seed Sans KR';
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
   color: ${({ isActive }) => (isActive ? '#404040' : '#a0a0a0')};
   cursor: pointer;
   text-decoration: none;
