@@ -13,8 +13,7 @@ import { auth } from '../firebase.js'
 import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
-import logoutImage from '../img/logout.png'
-import mypageImage from '../img/mypage.png'
+import { faArrowRightFromBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons'
 interface User {
   email: string | null
   photoURL: string | null
@@ -91,14 +90,14 @@ function Layout(): JSX.Element {
               <DropdownContents>
                 <DropdownContent onClick={myPageMove}>
                   <DropdownImgBox>
-                    <img src={mypageImage} />
+                    <ImgIcon icon={faCircleUser} />
                   </DropdownImgBox>
                   <MypageBox>마이페이지</MypageBox>
                 </DropdownContent>
                 <LineBox />
                 <DropdownContent onClick={handleLogout}>
                   <DropdownImgBox>
-                    <img src={logoutImage} />{' '}
+                    <ImgIcon icon={faArrowRightFromBracket} />
                   </DropdownImgBox>
                   <MypageBox>로그아웃</MypageBox>
                 </DropdownContent>
@@ -275,8 +274,6 @@ const FooterTitleBox = styled.div`
 const InfoBox = styled.div`
   width: 368px;
   height: 66px;
-
-  /* font-size: 0.875rem; */
 `
 
 const MakeTeamBox = styled.div`
@@ -316,11 +313,18 @@ const DropdownContents = styled.div`
   background-color: #f9f9f9;
   flex-direction: column;
   width: 136px;
-  height: 117px;
+  /* height: 117px; */
   align-items: center;
   border-radius: 8px;
-  margin-top: 200px;
+  /* margin-top: 58px; */
+  border: 1px solid #69535f;
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
+  transition: display 0.3s; /* 추가: 애니메이션 효과 */
+  right: 0;
+  top: 100%;
+  &.open {
+    display: flex; /* 표시 상태로 변경 */
+  }
 `
 const UserNameBox = styled.div`
   display: flex;
@@ -361,9 +365,13 @@ const DropDown = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: 220px;
-  height: 44px;
+  width: 136px;
+  height: 58px;
   cursor: pointer;
+
+  &:active ${DropdownContents} {
+    display: flex;
+  }
 
   &:hover ${DropdownContents} {
     display: flex;
@@ -373,10 +381,12 @@ const DropdownImgBox = styled.div`
   display: flex;
   padding-right: 0px;
   align-items: center;
-  gap: 6px;
+`
+const ImgIcon = styled(FontAwesomeIcon)`
+  width: 24px;
+  height: 24px;
 `
 const MypageBox = styled.div`
-  color: rgba(105, 83, 95, 0.7);
   text-align: center;
   font-family: Pretendard;
   font-size: 16px;
@@ -386,15 +396,29 @@ const MypageBox = styled.div`
 `
 const DropdownContent = styled.div`
   display: flex;
-  width: 104px;
   height: 20px;
   padding: 22px 16px 16px 16px;
   justify-content: center;
   align-items: flex-end;
   cursor: pointer;
+  gap: 6px;
+  color: #69535f4c;
   border-radius: 8px 8px 0px 0px;
+
+  &:hover {
+    background-color: #fffdf8;
+    border-radius: 8px;
+    padding: 22px 16px 16px 16px;
+    color: #69515e; /* Hover 상태의 글자색 설정 */
+  }
+  & svg {
+    width: 24px;
+    height: 24px;
+    color: inherit; /* 부모 요소의 color 값을 상속받아 아이콘 색상 설정 */
+  }
 `
 const LineBox = styled.div`
-  width: 112px;
-  border: 1px solid rgba(105, 83, 95, 0.3);
+  height: 1px;
+  width: 136px;
+  background-color: rgba(105, 83, 95, 0.3);
 `
