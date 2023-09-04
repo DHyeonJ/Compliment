@@ -2,25 +2,30 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { auth, storage, ref, getDownloadURL } from '../../firebase'
+import { auth, storage, ref, getDownloadURL, db } from '../../firebase'
 import defaultProfileImage from '../../img/user.png'
 import ProgressBar from '../../components/ProgressBar'
 import Tab from '../../components/Tab'
 import userInfoEdit from '../../img/userInfoEdit.png'
+
 function Mypage() {
   const navigator = useNavigate()
 
+  const user = auth.currentUser
   const [highlightedButton, setHighlightedButton] = useState('detail')
   const [imageUrl, setImageUrl] = useState('')
+  const [userPosts, setUserPosts] = useState([])
 
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
-  const user = auth.currentUser
+  // const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
-  const photoURL = user.photoURL
+  const photoURL = user ? user.photoURL : null
+
   useEffect(() => {
-    const fetchImageUrl = async () => {
+    // 사용자 정보 가져오기
+    const fetchUserInfo = async () => {
       if (auth.currentUser) {
         try {
           const userUid = auth.currentUser.uid
@@ -37,7 +42,24 @@ function Mypage() {
         }
       }
     }
-    fetchImageUrl()
+
+    // 사용자가 작성한 글 가져오기 (Firestore에서 예시)
+    const fetchUserPosts = async () => {
+      if (auth.currentUser) {
+        try {
+          const userUid = auth.currentUser.uid
+          const userPostsRef = db.collection('posts').where('authorUid', '==', userUid)
+          const snapshot = await userPostsRef.get()
+          const posts = snapshot.docs.map((doc) => doc.data())
+          setUserPosts(posts)
+        } catch (error) {
+          console.error('Error fetching user posts:', error)
+        }
+      }
+    }
+
+    fetchUserInfo()
+    fetchUserPosts()
   }, [])
 
   return (

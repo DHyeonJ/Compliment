@@ -21,7 +21,7 @@ const ProgressBar = () => {
           console.error('Error fetching doneMission count:', error)
         })
     }
-  }, [user])
+  }, [user, progress])
 
   return (
     <>
