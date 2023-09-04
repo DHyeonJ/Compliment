@@ -3,11 +3,9 @@ import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../../src/img/user.png'
-
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   console.log('data', data)
-
   return (
     <>
       {data?.map((item) => {
@@ -26,21 +24,18 @@ const Lists = ({ data }) => {
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
                     <span>{item.userEmail}</span>
                   </User>
-
                   <div>
                     <ListTitle>{item.title}</ListTitle>
                     <ListComments>{item.comments}</ListComments>
                   </div>
                 </ListContent>
-
                 <HandClapBox>
                   <ListDate>작성일 </ListDate>
                   <Date>{item.Date}</Date>
                   <Img src={HandClap} alt="HandClap" />
-                  <Likes>{item.likes}</Likes>
+                  <Likes>{item.likes ? item.likes.length : 0}</Likes>
                 </HandClapBox>
               </Contents>
-
               <div>
                 <Thumbnail src={item.image} alt="" />
               </div>
@@ -51,7 +46,6 @@ const Lists = ({ data }) => {
     </>
   )
 }
-
 const ListContentt = styled.div`
   display: flex;
   justify-content: space-between;
@@ -59,7 +53,6 @@ const ListContentt = styled.div`
   flex: 1 0 0;
   width: 1376px;
 `
-
 const Contents = styled.div`
   display: flex;
   min-width: 560px;
@@ -69,7 +62,6 @@ const Contents = styled.div`
   gap: 12px;
   flex: 1 0 0;
 `
-
 const Likes = styled.span`
   color: #999;
   text-align: right;
@@ -84,7 +76,6 @@ const Img = styled.img`
   height: 20px;
   margin-right: 4px;
 `
-
 const Date = styled.div`
   color: #999;
   text-align: right;
@@ -96,14 +87,12 @@ const Date = styled.div`
   margin-left: 8px;
   margin-right: 16px;
 `
-
 const HandClapBox = styled.div`
   padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
 `
-
 const List = styled.div`
   display: flex;
   min-width: 800px;
@@ -128,7 +117,6 @@ const UserImg = styled.img`
   border-radius: 50%;
   margin-right: 8px;
 `
-
 const User = styled.div`
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
@@ -141,7 +129,6 @@ const User = styled.div`
   justify-content: center;
   margin-bottom: 10px;
 `
-
 const ListTitle = styled.h1`
   width: 884px;
   color: var(--text-01404040, #404040);
@@ -150,12 +137,10 @@ const ListTitle = styled.h1`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
-
 const ListComments = styled.p`
   width: 1000px;
   height: 44px;
@@ -180,7 +165,6 @@ const ListDate = styled.p`
   font-weight: 500;
   line-height: 28px; /* 200% */
 `
-
 const ListContent = styled.div`
   display: flex;
   width: 1192px;
@@ -198,5 +182,4 @@ const Thumbnail = styled.img`
   border-radius: 8px;
   background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
 `
-
 export default Lists
