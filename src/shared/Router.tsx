@@ -23,12 +23,12 @@ function Router() {
         <Route path="/editboard/:id" element={<EditBoard />} />
         <Route path="/listpage" element={<ListPage />} />
         <Route path="/missionpage" element={<MissionPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
         <Route path="/edituserinfo" element={<EditUserInfo />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
     </Routes>
   )
 }

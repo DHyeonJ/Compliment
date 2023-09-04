@@ -16,6 +16,7 @@ const AddBoardCp = () => {
   const fileInput = React.useRef(null)
   const navigate = useNavigate()
   const nowTime = moment().format('YYYY-MM-DD')
+  const photoURL = user?.photoURL ?? null
   const mutationAdd = useMutation(
     // eslint-disable-next-line @typescript-eslint/promise-function-async
     (data) => {
@@ -55,7 +56,7 @@ const AddBoardCp = () => {
         Date: nowTime,
         image: imgUrl,
         fileName,
-        photoUrl: imgUrl,
+        photoURL,
       })
       // setModalMessage('게시물이 작성되었습니다.')
       // setIsModalOpen(true)

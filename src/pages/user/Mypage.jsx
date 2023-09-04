@@ -61,7 +61,7 @@ function Mypage() {
     fetchUserInfo()
     fetchUserPosts()
   }, [])
-
+  console.log('mypage', photoURL)
   return (
     <>
       <div>

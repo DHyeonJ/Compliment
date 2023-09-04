@@ -6,6 +6,7 @@ import defaultProfileImage from '../../src/img/user.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
+  console.log('data', data)
 
   return (
     <>
@@ -22,7 +23,7 @@ const Lists = ({ data }) => {
               <Contents>
                 <ListContent>
                   <User>
-                    <UserImg src={item.photoUrl ?? defaultProfileImage} alt="" />
+                    <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
                     <span>{item.userEmail}</span>
                   </User>
 
@@ -56,6 +57,7 @@ const ListContentt = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   flex: 1 0 0;
+  width: 1376px;
 `
 
 const Contents = styled.div`
@@ -112,9 +114,14 @@ const List = styled.div`
   align-self: stretch;
   margin-bottom: 12px;
   border-bottom: 1.2px solid #d9d9d9;
+  cursor: pointer;
+  &:hover {
+    background: rgba(105, 83, 95, 0.2);
+  }
 `
 const UserImg = styled.img`
   height: 32px;
+  width: 32px;
   flex-shrink: 0;
   background-image: url(${(props) => props.src});
   background-size: cover;
