@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
-import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore'
+import { getDocs, collection, deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth, auth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../img/user.png'
-
 function Detail() {
   const [data, setData] = useState([])
   const { id } = useParams()
@@ -12,54 +11,72 @@ function Detail() {
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
   const admin = 'admin@admin.com'
+  const [likeCount, setLikeCount] = useState(0) // 좋아요 갯수 초기화
+  const [uploadedImageUrl, setUploadedImageUrl] = useState('') // 업로드된 이미지 URL
+  // 좋아요 상태 초기화를 위한 useEffect
+  useEffect(() => {
+    // 사용자가 로그인한 경우에만 좋아요 상태 초기화
+    if (auth.currentUser) {
+      const userId = auth.currentUser.uid
+      const itemId = id
+      const checkLikedStatus = async () => {
+        try {
+          const itemDoc = doc(db, 'lists', itemId)
+          const itemData = (await getDoc(itemDoc)).data()
+          // itemData.likes가 배열이 아닌 경우, 빈 배열로 초기화
+          if (!Array.isArray(itemData.likes)) {
+            itemData.likes = []
+          }
+          // 사용자가 이미 좋아요를 눌렀는지 확인
+          const userLiked = itemData.likes.includes(userId)
+          setIsLiked(userLiked)
+          setLikeCount(itemData.likes.length) // 좋아요 갯수 설정
+        } catch (error) {
+          console.error('좋아요 상태 초기화 중 오류:', error)
+        }
+      }
+      checkLikedStatus()
+    }
+  }, [auth.currentUser, id])
   // 좋아요 기능
   const toggleLike = async () => {
     if (auth.currentUser) {
       const userId = auth.currentUser.uid
-      const itemId = detailItem.id
-
+      const itemId = id
       try {
-        // Firestore에서 문서 가져오기
         const itemDoc = doc(db, 'lists', itemId)
         const itemData = (await getDoc(itemDoc)).data()
-
-        // 사용자가 이미 "좋아요"를 누른 경우
+        // itemData.likes가 배열이 아닌 경우, 빈 배열로 초기화
+        if (!Array.isArray(itemData.likes)) {
+          itemData.likes = []
+        }
         if (itemData.likes.includes(userId)) {
-          // "좋아요"를 취소하도록 Firestore 문서 업데이트
           await updateDoc(itemDoc, {
             likes: itemData.likes.filter((uid) => uid !== userId),
           })
+          setLikeCount((prevLikeCount) => prevLikeCount - 1) // 좋아요 수를 감소시킴
         } else {
-          // 사용자가 아직 "좋아요"를 누르지 않은 경우
-          // Firestore 문서 업데이트하여 사용자의 UID를 "likes" 배열에 추가
           await updateDoc(itemDoc, {
             likes: [...itemData.likes, userId],
           })
+          setLikeCount((prevLikeCount) => prevLikeCount + 1) // 좋아요 수를 증가시킴
         }
-
-        // "좋아요" 상태를 토글합니다.
         setIsLiked((prevIsLiked) => !prevIsLiked)
       } catch (error) {
         console.error('좋아요 토글 중 오류:', error)
       }
     } else {
-      // 사용자가 인증되지 않았을 경우 처리
-      // 예를 들어 로그인 프롬프트를 표시하거나 다르게 처리할 수 있습니다.
       alert('이 항목을 좋아하려면 로그인하세요.')
     }
   }
-
   const handleLikeButtonClick = async () => {
     await toggleLike()
   }
-
   //   id 값이 일치하는 데이터만 가져오는 함수
   const getDetailData = (id) => {
     return data.find((item) => item.id === id)
   }
-
   const detailItem = getDetailData(id)
-
   useEffect(() => {
     // Firestore에서 데이터 가져오기
     const fetchData = async () => {
@@ -74,10 +91,8 @@ function Detail() {
         console.error('Error fetching data:', error)
       }
     }
-
     fetchData()
   }, [])
-
   // 삭제 기능
   const handleDelete = async () => {
     if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
@@ -93,17 +108,14 @@ function Detail() {
       alert('이 게시물을 삭제할 권한이 없습니다.')
     }
   }
-
   const handleDeleteClick = () => {
     const shouldDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
-
     if (shouldDelete) {
       handleDelete().catch((error) => {
         console.error('오류 발생: ', error)
       })
     }
   }
-
   // 수정 페이지 이동
   const handleEditMove = () => {
     if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
@@ -112,7 +124,6 @@ function Detail() {
       alert('게시물을 수정할 권한이 없습니다.')
     }
   }
-
   // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
   const renderEditDeleteButtons = () => {
     if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
@@ -125,7 +136,6 @@ function Detail() {
     }
     return null
   }
-
   return (
     <>
       {data.length > 0 && (
@@ -136,7 +146,7 @@ function Detail() {
               <TitleBox>{detailItem.title}</TitleBox>
               <MidleTitleBox>
                 <UserBox>
-                  <UserImg src={detailItem.photoUrl ?? defaultProfileImage} alt="" />
+                  <UserImg src={detailItem.photoURL ?? defaultProfileImage} alt="" />
                   <UserName>{detailItem.userEmail}</UserName>
                   <DateBox>작성일 {detailItem.Date}</DateBox>
                 </UserBox>
@@ -144,17 +154,14 @@ function Detail() {
               </MidleTitleBox>
             </HeaderContentBox>
           </HeaderBox>
-
           {/* 내용과 이미지 */}
           <ContentBodyBox>
             <ContentImgBox src={detailItem.image} alt="" />
             <BodyContent>{detailItem.comments}</BodyContent>
           </ContentBodyBox>
-
           {/* "좋아요" 버튼 추가 */}
           <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{detailItem.likes}</span>
-
+          <span>{likeCount}</span>
           {/* 댓글 영역 */}
           <CommentAreaBox>
             <CommentHeaderBox>칭찬 댓글 4</CommentHeaderBox>
@@ -186,204 +193,236 @@ function Detail() {
     </>
   )
 }
-
 export default Detail
-
 const DetailContentsBox = styled.div`
+  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* margin, padding */
+  margin: 0rem 15rem 3rem;
+  /* background 관련 */
   background: #fff;
-  margin: 32px 240px 48px;
   /* width: 1440px; */
   /* height: 2068px; */
   /* border: 1px solid black; */
 `
-
 const HeaderBox = styled.div`
+  /* display 관련 */
   display: flex;
-  padding: 0px 270px;
   flex-direction: column;
   align-items: center;
+  /* margin, padding */
+  padding: 0 16.875rem;
   /* border: 1px solid black; */
 `
-
 const HeaderContentBox = styled.div`
+  /* display 관련 */
   display: flex;
-  width: 912px;
-  padding: 0px 24px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  gap: 24px;
-  margin: 48px 0px;
+  gap: 1.5rem;
+  /* size 관련 */
+  width: 57rem;
+  /* margin, padding */
+  padding: 0 1.5rem;
+  margin: 3rem 0;
 `
-
 const TitleBox = styled.div`
+  /* display 관련 */
   align-self: stretch;
+  /* border 관련 */
+  line-height: normal;
+  /* font 관련 */
   color: #404040;
   font-family: LINE Seed Sans KR;
-  font-size: 36px;
+  font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
 `
-
 const MidleTitleBox = styled.div`
+  /* display 관련 */
   display: flex;
-  height: 36px;
   justify-content: space-between;
   align-items: flex-start;
   align-self: stretch;
+  /* size 관련 */
+  height: 2.25rem;
   /* border: 1px solid black; */
 `
-
 const UserBox = styled.div`
+  /* display 관련 */
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 1.5rem;
   /* border: 1px solid black; */
 `
-
 const UserImg = styled.img`
-  width: 36px;
-  height: 36px;
+  /* size 관련 */
+  width: 2.25rem;
+  height: 2.25rem;
 `
-
 const UserName = styled.div`
+  /* border 관련 */
+  margin-right: 1.5rem;
+  /* border 관련 */
+  line-height: 1.75rem;
+  border-radius: 50%;
+  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px;
-  margin-right: 24px;
 `
-
 const DateBox = styled.div`
+  /* border 관련 */
+  line-height: 1.75rem;
+  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px;
 `
-
 const ButtonBox = styled.div`
+  /* display 관련 */
   display: flex;
-  gap: 10px;
+  gap: 1rem;
 `
-
 const Button = styled.button`
+  /* display 관련 */
   display: flex;
-  width: 96px;
-  height: 36px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* gap: 12px; */
-  border-radius: 8px;
-  border: 1px solid #d9d9d9;
+  /* size 관련 */
+  width: 6rem;
+  height: 2.25rem;
+  /* background 관련 */
   background: #fff;
+  /* border 관련 */
+  border-radius: 0.5rem;
+  border: 1px solid #d9d9d9;
+  /* animation 관련 */
   cursor: pointer;
 `
-
 const ContentBodyBox = styled.div`
+  /* display 관련 */
   display: flex;
-  /* width: 1440px; */
-  padding: 0px 270px;
   flex-direction: column;
   align-items: center;
+  /* margin, padding */
+  padding: 0 16.875rem;
+  /* width: 1440px; */
   /* border: 1px solid black; */
 `
-
 const ContentImgBox = styled.img`
-  width: 973px;
-  height: 512px;
+  /* size 관련 */
+  width: 60.8125rem;
+  height: 32rem;
 `
-
 const BodyContent = styled.div`
+  /* display 관련 */
   display: flex;
-  width: 912px;
-  padding: 16px 24px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
-  margin-top: 32px;
-  margin-bottom: 48px;
+  gap: 1rem;
+  /* size 관련 */
+  width: 57rem;
+  /* margin, padding */
+  padding: 1rem 1.5rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
 `
-
 const CommentAreaBox = styled.div`
+  /* display 관련 */
   display: flex;
-  /* width: 1440px; */
-  padding: 0px 270px;
   flex-direction: column;
   align-items: center;
+  /* margin, padding */
+  padding: 0 16.875rem;
+  /* width: 1440px; */
   /* border: 1px solid black; */
 `
-
 const CommentHeaderBox = styled.div`
+  /* display 관련 */
   display: flex;
-  width: 912px;
-  padding: 24px;
   align-items: center;
-  gap: 10px;
-
+  gap: 1rem;
+  /* size 관련 */
+  width: 57rem;
+  /* margin, padding */
+  padding: 1.5rem;
+  /* border 관련 */
+  line-height: 1.375rem;
+  /* font 관련 */
   color: #404040;
   font-family: Pretendard;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
 `
-
 const CommentBox = styled.div`
+  /* display 관련 */
   display: flex;
-  min-width: 800px;
-  max-width: 1440px;
-  padding: 16px 24px;
   align-items: flex-start;
-  gap: 24px;
+  gap: 1.5rem;
   align-self: stretch;
+  /* size 관련 */
+  width: 57rem;
+  min-width: 50rem;
+  max-width: 90rem;
+  /* margin, padding */
+  padding: 1rem 1.5rem;
 `
-
 const CommentBodyBox = styled.div`
+  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 0.5rem;
   align-self: stretch;
 `
-
 const CommentInputAreaBox = styled.div`
+  /* display 관련 */
   display: flex;
-  width: 912px;
-  padding: 16px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
-  border-radius: 8px;
-  border: 1px solid #d9d9d9;
+  gap: 1rem;
+  /* size 관련 */
+  width: 57rem;
+  /* margin, padding */
+  padding: 1rem;
+  /* background 관련 */
   background: #fff;
+  /* border 관련 */
+  border-radius: 0.5rem;
+  border: 1px solid #d9d9d9;
 `
-
 const CommentInputMedleBox = styled.div`
+  /* display 관련 */
   display: flex;
-  min-width: 800px;
-  max-width: 1440px;
-  padding: 16px 24px;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
+  /* size 관련 */
+  min-width: 50rem;
+  max-width: 90rem;
+  /* margin, padding */
+  padding: 1rem 1.5rem;
 `
-
 const CommentInputBox = styled.input`
+  /* display 관련 */
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
-  padding: 24px 0px;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   flex: 1 0 0;
+  /* size 관련 */
+  min-width: 35rem;
+  max-width: 74.625rem;
+  /* margin, padding */
+  padding: 1.5rem 0;
 `
