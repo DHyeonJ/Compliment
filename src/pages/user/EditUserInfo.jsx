@@ -1,8 +1,11 @@
+/* eslint-disable import/first */
+/* eslint-disable object-shorthand */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-redeclare */
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-misused-promises */
+// eslint-disable-next-line import/first
 import React, { useState, u } from 'react'
 import { styled } from 'styled-components'
 import { auth, storage, db } from '../../firebase'
@@ -10,10 +13,13 @@ import { useNavigate } from 'react-router-dom'
 import { updatePassword, updateProfile } from 'firebase/auth'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { doc, updateDoc } from 'firebase/firestore'
+import defaultImg from '../../img/user.png'
 
 function EditUserInfo() {
   const navigate = useNavigate()
-
+  const MainpageMove = () => {
+    navigate('/')
+  }
   const [error, setError] = useState(null)
   const user = auth.currentUser
   const photoURL = user.photoURL
@@ -21,8 +27,7 @@ function EditUserInfo() {
   const [imageUrl, setImageUrl] = useState(null)
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
-
-  console.log(user)
+  const [nickname, setNickname] = useState('')
   const handlePasswordUpdate = async (event) => {
     event.preventDefault()
 
@@ -103,11 +108,18 @@ function EditUserInfo() {
       await updateDoc(updateInfoRef, {
         name: loggedInUserEmail,
         imgfile: imageUrl,
+        nickname: nickname,
       })
+
+      if (user) {
+        // 사용자의 닉네임 업데이트
+        await updateProfile(auth.currentUser, { displayName: nickname })
+        console.log('User profile updated.')
+      }
 
       setError(null)
 
-      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
+      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl, nickname)
       window.alert('프로필 정보를 저장했습니다.')
       console.log(photoURL)
     } catch (error) {
@@ -124,7 +136,7 @@ function EditUserInfo() {
           <EditTextBox>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요.</EditTextBox>
         </div>
         <ProfileImageBox>
-          <ProfileImagePreview src={imageUrl} alt="이미지 미리보기" />
+          <ProfileImagePreview src={imageUrl || (user ? user.photoURL : defaultImg)} alt="프로필사진 미리보기 " />
           <ProfileImageInput placeholder="프로필사진 등록하기" type="file" accept="image/*" onChange={handleImageUpload} />
           <ProfileImageBtn onClick={handleSave}>이미지 업로드</ProfileImageBtn>
           {error && <p>{error}</p>}
@@ -136,7 +148,7 @@ function EditUserInfo() {
           </EditInputAreaBox>
           <EditInputAreaBox>
             <EditInputLabelBox>닉네임</EditInputLabelBox>
-            <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" />
+            <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
           </EditInputAreaBox>{' '}
           <EditInputAreaBox>
             <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
@@ -148,9 +160,9 @@ function EditUserInfo() {
           </EditInputAreaBox>
           <EditInputAreaBox>
             <EditSaveBtn type="submit">저장하기</EditSaveBtn>
-            <CancleBtn>취소</CancleBtn>
           </EditInputAreaBox>
         </EditForm>
+        <CancleBtn onClick={MainpageMove}>취소</CancleBtn>
       </EditUserInfoBox>
     </>
   )
@@ -159,30 +171,27 @@ function EditUserInfo() {
 export default EditUserInfo
 
 const EditUserInfoBox = styled.div`
-  display: flex;
-  height: 975 px;
-  width: 736px;
-  flex: 100;
   flex-direction: column;
-  align-items: center; /* 변경된 부분: 가운데 정렬 */
-  gap: 48 px;
+  align-items: center;
   flex-shrink: 0;
+  display: flex;
+  gap: 4vh;
   text-align: center;
+  height: 120vh;
+  width: 80vw;
+  margin: auto;
   margin-top: 15px;
   margin-bottom: 15px;
-  margin-left: auto;
-  margin-right: auto;
 `
 
 const EditTitleBox = styled.div`
-  color: #404040;
   text-align: center;
+  margin-bottom: 8px;
+  color: #404040;
   font-family: LINE Seed Sans KR;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
-  margin-bottom: 8px;
 `
 
 const EditTextBox = styled.div`
@@ -207,58 +216,63 @@ const ProfileImagePreview = styled.img`
 
 const ProfileImageBox = styled.div`
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 `
 
 const ProfileImageInput = styled.input`
   display: inline-block;
-  height: 30px;
-  padding: 10px 10px 10px 10px;
   vertical-align: middle;
-  border: 1px solid #dddddd;
+  height: 30px;
   width: 78%;
+  padding: 10px 10px 10px 10px;
+  border: 1px solid #dddddd;
   color: #999999;
 `
 
 const ProfileImageBtn = styled.button`
   display: none;
+  background-color: white;
   border-left-width: 0;
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 0;
   color: #8f8989;
-  background-color: white;
   cursor: pointer;
 `
+
 const EditForm = styled.form`
+  align-items: center;
   text-align: left;
+  flex-direction: column;
+  margin-top: 20px;
 `
 
 const EditInputAreaBox = styled.div`
+  width: 480px;
   margin-left: 128px;
   margin-right: 128px;
-  width: 480px;
 `
 
 const EditInputLabelBox = styled.div`
   display: flex;
+  align-items: center;
+  flex-shrink: 0;
   width: 480px;
   height: 20px;
   padding: 0px 8px;
   margin-top: 32px;
-  align-items: center;
-  flex-shrink: 0;
   color: #404040;
 `
+
 const EditIdBox = styled.div`
   display: flex;
-  width: 480px;
-  height: 42px;
+  align-items: flex-start;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-start;
+  width: 480px;
+  height: 42px;
   border-bottom: 1px solid #d9d9d9;
   border-left-width: 0;
   border-right-width: 0;
@@ -266,13 +280,14 @@ const EditIdBox = styled.div`
   border-bottom-width: 1;
   color: #d9d9d9;
 `
+
 const EditInput = styled.input`
   display: flex;
-  width: 480px;
-  height: 42px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  width: 480px;
+  height: 42px;
   border-bottom: 1px solid #d9d9d9;
   border-left-width: 0;
   border-right-width: 0;
@@ -280,40 +295,42 @@ const EditInput = styled.input`
   border-bottom-width: 1;
   color: #d9d9d9;
 `
+
 const EditSaveBtn = styled.button`
   display: flex;
-  width: 480px;
-  height: 56px;
-  padding: 13px 32px;
   justify-content: center;
   align-items: center;
   gap: 10px;
+  text-align: center;
   flex-shrink: 0;
-  border-radius: 8px;
-  border: none;
-  background: #69535f;
+  line-height: normal;
+  letter-spacing: -0.64px;
+  width: 480px;
+  height: 56px;
   margin-top: 48px;
   margin-bottom: 48px;
+  margin-bottom: 12px;
+  padding: 13px 32px;
+  background: #69535f;
+  border-radius: 8px;
+  border: none;
   color: #fff;
-  text-align: center;
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal;
-  letter-spacing: -0.64px;
   cursor: pointer;
-  margin-bottom: 12px;
 `
 const CancleBtn = styled.button`
   display: flex;
+  gap: 10px;
+  line-height: normal;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
   width: 480px;
   height: 56px;
   padding: 13px 32px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
   border-radius: 8px;
   border: 1px solid #69535f;
   color: #69535f;
@@ -322,5 +339,4 @@ const CancleBtn = styled.button`
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal;
 `

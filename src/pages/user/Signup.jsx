@@ -1,14 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-import logoImg from '../../img/logo.png'
+import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
 import { setMissionCard } from '../../api/MissionCardsApi.jsx'
 import { current } from '@reduxjs/toolkit'
+import { debounce } from 'lodash'
+
 function Signup() {
   const navigate = useNavigate()
+  const MainpageMove = () => {
+    navigate('/')
+  }
 
   // 회원가입시 필요한 정보
   const [email, setEmail] = useState('')
@@ -84,44 +89,92 @@ function Signup() {
         alert(err)
       })
   }
+  // 실시간 유효성검사
+
+  const [validEmail, setValidEmail] = useState(true)
+  const [validPassword, setValidpassword] = useState('')
+  const [confirmPasswordError, setConfirmPasswordError] = useState('')
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(String(email).toLowerCase())
+  }
+
+  const debounceValidateEmail = debounce((email) => {
+    const result = validateEmail(email)
+    setValidEmail(result)
+  }, 500)
+
+  useEffect(() => {
+    if (email) {
+      debounceValidateEmail(email)
+    }
+  }, [email])
+
+  const debounceValidatePassword = debounce((password) => {
+    if (password.length > 0 && password.length < 6) {
+      setValidpassword('비밀번호는 6자 이상이어야 합니다.')
+    } else {
+      setValidpassword('')
+    }
+  }, 1000)
+
+  useEffect(() => {
+    debounceValidatePassword(password)
+  }, [password])
+
+  useEffect(() => {
+    debounceValidateConfirmPassword(password, confirmPassword)
+  }, [password, confirmPassword])
+
+  const debounceValidateConfirmPassword = debounce((password, confirmPassword) => {
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('비밀번호가 일치하지 않습니다')
+    } else {
+      setConfirmPasswordError('')
+    }
+  }, 1000)
 
   return (
     <>
       <SignupBox>
         <div>
-          <SignupH1>회원가입 </SignupH1>
-          <SignupText>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupText>
+          <LogoImg src={logoImg} onClick={MainpageMove}></LogoImg>
+          <SignupH1Box>회원가입 </SignupH1Box>
+          <SignupTextBox>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요!</SignupTextBox>
         </div>
         <SignupAreaBox>
-          <SignupImg src={logoImg} />
-          <button>프로필이미지등록</button>
+          {/* <SignupImgBox src={logoImg} /> */}
+          {/* <button>프로필이미지등록</button> */}
           <div>
             <div>
               <SignForm>
-                <SignInputArea>
+                <SignInputAreaBox>
                   <SignupInputLabel>아이디</SignupInputLabel>
                   <SignupInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
-                </SignInputArea>
-                <SignInputArea>
+                  {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
+                </SignInputAreaBox>
+                <SignInputAreaBox>
                   <SignupInputLabel>비밀번호</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="password" value={password} onChange={onChange} />
-                </SignInputArea>
-                <SignInputArea>
+                  {password.length > 0 && password.length < 6 && <DebounceTextBox>비밀번호는 6자 이상이어야 합니다.</DebounceTextBox>}
+                </SignInputAreaBox>
+                <SignInputAreaBox>
                   <SignupInputLabel>비밀번호 확인</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="confirmPassword" value={confirmPassword} onChange={onChange} />
-                </SignInputArea>
-                <SignInputArea>
+                  {confirmPasswordError && <DebounceTextBox>{confirmPasswordError}</DebounceTextBox>}
+                </SignInputAreaBox>
+                {/* <SignInputAreaBox>
                   <SignupInputLabel>닉네임</SignupInputLabel>
                   <SignupInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" />
-                </SignInputArea>
-                <SignInputArea>
+                </SignInputAreaBox> */}
+                <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
                   <SignupBtn onClick={Signup}>가입하기</SignupBtn>
-                </SignInputArea>
+                </SignInputAreaBox>
               </SignForm>
             </div>
             <SignWithGoogleArea>
-              <SignLine> ㅡ OR ㅡ </SignLine>
+              <SignLineBox> ㅡ OR ㅡ </SignLineBox>
               <SignWithGoogleBtn onClick={handleGoogleLogin}>
                 <GoogleLogoImg src={google}></GoogleLogoImg>Google로 시작하기
               </SignWithGoogleBtn>
@@ -136,111 +189,137 @@ function Signup() {
 export default Signup
 
 const SignupBox = styled.div`
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  display: flex;
+  height: 100vh;
 `
-const SignupText = styled.div`
+
+const LogoImg = styled.img`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  width: 120px;
+  /* width: 20vw; */
+  height: 75px;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  padding: 24px 43px 25px 41px;
+  cursor: pointer;
+`
+const SignupTextBox = styled.div`
+  line-height: normal;
+  text-align: center;
   color: #404040;
   text-align: center;
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: normal;
-  text-align: center;
 `
 
-const SignupH1 = styled.div`
+const SignupH1Box = styled.div`
+  line-height: normal;
+  margin-top: 15px;
+  margin-bottom: 15px;
   color: #404040;
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
-  margin-top: 15px;
-  margin-bottom: 15px;
 `
 
 const SignupAreaBox = styled.div`
-  display: flex;
-  height: 975 px;
-  width: 736px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   flex: 100;
   flex-direction: column;
-  align-items: center; /* 변경된 부분: 가운데 정렬 */
+  align-items: center;
+  display: flex;
   gap: 48 px;
   flex-shrink: 0;
   text-align: center;
+  width: 80vw;
   margin-top: 15px;
   margin-bottom: 15px;
+  margin-left: 10vw;
+  margin-right: 10vw;
 `
 
-const SignupImg = styled.div`
-  margin-left: 308px;
-  margin-right: 308px;
-  width: 36px;
-  height: 26;
+const SignupImgBox = styled.div`
   display: flex;
-  width: 120px;
-  height: 75px;
-  padding: 24px 43px 25px 41px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  width: 36px;
+  height: 75px;
+  margin-left: 308px;
   margin-bottom: 10px;
+  margin-right: 308px;
+  padding: 24px 43px 25px 41px;
 `
 
 const SignForm = styled.form`
   text-align: left;
+  width: 100%;
 `
 
-const SignInputArea = styled.div`
+const SignInputAreaBox = styled.div`
+  width: 480px;
   margin-left: 128px;
   margin-right: 128px;
-  width: 480px;
 `
 
 const SignupInputLabel = styled.div`
   display: flex;
+  align-items: center;
+  flex-shrink: 0;
   width: 480px;
   height: 20px;
   padding: 0px 8px;
   margin-top: 32px;
-  align-items: center;
-  flex-shrink: 0;
   color: #404040;
 `
+
 const SignupInput = styled.input`
   display: flex;
-  width: 480px;
-  height: 42px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  width: 480px;
+  height: 42px;
   border-bottom: 1px solid #d9d9d9;
   border-left-width: 0;
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 1;
-  color: #d9d9d9;
+  color: #0e0d0d;
+
+  ::placeholder {
+    color: #d9d9d9;
+    font-weight: 500;
+    line-height: normal;
+  }
 `
 const SignupBtn = styled.button`
   display: flex;
-  width: 480px;
-  height: 56px;
-  padding: 13px 32px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  border-radius: 8px;
-  border: none;
-  background: #69535f;
+  letter-spacing: -0.64px;
+  width: 480px;
+  height: 56px;
   margin-top: 48px;
   margin-bottom: 48px;
+  padding: 13px 32px;
+  background: #69535f;
+  border-radius: 8px;
+  border: none;
   color: #fff;
   text-align: center;
   font-family: Pretendard;
@@ -248,46 +327,55 @@ const SignupBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  letter-spacing: -0.64px;
   cursor: pointer;
 `
 const SignWithGoogleArea = styled.div`
   margin-left: 128px;
   margin-right: 128px;
 `
-const SignLine = styled.div`
+
+const SignLineBox = styled.div`
   display: flex;
-  width: 480px;
-  height: 19px;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   justify-content: center;
+  width: 480px;
+  height: 19px;
   color: #666666;
   margin-top: -17px;
 `
 
 const SignWithGoogleBtn = styled.button`
   display: flex;
-  margin-top: 16px;
-  width: 480px;
-  height: 56px;
-  padding: 8px 0px;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  line-height: 110%; /* 17.6px */
+  width: 480px;
+  height: 56px;
+  margin-top: 16px;
+  padding: 8px 0px;
   border-radius: 8px;
   border: 1px solid #404040;
-  background: var(--white, #fff);
   color: #404040;
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  line-height: 110%; /* 17.6px */
+  background: var(--white, #fff);
   cursor: pointer;
 `
 const GoogleLogoImg = styled.img`
   width: 25px;
   height: 25px;
+`
+
+const DebounceTextBox = styled.div`
+  color: #e36f6f;
+  font-family: Noto Sans;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `

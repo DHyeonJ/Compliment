@@ -19,6 +19,7 @@ function Mypage() {
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
   const photoURL = user.photoURL
+  const nickname = user.displayName
   useEffect(() => {
     const fetchImageUrl = async () => {
       if (auth.currentUser) {
@@ -39,7 +40,7 @@ function Mypage() {
     }
     fetchImageUrl()
   }, [])
-
+  console.log('mypage', photoURL)
   return (
     <>
       <div>
