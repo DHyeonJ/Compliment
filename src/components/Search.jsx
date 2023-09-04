@@ -43,6 +43,7 @@ const SearchBox = styled.div`
 `
 const SearchIcon = styled(FontAwesomeIcon)`
   width: 32px;
+  cursor: pointer;
   height: 32px;
   color: #404040;
   margin: 8px;

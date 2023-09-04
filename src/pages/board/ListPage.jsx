@@ -9,10 +9,6 @@ import { getLists } from '../../api/ListsApi'
 import { useQuery } from 'react-query'
 
 function ListPage() {
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const itemsPerPage = 10; // 원하는 숫자로 변경하세요
-  //
-
   const navigate = useNavigate()
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
 
@@ -116,14 +112,14 @@ function ListPage() {
 export default ListPage
 
 const ListContainer = styled.div`
-  height: 1750px;
+  height: 1660px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
   overflow-y: auto;
   &::-webkit-scrollbar {
-    width: 10px; /* 스크롤바의 너비 */
+    width: 10px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -164,7 +160,6 @@ const ContentBox = styled.div`
 `
 const BannerBox = styled.div`
   display: flex;
-  width: 1440px;
   padding: 48px 56px;
   flex-direction: column;
   align-items: flex-start;
@@ -174,7 +169,6 @@ const BannerBox = styled.div`
 `
 const ChoiceBox = styled.div`
   display: flex;
-  width: 1440px;
   padding: 0px 32px 0px 24px;
   justify-content: space-between;
   align-items: center;
@@ -194,6 +188,7 @@ const NewSpan = styled.span`
   width: 144px;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
   &:hover {
     color: ${(props) => (props.active ? '#69535f' : '#69535f')}; /* 수정된 부분 */
     font-weight: 700;
@@ -207,7 +202,7 @@ const BlockBox = styled.div`
 const RankingSpan = styled.span`
   color: ${(props) => (props.active ? '#69535f' : '#797979')};
   font-weight: ${(props) => (props.active ? '700' : '400')};
-
+  cursor: pointer;
   display: flex;
   width: 144px;
   justify-content: center;
@@ -245,6 +240,7 @@ const PlusButton = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
   border-radius: 8px;
   background: #69535f;
   color: #fff;

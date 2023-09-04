@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
-import Logo from '../../components/Logo'
 import MenuNav from '../../components/MenuNav'
 import { getMissionCards, updateMissionCard, setMissionCard } from '../../api/MissionCardsApi'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { auth } from '../../firebase'
+import missionCard from '../../img/missionCard.png'
+import missionCardActive from '../../img/missionCardActive.png'
 
 const MissionPage = () => {
   const { data: missionData, isLoading } = useQuery('missionContents', getMissionCards)
@@ -62,7 +63,7 @@ const MissionPage = () => {
     const now = new Date()
     // const timeUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now
     // const resetInterval = setInterval(resetSelectedCards, timeUntilMidnight)
-    const resetInterval = setInterval(resetSelectedCards, 1000000000)
+    const resetInterval = setInterval(resetSelectedCards, 10000000000)
 
     // Cleanup function to clear the interval
     return () => clearInterval(resetInterval)
@@ -92,7 +93,7 @@ const MissionPage = () => {
   }
 
   return (
-    <div>
+    <>
       <MenuNav />
       <Hug>
         <BannerBox>
@@ -111,12 +112,12 @@ const MissionPage = () => {
             {randomCards?.map((item) => {
               return (
                 <MissionCard key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={selectedCardId.includes(item.id)}>
-                  <MissionCardFrame>
-                    <MissionCardTitle>{item.title}</MissionCardTitle>
-                    <LogoBox>
-                      <Logo></Logo>
+                  <MissionCardFrame isSelected={selectedCardId.includes(item.id)}>
+                    <MissionCardTitle isSelected={selectedCardId.includes(item.id)}>{item.title}</MissionCardTitle>
+                    <LogoBox isSelected={selectedCardId.includes(item.id)}>
+                      <LogoImg src={selectedCardId.includes(item.id) ? missionCardActive : missionCard} alt={selectedCardId.includes(item.id) ? 'Active Mission Card' : 'Inactive Mission Card'} />
                     </LogoBox>
-                    <MissionCardContents>{item.content}</MissionCardContents>
+                    <MissionCardContents isSelected={selectedCardId.includes(item.id)}>{item.content}</MissionCardContents>
                   </MissionCardFrame>
                 </MissionCard>
               )
@@ -124,20 +125,22 @@ const MissionPage = () => {
           </MissionCards>
         </MissionCardBox>
       </Hug>
-    </div>
+    </>
   )
 }
 
 export default MissionPage
 
 const LogoBox = styled.div`
-  /* width: 111px;
-height: 78px; */
   padding: 18px;
+`
+const LogoImg = styled.img`
+  width: 111px;
+  height: 78px;
 `
 
 const MissionCardContents = styled.div`
-  color: #69535f;
+  color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 14px;
@@ -148,7 +151,7 @@ const MissionCardContents = styled.div`
 `
 
 const MissionCardTitle = styled.div`
-  color: #69535f;
+  color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 20px;
@@ -162,7 +165,7 @@ const MissionCardFrame = styled.div`
   flex: 1 0 0;
   align-self: stretch;
   border-radius: 16px;
-  border: 2px solid #c5b2bc;
+  border: ${(props) => (props.isSelected ? '2px solid #F5F1E6' : '2px solid #c5b2bc')};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -171,6 +174,7 @@ const MissionCardFrame = styled.div`
 const MissionCard = styled.div`
   display: flex;
   width: 256px;
+  cursor: pointer;
   height: 368px;
   padding: 8px;
   justify-content: space-between;
@@ -178,8 +182,7 @@ const MissionCard = styled.div`
   border-radius: 20px;
   border: 2px solid #f5f1e6;
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
-  /* background: #fefbf3; */
-  background: ${(props) => (props.isSelected ? 'green' : '#fefbf3')};
+  background: ${(props) => (props.isSelected ? ' #AD7D83' : '#fefbf3')};
 `
 
 const MissionCards = styled.div`
@@ -214,7 +217,7 @@ const MissionCardBox = styled.div`
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  border: 1px solid red;
+  margin-top: 48px;
 `
 
 const BannerContent = styled.div`
@@ -228,6 +231,7 @@ const BannerContent = styled.div`
 
 const BannerTitle = styled.div`
   color: #404040;
+
   font-family: LINE Seed Sans KR;
   font-size: 36px;
   font-style: normal;
@@ -241,7 +245,6 @@ const BannerContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
-  border: 1px solid green;
 `
 
 const Hug = styled.div`
@@ -250,11 +253,9 @@ const Hug = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  border: 2px solid green;
 `
 const BannerBox = styled.div`
   display: flex;
-  width: 1440px;
   padding: 48px 56px;
   flex-direction: column;
   align-items: flex-start;
