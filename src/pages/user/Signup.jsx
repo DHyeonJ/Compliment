@@ -84,6 +84,7 @@ function Signup() {
     signInWithPopup(auth, provider)
       .then((data) => {
         setGoogleUserData(data.user)
+        navigate('/')
       })
       .catch((err) => {
         alert(err)
@@ -201,7 +202,7 @@ const LogoImg = styled.img`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  width: 120px;
+  /* width: 120px; */
   /* width: 20vw; */
   height: 75px;
   margin-left: 10vw;

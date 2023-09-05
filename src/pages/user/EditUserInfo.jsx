@@ -136,7 +136,7 @@ function EditUserInfo() {
           <EditTextBox>칭구의 일원이 되어 긍정적인 에너지를 나눠보세요.</EditTextBox>
         </div>
         <ProfileImageBox>
-          <ProfileImagePreview src={imageUrl || (user ? user.photoURL : defaultImg)} alt="프로필사진 미리보기 " />
+          <ProfileImagePreview src={imageUrl || defaultImg} alt="프로필사진 미리보기" />
           <ProfileImageInput placeholder="프로필사진 등록하기" type="file" accept="image/*" onChange={handleImageUpload} />
           <ProfileImageBtn onClick={handleSave}>이미지 업로드</ProfileImageBtn>
           {error && <p>{error}</p>}
@@ -146,18 +146,18 @@ function EditUserInfo() {
             <EditInputLabelBox>아이디</EditInputLabelBox>
             <EditIdBox>{loggedInUserEmail}</EditIdBox>
           </EditInputAreaBox>
-          <EditInputAreaBox>
-            <EditInputLabelBox>닉네임</EditInputLabelBox>
-            <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-          </EditInputAreaBox>{' '}
-          <EditInputAreaBox>
-            <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
-            <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-          </EditInputAreaBox>
-          <EditInputAreaBox>
-            <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
-            <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-          </EditInputAreaBox>
+          {user && !user.providerData.some((provider) => provider.providerId === 'google.com') && (
+            <>
+              <EditInputAreaBox>
+                <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
+                <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+              </EditInputAreaBox>
+              <EditInputAreaBox>
+                <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
+                <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+              </EditInputAreaBox>
+            </>
+          )}
           <EditInputAreaBox>
             <EditSaveBtn type="submit">저장하기</EditSaveBtn>
           </EditInputAreaBox>
