@@ -22,6 +22,7 @@ function Login() {
     signInWithPopup(auth, provider)
       .then((data) => {
         setGoogleUserData(data.user)
+        navigate('/')
       })
       .catch((err) => {
         alert(err)
