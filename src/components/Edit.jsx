@@ -1,185 +1,424 @@
 import React, { useState, useEffect } from 'react'
-import { styled } from 'styled-components'
-import HandClap from '../img/hand-clap.png'
-import { useNavigate } from 'react-router-dom'
-import defaultProfileImage from '../../src/img/user.png'
-const Lists = ({ data }) => {
+import styled from 'styled-components'
+import { useParams, useNavigate } from 'react-router-dom'
+import { collection, getDoc, doc, updateDoc } from 'firebase/firestore'
+import { db, useAuth, storage } from '../firebase'
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+
+function Edit() {
   const navigate = useNavigate()
-  console.log('data', data)
+  const { id } = useParams()
+  const auth = useAuth()
+  const [title, setTitle] = useState('')
+  const [content, setContent] = useState('')
+  const [detailItem, setDetailItem] = useState(null)
+  const [fileName, setFileName] = useState('')
+  const [imgUrl, setImgUrl] = useState('')
+  const fileInput = React.useRef(null)
+
+  useEffect(() => {
+    // Firebase에서 데이터 가져오기
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, 'lists', id)
+        const docSnapshot = await getDoc(docRef)
+        if (docSnapshot.exists()) {
+          setDetailItem(docSnapshot.data())
+          setTitle(docSnapshot.data().title)
+          setContent(docSnapshot.data().comments)
+        } else {
+          console.log('Document not found!')
+        }
+      } catch (error) {
+        console.error('Error fetching document:', error)
+        // 에러 처리 추가
+      }
+    }
+
+    fetchData()
+      .then(() => {
+        // fetchData가 성공적으로 끝날 때의 처리
+      })
+      .catch((error) => {
+        console.error('Error during fetchData:', error)
+        // fetchData 실행 중에 발생한 에러 처리
+      })
+  }, [id])
+
+  const handleUploadClick = (e) => {
+    fileInput.current.click()
+  }
+
+  const handleChange = (e) => {
+    e.preventDefault()
+    const file = e.target.files[0]
+    if (!file) return null
+
+    const storageRef = ref(storage, `files/${file.name}`)
+    const uploadTask = uploadBytes(storageRef, file)
+    setFileName(file.name)
+
+    // 업로드 작업이 완료되면 이 부분이 실행됩니다.
+    uploadTask
+      .then((snapshot) => {
+        e.target.value = ''
+        // 업로드된 이미지의 다운로드 URL을 가져와 imgUrl 상태를 업데이트합니다.
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          setImgUrl(downloadURL)
+        })
+      })
+      .catch((error) => {
+        console.error('Error uploading image:', error)
+      })
+  }
+
+  const handleEdit = () => {
+    // Firestore 문서 업데이트
+    const docRef = doc(db, 'lists', id)
+
+    updateDoc(docRef, {
+      title,
+      comments: content,
+      imageUrl: imgUrl, // 이미지 URL을 업데이트합니다.
+    })
+      .then(() => {
+        // 수정 성공 후 Detail 페이지로 이동
+        navigate(`/detail/${id}`)
+      })
+      .catch((error) => {
+        console.error('Error updating document:', error)
+      })
+  }
+
   return (
-    <>
-      {data?.map((item) => {
-        console.log(item)
-        return (
-          <List
-            key={item.id}
-            onClick={() => {
-              navigate(`/detail/${item.id}`)
-            }}
-          >
-            <ListContentt>
-              <Contents>
-                <ListContent>
-                  <User>
-                    <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
-                    <span>{item.userEmail}</span>
-                  </User>
-                  <div>
-                    <ListTitle>{item.title}</ListTitle>
-                    <ListComments>{item.comments}</ListComments>
-                  </div>
-                </ListContent>
-                <HandClapBox>
-                  <ListDate>작성일 </ListDate>
-                  <Date>{item.Date}</Date>
-                  <Img src={HandClap} alt="HandClap" />
-                  <Likes>{item.likes ? item.likes.length : 0}</Likes>
-                </HandClapBox>
-              </Contents>
+    <ContainerPageBox>
+      <ContainerBox>
+        {/* 제목 부분 */}
+        <div>
+          <ListContainerBox>
+            <TitleContainerBox>
+              <TitleContainer value={title} onChange={(e) => setTitle(e.target.value)} />
+            </TitleContainerBox>
+          </ListContainerBox>
+        </div>
+
+        {/* 본문 부분 */}
+        <div>
+          <CommentContainerBox>
+            <div>
+              <CommentInputBox value={content} onChange={(e) => setContent(e.target.value)} />
+            </div>
+
+            <ButtonsBox>
               <div>
-                <Thumbnail src={item.image} alt="" />
+                <CustomFileInputLabel htmlFor="fileInput" onClick={handleUploadClick}>
+                  이미지 업로드
+                </CustomFileInputLabel>
+                <CustomFileInput ref={fileInput} type="file" onChange={handleChange} />
+                <span>{fileName}</span>
               </div>
-            </ListContentt>
-          </List>
-        )
-      })}
-    </>
+              <div>
+                <CancelAndAddContainerBox>
+                  <CancelContainerBox onClick={() => navigate(`/detail/${id}`)}>취소</CancelContainerBox>
+                  <EditListContainerBox onClick={handleEdit}>수정</EditListContainerBox>
+                </CancelAndAddContainerBox>
+              </div>
+            </ButtonsBox>
+          </CommentContainerBox>
+        </div>
+      </ContainerBox>
+    </ContainerPageBox>
   )
 }
-const ListContentt = styled.div`
+
+export default Edit
+
+const CancelAndAddContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 1rem; /* px에서 rem으로 변경 */
+`
+
+const EditListContainerBox = styled.div`
+  /* position 관련 */
+
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem; /* px에서 rem으로 변경 */
+
+  /* size 관련 */
+  height: 2.75rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0 1.5rem; /* px에서 rem으로 변경 */
+
+  /* background 관련 */
+  background: #69535f;
+
+  /* border 관련 */
+  border-radius: 0.5rem; /* px에서 rem으로 변경 */
+  line-height: 1.375rem; /* px에서 rem으로 변경 */
+
+  /* font 관련 */
+  color: #fff;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-style: normal;
+  font-weight: 400;
+
+  /* animation 관련 */
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
+`
+const CancelContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem; /* px에서 rem으로 변경 */
+
+  /* size 관련 */
+  height: 2.75rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0 1.5rem; /* px에서 rem으로 변경 */
+
+  /* background 관련 */
+  background: #fff;
+
+  /* border 관련 */
+  border-radius: 0.5rem; /* px에서 rem으로 변경 */
+  border: 1px solid #d9d9d9;
+  line-height: 1.375rem; /* px에서 rem으로 변경 */
+
+  /* font 관련 */
+  color: var(--text-01404040, #404040);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-style: normal;
+  font-weight: 400;
+
+  /* animation 관련 */
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
+`
+// const UploadFile = styled.input`
+//   display: flex;
+//   width: 240px;
+//   height: 44px;
+//   padding: 0px 12px;
+//   flex-direction: column;
+//   justify-content: center;
+//   align-items: flex-start;
+//   gap: 12px;
+//   border-radius: 8px;
+//   border: 1px solid #999;
+//   background: #fff;
+// `
+
+const CustomFileInputLabel = styled.label`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem; /* px에서 rem으로 변경 */
+
+  /* size 관련 */
+  height: 2.75rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0 1.25rem; /* px에서 rem으로 변경 */
+
+  /* background 관련 */
+  background: #fff;
+
+  /* border 관련 */
+  border-radius: 0.5rem; /* px에서 rem으로 변경 */
+  border: 1px solid #69535f;
+  line-height: 1.375rem; /* px에서 rem으로 변경 */
+
+  /* font 관련 */
+  color: #69535f;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-style: normal;
+  font-weight: 400;
+
+  /* animation 관련 */
+  cursor: pointer;
+`
+
+const CustomFileInput = styled.input`
+  /* display 관련 */
+  display: none;
+`
+
+const ContainerPageBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* margin, padding */
+  margin: 2rem 15rem 3rem; /* px에서 rem으로 변경 */
+
+  /* background 관련 */
+  background: #fff;
+
+  /* border 관련 */
+  border-radius: 1.25rem; /* px에서 rem으로 변경 */
+  box-shadow: 0px 0.25rem 1rem 0px rgba(0, 0, 0, 0.14);
+`
+
+const ContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 2rem 15rem 3rem 15rem; /* px에서 rem으로 변경 */
+`
+
+const ButtonsBox = styled.div`
+  /* display 관련 */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  flex: 1 0 0;
-  width: 1376px;
+
+  /* size 관련 */
+  width: 57rem; /* px에서 rem으로 변경 */
+  height: 3.25rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0.25rem 1.5rem; /* px에서 rem으로 변경 */
 `
-const Contents = styled.div`
+
+const CommentInputBox = styled.textarea`
+  /* display 관련 */
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-  flex: 1 0 0;
-`
-const Likes = styled.span`
-  color: #999;
-  text-align: right;
-  font-family: Pretendard;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 28px; /* 200% */
-`
-const Img = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 4px;
-`
-const Date = styled.div`
-  color: #999;
-  text-align: right;
-  font-family: Pretendard;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 28px; /* 200% */
-  margin-left: 8px;
-  margin-right: 16px;
-`
-const HandClapBox = styled.div`
-  padding-left: 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`
-const List = styled.div`
-  display: flex;
-  min-width: 800px;
-  max-width: 1440px;
-  padding: 16px 32px;
-  align-items: flex-start;
-  gap: 24px;
+  gap: 1rem; /* px에서 rem으로 변경 */
   align-self: stretch;
-  margin-bottom: 12px;
-  border-bottom: 1.2px solid #d9d9d9;
-  cursor: pointer;
-  &:hover {
-    background: rgba(105, 83, 95, 0.2);
+
+  /* size 관련 */
+  width: 57rem; /* px에서 rem으로 변경 */
+  height: 17.75rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 1rem 1.5rem; /* px에서 rem으로 변경 */
+  line-height: 1.75rem; /* px에서 rem으로 변경 */
+
+  /* border 관련 */
+  border: none;
+  outline: none;
+  resize: none;
+
+  /* font 관련 */
+  color: #999;
+  font-family: Pretendard;
+  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-style: normal;
+  font-weight: 400;
+`
+
+// const CommentInput = styled.input`
+//   align-self: stretch;
+//   color: #999;
+//   font-family: Pretendard;
+//   font-size: 16px;
+//   font-style: normal;
+//   font-weight: 400;
+//   line-height: 28px; /* 175% */
+// `
+
+const CommentContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* size 관련 */
+  width: 90rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0 16.875rem; /* px에서 rem으로 변경 */
+  margin: 3rem 0;
+`
+
+const TitleContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 2rem 15rem 3rem 15rem; /* px에서 rem으로 변경 */
+
+  /* border 관련 */
+  border-bottom: 1px solid #999;
+`
+
+const ListContainerBox = styled.div`
+  /* display 관련 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* size 관련 */
+  width: 90rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  padding: 0 16.875rem; /* px에서 rem으로 변경 */
+`
+
+const TitleContainer = styled.input`
+  /* size 관련 */
+  width: 49.25rem; /* px에서 rem으로 변경 */
+
+  /* margin, padding */
+  line-height: normal;
+
+  /* border 관련 */
+  border: none;
+  outline: none;
+
+  /* font 관련 */
+  color: #999;
+  font-family: LINE Seed Sans KR;
+  font-size: 2.25rem; /* px에서 rem으로 변경 */
+  font-style: normal;
+  font-weight: 400;
+
+  /* animation 관련 */
+  &::placeholder {
+    transition: opacity 0.1s ease-in-out;
+  }
+
+  &:focus::placeholder {
+    opacity: 0;
   }
 `
-const UserImg = styled.img`
-  height: 32px;
-  width: 32px;
-  flex-shrink: 0;
-  background-image: url(${(props) => props.src});
-  background-size: cover;
-  border-radius: 50%;
-  margin-right: 8px;
-`
-const User = styled.div`
-  color: var(--text-01404040, #404040);
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 28px; /* 175% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-`
-const ListTitle = styled.h1`
-  width: 884px;
-  color: var(--text-01404040, #404040);
-  font-family: LINE Seed Sans KR;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-const ListComments = styled.p`
-  width: 1000px;
-  height: 44px;
-  align-self: stretch;
-  color: var(--text-01404040, #404040);
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 22px; /* 137.5% */
-  margin-top: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
-const ListDate = styled.p`
-  color: #999;
-  text-align: right;
-  font-family: Pretendard;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 28px; /* 200% */
-`
-const ListContent = styled.div`
-  display: flex;
-  width: 1192px;
-  height: 120px;
-  padding: 0px 24px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  border-radius: 20px;
-  margin-bottom: 8px;
-`
-const Thumbnail = styled.img`
-  width: 160px;
-  height: 160px;
-  border-radius: 8px;
-  background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
-`
-export default Lists
