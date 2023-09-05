@@ -22,6 +22,7 @@ function Login() {
     signInWithPopup(auth, provider)
       .then((data) => {
         setGoogleUserData(data.user)
+        navigate('/')
       })
       .catch((err) => {
         alert(err)
@@ -102,7 +103,7 @@ function Login() {
         <LoginForm>
           <LoginInputArea>
             <LoginInputLabel>아이디</LoginInputLabel>
-            <LoginInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
+            <LoginInput placeholder="아이디는 이메일 형식입니다." type="email" name="email" value={email} onChange={onChange} />
           </LoginInputArea>
           <LoginInputArea>
             <LoginInputLabel>비밀번호</LoginInputLabel>
