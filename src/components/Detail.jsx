@@ -24,7 +24,7 @@ function Detail() {
           const itemDoc = doc(db, 'lists', itemId)
           const itemData = (await getDoc(itemDoc)).data()
           // 사용자가 이미 좋아요를 눌렀는지 확인
-          const userLiked = itemData.likes.includes(userId)
+          const userLiked = itemData?.likedUser?.includes(userId)
           setIsLiked(userLiked)
           fetchData() // 좋아요 개수 설정
         } catch (error) {
@@ -44,12 +44,23 @@ function Detail() {
         const itemDoc = doc(db, 'lists', itemId)
         const itemData = (await getDoc(itemDoc)).data()
 
+        // 사용자의 UID를 현재 좋아요한 사용자 목록에 추가 또는 제거합니다.
+        let updatedLikedUsers = itemData.likedUser || []
+        if (isLiked) {
+          // 이미 좋아요를 눌렀다면 사용자 UID를 배열에서 제거
+          updatedLikedUsers = updatedLikedUsers.filter((userUid) => userUid !== userId)
+        } else {
+          // 좋아요를 누르지 않았다면 사용자 UID를 배열에 추가
+          updatedLikedUsers.push(userId)
+        }
+
         // 좋아요 개수를 변경합니다.
         const newLikesCount = itemData.likes + (isLiked ? -1 : 1)
 
         // Firestore 문서 업데이트
         await updateDoc(itemDoc, {
           likes: newLikesCount,
+          likedUser: updatedLikedUsers,
         })
 
         fetchData() // 좋아요 수를 업데이트
