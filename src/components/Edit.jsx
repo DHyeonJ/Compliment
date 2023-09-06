@@ -77,7 +77,7 @@ function Edit() {
     const docRef = doc(db, 'lists', id)
 
     updateDoc(docRef, {
-      title,
+      title: title,
       comments: content,
       imageUrl: imgUrl, // 이미지 URL을 업데이트합니다.
     })
