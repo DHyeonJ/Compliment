@@ -33,7 +33,7 @@ const Lists = ({ data }) => {
                   <ListDate>작성일 </ListDate>
                   <Date>{item.Date}</Date>
                   <Img src={HandClap} alt="HandClap" />
-                  <Likes>{item.likes ? item.likes.length : 0}</Likes>
+                  <Likes>{item.likes ? item.likes : 0}</Likes>
                 </HandClapBox>
               </Contents>
               <div>

@@ -4,15 +4,15 @@ import { getDocs, collection, deleteDoc, doc, updateDoc, getDoc } from 'firebase
 import { db, useAuth, auth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../img/user.png'
+
 function Detail() {
-  const [data, setData] = useState([])
+  const [data, setData] = useState(null)
   const { id } = useParams()
   const auth = useAuth()
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
   const admin = 'admin@admin.com'
-  const [likeCount, setLikeCount] = useState(0) // 좋아요 갯수 초기화
-  const [uploadedImageUrl, setUploadedImageUrl] = useState('') // 업로드된 이미지 URL
+
   // 좋아요 상태 초기화를 위한 useEffect
   useEffect(() => {
     // 사용자가 로그인한 경우에만 좋아요 상태 초기화
@@ -23,14 +23,10 @@ function Detail() {
         try {
           const itemDoc = doc(db, 'lists', itemId)
           const itemData = (await getDoc(itemDoc)).data()
-          // itemData.likes가 배열이 아닌 경우, 빈 배열로 초기화
-          if (!Array.isArray(itemData.likes)) {
-            itemData.likes = []
-          }
           // 사용자가 이미 좋아요를 눌렀는지 확인
           const userLiked = itemData.likes.includes(userId)
           setIsLiked(userLiked)
-          setLikeCount(itemData.likes.length) // 좋아요 갯수 설정
+          fetchData() // 좋아요 개수 설정
         } catch (error) {
           console.error('좋아요 상태 초기화 중 오류:', error)
         }
@@ -38,6 +34,7 @@ function Detail() {
       checkLikedStatus()
     }
   }, [auth.currentUser, id])
+
   // 좋아요 기능
   const toggleLike = async () => {
     if (auth.currentUser) {
@@ -46,21 +43,16 @@ function Detail() {
       try {
         const itemDoc = doc(db, 'lists', itemId)
         const itemData = (await getDoc(itemDoc)).data()
-        // itemData.likes가 배열이 아닌 경우, 빈 배열로 초기화
-        if (!Array.isArray(itemData.likes)) {
-          itemData.likes = []
-        }
-        if (itemData.likes.includes(userId)) {
-          await updateDoc(itemDoc, {
-            likes: itemData.likes.filter((uid) => uid !== userId),
-          })
-          setLikeCount((prevLikeCount) => prevLikeCount - 1) // 좋아요 수를 감소시킴
-        } else {
-          await updateDoc(itemDoc, {
-            likes: [...itemData.likes, userId],
-          })
-          setLikeCount((prevLikeCount) => prevLikeCount + 1) // 좋아요 수를 증가시킴
-        }
+
+        // 좋아요 개수를 변경합니다.
+        const newLikesCount = itemData.likes + (isLiked ? -1 : 1)
+
+        // Firestore 문서 업데이트
+        await updateDoc(itemDoc, {
+          likes: newLikesCount,
+        })
+
+        fetchData() // 좋아요 수를 업데이트
         setIsLiked((prevIsLiked) => !prevIsLiked)
       } catch (error) {
         console.error('좋아요 토글 중 오류:', error)
@@ -69,30 +61,30 @@ function Detail() {
       alert('이 항목을 좋아하려면 로그인하세요.')
     }
   }
+
   const handleLikeButtonClick = async () => {
     await toggleLike()
   }
-  //   id 값이 일치하는 데이터만 가져오는 함수
-  const getDetailData = (id) => {
-    return data.find((item) => item.id === id)
+
+  const fetchData = async () => {
+    try {
+      const docRef = doc(db, 'lists', id)
+      const docSnap = await getDoc(docRef)
+      console.log(docSnap.data())
+      setData(docSnap.data())
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
   }
-  const detailItem = getDetailData(id)
+
+  const detailItem = data
+
   useEffect(() => {
     // Firestore에서 데이터 가져오기
-    const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'lists')) // 실제 컬렉션 이름으로 변경
-        const fetchedData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        setData(fetchedData)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      }
-    }
+
     fetchData()
-  }, [])
+  }, [id])
+
   // 삭제 기능
   const handleDelete = async () => {
     if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
@@ -116,6 +108,7 @@ function Detail() {
       })
     }
   }
+
   // 수정 페이지 이동
   const handleEditMove = () => {
     if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
@@ -136,9 +129,10 @@ function Detail() {
     }
     return null
   }
+
   return (
     <>
-      {data.length > 0 && (
+      {data && (
         <DetailContentsBox key={detailItem.id}>
           {/* 제목과 작성자 정보 */}
           <HeaderBox>
@@ -161,7 +155,7 @@ function Detail() {
           </ContentBodyBox>
           {/* "좋아요" 버튼 추가 */}
           <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{likeCount}</span>
+          <span>{data ? data.likes : 0}</span>
           {/* 댓글 영역 */}
           <CommentAreaBox>
             <CommentHeaderBox>칭찬 댓글 4</CommentHeaderBox>
@@ -194,6 +188,7 @@ function Detail() {
   )
 }
 export default Detail
+
 const DetailContentsBox = styled.div`
   /* display 관련 */
   display: flex;
