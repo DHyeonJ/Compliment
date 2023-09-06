@@ -26,6 +26,7 @@ function Edit() {
           setDetailItem(docSnapshot.data())
           setTitle(docSnapshot.data().title)
           setContent(docSnapshot.data().comments)
+          setImgUrl(docSnapshot.data().image)
         } else {
           console.log('Document not found!')
         }
@@ -55,11 +56,10 @@ function Edit() {
     if (!file) return null
 
     const storageRef = ref(storage, `files/${file.name}`)
-    const uploadTask = uploadBytes(storageRef, file)
     setFileName(file.name)
 
     // 업로드 작업이 완료되면 이 부분이 실행됩니다.
-    uploadTask
+    uploadBytes(storageRef, file)
       .then((snapshot) => {
         e.target.value = ''
         // 업로드된 이미지의 다운로드 URL을 가져와 imgUrl 상태를 업데이트합니다.
@@ -76,18 +76,32 @@ function Edit() {
     // Firestore 문서 업데이트
     const docRef = doc(db, 'lists', id)
 
-    updateDoc(docRef, {
-      title: title,
-      comments: content,
-      imageUrl: imgUrl, // 이미지 URL을 업데이트합니다.
-    })
-      .then(() => {
-        // 수정 성공 후 Detail 페이지로 이동
-        navigate(`/detail/${id}`)
-      })
-      .catch((error) => {
-        console.error('Error updating document:', error)
-      })
+    // 업데이트할 데이터를 객체로 생성
+    const updatedData = {}
+    if (title !== detailItem.title) {
+      updatedData.title = title
+    }
+    if (content !== detailItem.comments) {
+      updatedData.comments = content
+    }
+    if (imgUrl !== detailItem.image) {
+      updatedData.image = imgUrl
+    }
+
+    // 업데이트할 내용이 있는 경우에만 업데이트 요청
+    if (Object.keys(updatedData).length > 0) {
+      updateDoc(docRef, updatedData)
+        .then(() => {
+          // 수정 성공 후 Detail 페이지로 이동
+          navigate(`/detail/${id}`)
+        })
+        .catch((error) => {
+          console.error('문서 업데이트 중 오류 발생:', error)
+        })
+    } else {
+      // 변경된 내용이 없는 경우에는 바로 상세 페이지로 이동
+      navigate(`/detail/${id}`)
+    }
   }
 
   return (
