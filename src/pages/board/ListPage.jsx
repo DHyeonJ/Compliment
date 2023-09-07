@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists } from '../../api/ListsApi'
 import { useQuery } from 'react-query'
+import moment from 'moment'
 
 function ListPage() {
   const navigate = useNavigate()
@@ -21,6 +22,7 @@ function ListPage() {
   // state 하나로 관리
   const [displayData, setDisplayData] = useState([])
 
+  console.log('listsData!!!!!', listsData)
   //
   const [page, setPage] = useState(1)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
@@ -28,8 +30,9 @@ function ListPage() {
     if (keyword.trim() === '') {
       setDisplayData(displayData)
     } else {
-      const filtered = listsData ? listsData.filter((item) => item.comments.toLowerCase().includes(keyword.toLowerCase())) : []
-      setDisplayData(filtered)
+      const filtered = listsData
+      const filteredTime = filtered ? listsData.filter((item) => item.comments.toLowerCase().includes(keyword.toLowerCase())) : []
+      setDisplayData(filteredTime)
     }
   }
 
@@ -60,10 +63,13 @@ function ListPage() {
     setDisplayData(likesData)
   }
 
+  //
   const latestSort = () => {
     setActiveSort('latest')
-    const orderedData = [...listsData]?.sort((a, b) => Date.parse(b.Date) - Date.parse(a.Date))
-    console.log(orderedData)
+    const news = [...listsData]
+    const orderedData = news?.sort((a, b) => b.timeSort - a.timeSort)
+
+    console.log('here', orderedData)
     setDisplayData(orderedData)
   }
 
@@ -72,6 +78,8 @@ function ListPage() {
       latestSort()
     }
   }, [listsData])
+
+  console.log('listsData', listsData)
   return (
     <ListPageBox>
       <MenuNav />

@@ -159,7 +159,21 @@ function EditUserInfo() {
             </>
           )}
           <EditInputAreaBox>
-            <EditSaveBtn type="submit">저장하기</EditSaveBtn>
+            <EditInputLabelBox>닉네임</EditInputLabelBox>
+            <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
+            <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
+            <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditSaveBtn type="submit" onClick={handleSave}>
+              저장하기
+            </EditSaveBtn>
           </EditInputAreaBox>
         </EditForm>
         <CancleBtn onClick={MainpageMove}>취소</CancleBtn>

@@ -1,10 +1,11 @@
+/* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../img/user.png'
-// import Reply from './Reply'
+import Reply from './Reply'
 
 function Detail() {
   const [data, setData] = useState(null)
@@ -24,10 +25,11 @@ function Detail() {
         try {
           const itemDoc = doc(db, 'lists', itemId)
           const itemData = (await getDoc(itemDoc)).data()
+
           // 사용자가 이미 좋아요를 눌렀는지 확인
           const userLiked = itemData?.likedUser?.includes(userId)
           setIsLiked(userLiked)
-          fetchData() // 좋아요 개수 설정
+          fetchData() // 좋아요 갯수 설정
         } catch (error) {
           console.error('좋아요 상태 초기화 중 오류:', error)
         }
@@ -55,15 +57,12 @@ function Detail() {
           updatedLikedUsers.push(userId)
         }
 
-        // 좋아요 개수를 변경합니다.
         const newLikesCount = itemData.likes + (isLiked ? -1 : 1)
-
         // Firestore 문서 업데이트
         await updateDoc(itemDoc, {
           likes: newLikesCount,
           likedUser: updatedLikedUsers,
         })
-
         fetchData() // 좋아요 수를 업데이트
         setIsLiked((prevIsLiked) => !prevIsLiked)
       } catch (error) {
@@ -161,20 +160,30 @@ function Detail() {
           </HeaderBox>
           {/* 내용과 이미지 */}
           <ContentBodyBox>
-            <ContentImgBox src={data.image} alt="" />
+            <ContentImgBox>
+              <ContentImg src={data.image} alt="" />
+            </ContentImgBox>
             <BodyContent>{data.comments}</BodyContent>
           </ContentBodyBox>
           {/* "좋아요" 버튼 추가 */}
           <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
           <span>{data ? data.likes : 0}</span>
           {/* 댓글 영역 */}
-          <CommentAreaBox>{/* <Reply /> */}</CommentAreaBox>
+          <CommentAreaBox>
+            <Reply />
+          </CommentAreaBox>
         </DetailContentsBox>
       )}
     </>
   )
 }
 export default Detail
+
+const ContentImgBox = styled.div`
+  width: 900px;
+  height: 480px;
+`
+
 const DetailContentsBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -293,10 +302,13 @@ const ContentBodyBox = styled.div`
   /* width: 1440px; */
   /* border: 1px solid black; */
 `
-const ContentImgBox = styled.img`
+const ContentImg = styled.img`
   /* size 관련 */
-  width: 60.8125rem;
-  height: 32rem;
+  /* width: 60.8125rem;
+  height: 32rem; */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `
 const BodyContent = styled.div`
   /* display 관련 */

@@ -3,13 +3,14 @@ import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../../src/img/user.png'
+
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   console.log('data', data)
+
   return (
     <>
       {data?.map((item) => {
-        console.log(item)
         return (
           <List
             key={item.id}
