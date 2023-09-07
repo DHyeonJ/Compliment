@@ -8,11 +8,11 @@ import { useMutation, useQueryClient } from 'react-query'
 import { collection, query, where, getDocs } from 'firebase/firestore'
 import { db } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
-​
+
 function Reply() {
   const { id } = useParams()
   const nowTime = moment().format('YYYY-MM-DD')
-​
+
   const [replyData, setReplyData] = useState([])
   const [replyContent, setReplyContent] = useState('')
   const userData = localStorage.getItem('user')
@@ -23,12 +23,12 @@ function Reply() {
   const [editedReplyContent, setEditedReplyContent] = useState('') // 수정할 내용을 저장하는 상태 변수
   const [editingReplyId, setEditingReplyId] = useState(null) // 현재 수정 중인 댓글 ID
   const admin = 'admin@admin.com'
-​
+
   const fetchReplyData = async () => {
     if (id) {
       const replyRef = collection(db, 'reply')
       const q = query(replyRef, where('ContentId', '==', id))
-​
+
       try {
         const querySnapshot = await getDocs(q)
         const updatedReplyData = []
@@ -46,11 +46,11 @@ function Reply() {
     }
     return []
   }
-​
+
   useEffect(() => {
     fetchReplyData()
   }, [])
-​
+
   const addNewReply = async () => {
     const replyId = Date.now().toString()
     const newReplyList = {
@@ -62,12 +62,12 @@ function Reply() {
       photoURL: userPhotoURL,
       replyId,
     }
-​
+
     if (replyContent.trim() === '') {
       alert('댓글을 입력해주세요.')
       return
     }
-​
+
     try {
       await addReply({ newReplyList, replyId })
       setReplyData([...replyData, newReplyList])
@@ -76,36 +76,36 @@ function Reply() {
       console.error('Error adding document: ', error)
     }
   }
-​
+
   const handleChangeReplyContent = (e) => {
     setReplyContent(e.target.value)
   }
-​
+
   const onEditHandler = (replyId) => {
     setIsEditing(true)
     setEditingReplyId(replyId)
-​
+
     // Find the comment being edited and set its content in the textarea
     const editedComment = replyData.find((comment) => comment.id === replyId)
     if (editedComment) {
       setEditedReplyContent(editedComment.reply)
     }
   }
-​
+
   // Function to save the edited content
   const onSaveEditHandler = async () => {
     if (editedReplyContent.trim() === '') {
       alert('댓글을 입력해주세요.')
       return
     }
-​
+
     try {
       // Update the comment content
       await updateReply({
         targetId: editingReplyId,
         editedReply: editedReplyContent,
       })
-​
+
       // Update the comment data in the state
       const updatedReplyData = replyData.map((comment) => {
         if (comment.id === editingReplyId) {
@@ -113,9 +113,9 @@ function Reply() {
         }
         return comment
       })
-​
+
       setReplyData(updatedReplyData)
-​
+
       // Exit edit mode
       setIsEditing(false)
       setEditingReplyId(null)
@@ -123,7 +123,7 @@ function Reply() {
       console.error('댓글 수정에 실패했습니다.', error)
     }
   }
-​
+
   const deleteComment = async (replyId) => {
     try {
       await deleteReply(replyId)
@@ -133,7 +133,7 @@ function Reply() {
       console.error('댓글 삭제 오류: ', error)
     }
   }
-​
+
   return (
     <>
       <CommentHeaderBox>
@@ -159,7 +159,7 @@ function Reply() {
                   </UserBox>
                   {comment.reply}
                   <DateBox>작성일 {comment.Date}</DateBox>
-​
+
                   <div>
                     <button onClick={() => onEditHandler(comment.id)}>수정</button>
                     <button onClick={async () => await deleteComment(comment.id)}>삭제</button>
@@ -185,7 +185,7 @@ function Reply() {
     </>
   )
 }
-​
+
 export default Reply
 const UserBox = styled.div`
   /* display 관련 */
@@ -243,7 +243,7 @@ const Button = styled.button`
   /* animation 관련 */
   cursor: pointer;
 `
-​
+
 const CommentHeaderBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -275,7 +275,7 @@ const CommentBox = styled.div`
   /* margin, padding */
   padding: 1rem 1.5rem;
 `
-​
+
 const CommentBodyBox = styled.div`
   /* display 관련 */
   display: flex;
