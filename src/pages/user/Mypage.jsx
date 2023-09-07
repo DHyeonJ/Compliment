@@ -19,9 +19,10 @@ function Mypage() {
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
-  // const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
   const photoURL = user ? user.photoURL : null
+  // 이메일에서 id값만 불러오기
+  const userId = loggedInUserEmail?.split('@')[0]
 
   useEffect(() => {
     // 사용자 정보 가져오기
@@ -61,7 +62,6 @@ function Mypage() {
     fetchUserInfo()
     fetchUserPosts()
   }, [])
-  console.log('mypage', photoURL)
   return (
     <>
       <div>
@@ -70,7 +70,7 @@ function Mypage() {
             <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
             <TextBox>
               <NicknameTextBox>
-                <Bold>{loggedInUserEmail}</Bold> 님 <br /> 안녕하세요.
+                <Bold>{userId}</Bold> 님 <br /> 안녕하세요.
               </NicknameTextBox>
               <SignEditBox onClick={EditUserpageMove}>
                 회원정보 수정
@@ -142,7 +142,7 @@ const SignEditBox = styled.div`
   line-height: normal;
   margin-top: 14px;
 `
-const Bold = styled.p`
+const Bold = styled.span`
   font-weight: 700;
 `
 const UserButton = styled.img`

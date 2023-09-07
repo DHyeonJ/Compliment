@@ -15,7 +15,8 @@ const AddBoardCp = () => {
   const [fileName, setFileName] = useState('')
   const fileInput = React.useRef(null)
   const navigate = useNavigate()
-  const nowTime = moment().format('YYYY-MM-DD')
+  const nowTime = moment().format('YYYY-MM-DD HH:mm')
+  const timeSort = Date.now()
   const photoURL = user?.photoURL ?? null
   const mutationAdd = useMutation(
     // eslint-disable-next-line @typescript-eslint/promise-function-async
@@ -30,7 +31,7 @@ const AddBoardCp = () => {
   )
   const handleSaveClick = async (e) => {
     // e.preventDefault()
-
+    console.log()
     if (title.trim() === '') {
       setModalMessage('제목을 입력해주세요.')
       return
@@ -57,6 +58,7 @@ const AddBoardCp = () => {
         image: imgUrl,
         fileName,
         photoURL,
+        timeSort,
       })
       // setModalMessage('게시물이 작성되었습니다.')
       // setIsModalOpen(true)

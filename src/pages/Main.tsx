@@ -5,13 +5,12 @@ import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, limit, query } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
 import defaultProfileImage from '../img/user.png'
-
 interface Images {
   id: string
   image: string
   nickname: string
 }
-
+console.log(auth)
 function Main() {
   const [images, setImages] = useState<Images[]>([])
   useEffect(() => {
@@ -23,11 +22,10 @@ function Main() {
           orderBy('likes', 'desc'), // 'likes' 필드를 내림차순으로 정렬
           limit(10), // 상위 10개의 문서만 가져오기
         )
-
         const querySnapshot = await getDocs(q)
         const data = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          image: doc.data().photoUrl,
+          image: doc.data().photoURL,
           nickname: doc.data().nickname,
         }))
         setImages(data)
@@ -35,17 +33,13 @@ function Main() {
         console.error('Error fetching data:', error)
       }
     }
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData()
   }, [])
-
   const navigator = useNavigate()
-
   const listPageMove = () => {
     navigator('/listpage')
   }
-
   const missionPageMove = () => {
     navigator('/missionpage')
   }
@@ -90,7 +84,6 @@ function Main() {
   )
 }
 export default Main
-
 const MainBox = styled.div`
   display: flex;
   justify-content: center;
@@ -104,7 +97,6 @@ const ContentBox = styled.div`
   justify-content: center;
   flex-direction: column;
 `
-
 const RankInfo = styled.div`
   margin-top: 56px;
   height: 271px;
@@ -123,7 +115,6 @@ const RankUserBox = styled.div`
   justify-content: space-around;
   align-items: center;
 `
-
 const RankUserInfo = styled.div`
   display: flex;
   align-items: center;
@@ -131,7 +122,6 @@ const RankUserInfo = styled.div`
   height: 134px;
   flex-direction: column;
 `
-
 const RankProFileBox = styled.img<{ isOdd: boolean }>`
   display: flex;
   align-items: center;
@@ -143,7 +133,6 @@ const RankProFileBox = styled.img<{ isOdd: boolean }>`
   border: 4px solid ${(props) => (props.isOdd ? '#F6B000' : '#D9876D')};
   cursor: pointer;
 `
-
 const RankNickName = styled.div`
   display: flex;
   align-items: center;
@@ -163,7 +152,6 @@ const LinkPageBox = styled.div`
   margin-top: 56px;
   gap: 32px;
 `
-
 const ListPageBox = styled.div`
   display: flex;
   padding: 44px 280px 88px 44px;
@@ -176,7 +164,6 @@ const ListPageBox = styled.div`
   box-shadow: 5px 5px 5px -5px #333;
   cursor: pointer;
 `
-
 const ListTitle = styled.h2`
   color: var(--text01_404040, #404040);
   font-family: LINE Seed Sans KR;
@@ -204,7 +191,6 @@ const MissionPageBox = styled.div`
   box-shadow: 5px 5px 5px -5px #333;
   cursor: pointer;
 `
-
 const MissionContentBox = styled.div`
   display: flex;
   padding: 44px 280px 88px 44px;
@@ -215,7 +201,6 @@ const MissionContentBox = styled.div`
   border-radius: 20px;
   background: #f5f6cd;
 `
-
 const MissionTitle = styled.h2`
   width: 281px;
   color: var(--text01_404040, #404040);
