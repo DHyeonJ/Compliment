@@ -6,8 +6,8 @@ import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-import likesImg from '../img/likes.png'
-import likedImg from '../img/liked.png'
+import likesImg from '../img/hand-clapdd.png'
+import likedImg from '../img/hand-clap.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -169,21 +169,23 @@ function Detail() {
             </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
 
-            <Button onClick={handleLikeButtonClick} isLiked={isLiked}>
+            <LikeButton onClick={handleLikeButtonClick} isLiked={isLiked}>
               <BtnSpan>
                 {isLiked ? (
                   <>
+                    <img src={likedImg} />
                     <span> 칭찬 취소</span>
                   </>
                 ) : (
                   <>
+                    <img src={likesImg} />
                     <span>칭찬 하기</span>
                   </>
                 )}
                 &nbsp; &nbsp;
                 {data ? data.likes : 0}
               </BtnSpan>
-            </Button>
+            </LikeButton>
             {/* 댓글 영역 */}
             <CommentAreaBox>
               <Reply />
@@ -268,6 +270,7 @@ const UserImg = styled.img`
   /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
+  border-radius: 60px;
 `
 const UserName = styled.div`
   /* border 관련 */
@@ -312,15 +315,25 @@ const Button = styled.button`
   background: #fff;
   margin-bottom: 15px;
   /* border 관련 */
-  border-radius: 0.5rem;
-  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #d9d9d9;')};
-  background-color: ${({ isLiked }) => (isLiked ? '#f4f1e9' : 'none')};
 
   /* animation 관련 */
   &:hover {
     cursor: pointer;
-    border: 3px solid #f4f1e9;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const LikeButton = styled.button`
+  width: 154px;
+  height: 3.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 5px;
+  color: ${({ isLiked }) => (isLiked ? '#FFFBF3' : ' #69535F;')};
+  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #69535F;')};
+  background-color: ${({ isLiked }) => (isLiked ? '#69535F' : 'none')};
+  &:hover {
     cursor: pointer;
+    border: 3px solid #c7c3b8;
   }
 `
 

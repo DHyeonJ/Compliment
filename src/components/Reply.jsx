@@ -194,7 +194,7 @@ function Reply() {
             <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
             <UserName>{user?.email}</UserName>
           </UserBox>
-          <CommentInputBox value={replyContent} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요            한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
+          <CommentInputBox value={replyContent} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
           <ButtonBox>
             <Button onClick={addNewReply}>등록</Button>
           </ButtonBox>

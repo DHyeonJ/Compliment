@@ -50,7 +50,7 @@ function Main() {
         const q = query(
           collection(db, 'reply'), // 'reply' 컬렉션을 대상으로 쿼리 설정
           orderBy('userEmail'), // 'userEmail' 필드를 기준으로 정렬
-          limit(10), // TOP 10개의 문서만 가져오기
+          limit(50), // TOP 10개의 문서만 가져오기
         )
 
         const querySnapshot = await getDocs(q)
@@ -101,6 +101,7 @@ function Main() {
     fetchData()
   }, [])
 
+  console.log('user', topUserList)
   const topUserImages = topUserList.map((user) => user.photoURL)
   const imageUrls = images.map((item) => item.image)
 
