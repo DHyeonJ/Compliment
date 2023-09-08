@@ -12,7 +12,6 @@ const getProgressData = async (id) => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       return item.checked === true
     })
-    console.log('ddd', checkedData)
     return checkedData.length || 0
   }
   return 0 // 스냅샷 데이터 반환
