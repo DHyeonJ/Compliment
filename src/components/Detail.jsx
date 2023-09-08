@@ -93,7 +93,7 @@ function Detail() {
   }, [])
   // 삭제 기능
   const handleDelete = async () => {
-    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+    if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
       try {
         await deleteDoc(doc(db, 'lists', id))
         console.log('문서가 성공적으로 삭제되었습니다!')
@@ -126,7 +126,7 @@ function Detail() {
   // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
   const renderEditDeleteButtons = () => {
     if (!data) {
-      // detailItem이 없는 경우에 대한 처리
+      // data가 없는 경우에 대한 처리
       return null
     }
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {

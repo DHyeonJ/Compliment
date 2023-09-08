@@ -135,7 +135,11 @@ function Main() {
     navigator('/listpage')
   }
   const missionPageMove = () => {
-    navigator('/missionpage')
+    if (auth.currentUser) {
+      navigator('/missionpage')
+    } else {
+      alert('로그인 후에 확인 하실 수 있습니다.')
+    }
   }
   return (
     <MainBox>
