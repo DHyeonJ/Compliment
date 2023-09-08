@@ -12,6 +12,7 @@ import EditUserInfo from '../pages/user/EditUserInfo'
 import Login from '../pages/user/Login'
 import Layout from './Layout'
 import Mypage from '../pages/user/Mypage'
+import Loading from '../components/Loading'
 
 function Router() {
   return (
@@ -26,6 +27,7 @@ function Router() {
         <Route path="/edituserinfo" element={<EditUserInfo />} />
         <Route path="/mypage" element={<Mypage />} />
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/loading" element={<Loading />} />
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
