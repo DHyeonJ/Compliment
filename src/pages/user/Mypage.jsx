@@ -9,20 +9,27 @@ import Tab from '../../components/Tab'
 import userInfoEdit from '../../img/userInfoEdit.png'
 
 function Mypage() {
+  // 부모 컴포넌트에서 유저 정보 가져오기
+  const localUser = JSON.parse(localStorage.getItem('user'))
+
   const navigator = useNavigate()
 
   const user = auth.currentUser
   const [highlightedButton, setHighlightedButton] = useState('detail')
   const [imageUrl, setImageUrl] = useState('')
-  const [userPosts, setUserPosts] = useState([])
 
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
-  const loggedInUserEmail = user ? user.email : null
   const photoURL = user ? user.photoURL : null
   // 이메일에서 id값만 불러오기
-  const userId = loggedInUserEmail?.split('@')[0]
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
+
+  // 프로필 불러오기 값만 불러오기
+  const photoImg = localUserid?.photoURL
 
   useEffect(() => {
     // 사용자 정보 가져오기
@@ -43,38 +50,21 @@ function Mypage() {
         }
       }
     }
-
-    // 사용자가 작성한 글 가져오기 (Firestore에서 예시)
-    const fetchUserPosts = async () => {
-      if (auth.currentUser) {
-        try {
-          const userUid = auth.currentUser.uid
-          const userPostsRef = db.collection('posts').where('authorUid', '==', userUid)
-          const snapshot = await userPostsRef.get()
-          const posts = snapshot.docs.map((doc) => doc.data())
-          setUserPosts(posts)
-        } catch (error) {
-          console.error('Error fetching user posts:', error)
-        }
-      }
-    }
-
     fetchUserInfo()
-    fetchUserPosts()
   }, [])
   return (
     <>
       <div>
         <MypageBox>
           <ProfileBox>
-            <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
+            <ProfileImage alt="프로필 이미지" src={photoImg ?? defaultProfileImage} />
             <TextBox>
               <NicknameTextBox>
-                <Bold>{userId}</Bold> 님 <br /> 안녕하세요.
+                <Bold>{localStorageUserId}</Bold> 님 <br /> 안녕하세요.
               </NicknameTextBox>
               <SignEditBox onClick={EditUserpageMove}>
                 회원정보 수정
-                <UserButton src={userInfoEdit}></UserButton>
+                <UserButton src={userInfoEdit} />
               </SignEditBox>
             </TextBox>
           </ProfileBox>
@@ -135,12 +125,14 @@ const NicknameTextBox = styled.div`
 const SignEditBox = styled.div`
   color: #666;
   text-align: center;
+  display: flex;
   font-family: Pretendard;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   margin-top: 14px;
+  cursor: pointer;
 `
 const Bold = styled.span`
   font-weight: 700;
