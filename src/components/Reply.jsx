@@ -6,7 +6,7 @@ import moment from 'moment'
 import { useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from 'react-query'
 import { collection, query, where, getDocs } from 'firebase/firestore'
-import { db } from '../firebase'
+import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
 
 function Reply() {
@@ -15,15 +15,26 @@ function Reply() {
 
   const [replyData, setReplyData] = useState([])
   const [replyContent, setReplyContent] = useState('')
-  const userData = localStorage.getItem('user')
-  const parsedUserData = JSON.parse(userData)
-  const userEmail = parsedUserData.email
-  const userPhotoURL = parsedUserData.photoURL
-  const [isEditing, setIsEditing] = useState(false) // 수정 모드 여부를 나타내는 상태 변수
-  const [editedReplyContent, setEditedReplyContent] = useState('') // 수정할 내용을 저장하는 상태 변수
-  const [editingReplyId, setEditingReplyId] = useState(null) // 현재 수정 중인 댓글 ID
-  const currentUserEmail = parsedUserData.email // 현재 로그인한 사용자의 이메일 가져오기
-  const admin = 'admin@admin.com'
+  const [user, setUser] = useState(null) // 사용자 정보를 저장할 상태 변수
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedReplyContent, setEditedReplyContent] = useState('')
+  const [editingReplyId, setEditingReplyId] = useState(null)
+
+  useEffect(() => {
+    // Firebase에서 사용자 로그인 상태를 관찰합니다.
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // 사용자가 로그인한 경우, 사용자 정보를 설정합니다.
+        setUser(user)
+      } else {
+        // 사용자가 로그아웃한 경우, 사용자 정보를 null로 설정합니다.
+        setUser(null)
+      }
+    })
+
+    // 컴포넌트가 언마운트될 때 Firebase 구독을 정리합니다.
+    return () => unsubscribe()
+  }, [])
 
   const fetchReplyData = async () => {
     if (id) {
@@ -39,13 +50,10 @@ function Reply() {
           updatedReplyData.push(replyData)
         })
         setReplyData(updatedReplyData)
-        return replyData
       } catch (error) {
-        console.error('Error fetching user reply:', error)
-        return []
+        console.error('댓글 가져오기 오류:', error)
       }
     }
-    return []
   }
 
   useEffect(() => {
@@ -53,14 +61,20 @@ function Reply() {
   }, [])
 
   const addNewReply = async () => {
+    if (!user) {
+      // 사용자가 로그인하지 않은 경우 알림창 표시
+      window.alert('댓글을 작성하려면 먼저 로그인하세요.')
+      return
+    }
+
     const replyId = Date.now().toString()
     const newReplyList = {
       id: replyId,
-      userEmail,
+      userEmail: user ? user.email : '', // 사용자의 이메일
       ContentId: id,
       reply: replyContent,
       Date: nowTime,
-      photoURL: userPhotoURL,
+      photoURL: user ? user.photoURL : '', // 사용자의 프로필 사진 URL
       replyId,
     }
 
@@ -74,7 +88,7 @@ function Reply() {
       setReplyData([...replyData, newReplyList])
       setReplyContent('')
     } catch (error) {
-      console.error('Error adding document: ', error)
+      console.error('문서 추가 오류: ', error)
     }
   }
 
@@ -86,14 +100,13 @@ function Reply() {
     setIsEditing(true)
     setEditingReplyId(replyId)
 
-    // Find the comment being edited and set its content in the textarea
+    // 수정 중인 댓글을 찾고 텍스트 영역에 해당 내용을 설정합니다.
     const editedComment = replyData.find((comment) => comment.id === replyId)
     if (editedComment) {
       setEditedReplyContent(editedComment.reply)
     }
   }
 
-  // Function to save the edited content
   const onSaveEditHandler = async () => {
     if (editedReplyContent.trim() === '') {
       alert('댓글을 입력해주세요.')
@@ -101,13 +114,11 @@ function Reply() {
     }
 
     try {
-      // Update the comment content
       await updateReply({
         targetId: editingReplyId,
         editedReply: editedReplyContent,
       })
 
-      // Update the comment data in the state
       const updatedReplyData = replyData.map((comment) => {
         if (comment.id === editingReplyId) {
           return { ...comment, reply: editedReplyContent }
@@ -117,7 +128,6 @@ function Reply() {
 
       setReplyData(updatedReplyData)
 
-      // Exit edit mode
       setIsEditing(false)
       setEditingReplyId(null)
     } catch (error) {
@@ -146,13 +156,11 @@ function Reply() {
           {replyData?.map((comment) => (
             <div key={comment.id}>
               {isEditing && editingReplyId === comment.id ? (
-                // 수정 모드에서는 입력란을 표시하고 저장 버튼을 렌더링
                 <div>
                   <input value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
                   <button onClick={onSaveEditHandler}>저장</button>
                 </div>
               ) : (
-                // 수정 모드가 아닐 때는 수정 버튼을 렌더링
                 <>
                   <UserBox>
                     <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
@@ -162,7 +170,7 @@ function Reply() {
                   <DateBox>작성일 {comment.Date}</DateBox>
 
                   <div>
-                    {(currentUserEmail === comment.userEmail || currentUserEmail === 'admin@admin.com') && ( // 현재 로그인한 사용자의 이메일이 댓글의 이메일 또는 'admin' 계정 이메일과 일치하는지 확인
+                    {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
                       <>
                         <button onClick={() => onEditHandler(comment.id)}>수정</button>
                         <button onClick={async () => await deleteComment(comment.id)}>삭제</button>
@@ -178,8 +186,8 @@ function Reply() {
       <CommentInputAreaBox>
         <CommentInputMedleBox>
           <UserBox>
-            <UserImg src={userPhotoURL ?? defaultProfileImage} alt="" />
-            <UserName>{userEmail}</UserName>
+            <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
+            <UserName>{user?.email}</UserName>
           </UserBox>
           <CommentInputBox value={replyContent} onChange={handleChangeReplyContent} />
           <ButtonBox>
