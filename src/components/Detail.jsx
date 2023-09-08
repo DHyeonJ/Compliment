@@ -6,7 +6,8 @@ import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-
+import likesImg from '../img/likes.png'
+import likedImg from '../img/liked.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -142,43 +143,64 @@ function Detail() {
 
   return (
     <>
-      {data && (
-        <DetailContentsBox key={data.id}>
-          {/* 제목과 작성자 정보 */}
-          <HeaderBox>
-            <HeaderContentBox>
-              <TitleBox>{data.title}</TitleBox>
-              <MidleTitleBox>
-                <UserBox>
-                  <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                  <UserName>{data.userEmail}</UserName>
-                  <DateBox>작성일 {data.Date}</DateBox>
-                </UserBox>
-                {renderEditDeleteButtons()}
-              </MidleTitleBox>
-            </HeaderContentBox>
-          </HeaderBox>
-          {/* 내용과 이미지 */}
-          <ContentBodyBox>
-            <ContentImgBox>
-              <ContentImg src={data.image} alt="" />
-            </ContentImgBox>
-            <BodyContent>{data.comments}</BodyContent>
-          </ContentBodyBox>
-          {/* "좋아요" 버튼 추가 */}
-          <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{data ? data.likes : 0}</span>
-          {/* 댓글 영역 */}
-          <CommentAreaBox>
-            <Reply />
-          </CommentAreaBox>
-        </DetailContentsBox>
-      )}
+      <DetailAreaBox>
+        {data && (
+          <DetailContentsBox key={data.id}>
+            {/* 제목과 작성자 정보 */}
+            <HeaderBox>
+              <HeaderContentBox>
+                <TitleBox>{data.title}</TitleBox>
+                <MidleTitleBox>
+                  <UserBox>
+                    <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
+                    <UserName>{data.userEmail}</UserName>
+                    <DateBox>작성일 {data.Date}</DateBox>
+                  </UserBox>
+                  {renderEditDeleteButtons()}
+                </MidleTitleBox>
+              </HeaderContentBox>
+            </HeaderBox>
+            {/* 내용과 이미지 */}
+            <ContentBodyBox>
+              <ContentImgBox>
+                <ContentImg src={data.image} alt="" />
+              </ContentImgBox>
+              <BodyContent>{data.comments}</BodyContent>
+            </ContentBodyBox>
+            {/* "좋아요" 버튼 추가 */}
+
+            <Button onClick={handleLikeButtonClick} isLiked={isLiked}>
+              <BtnSpan>
+                {isLiked ? (
+                  <>
+                    <span> 칭찬 취소</span>
+                  </>
+                ) : (
+                  <>
+                    <span>칭찬 하기</span>
+                  </>
+                )}
+                &nbsp; &nbsp;
+                {data ? data.likes : 0}
+              </BtnSpan>
+            </Button>
+            {/* 댓글 영역 */}
+            <CommentAreaBox>
+              <Reply />
+            </CommentAreaBox>
+          </DetailContentsBox>
+        )}
+      </DetailAreaBox>
     </>
   )
 }
 export default Detail
 
+const DetailAreaBox = styled.div`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+`
 const ContentImgBox = styled.div`
   width: 900px;
   height: 480px;
@@ -270,6 +292,7 @@ const DateBox = styled.div`
   font-style: normal;
   font-weight: 400;
 `
+
 const ButtonBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -281,16 +304,29 @@ const Button = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  line-height: 1.25rem;
   /* size 관련 */
-  width: 6rem;
-  height: 2.25rem;
+  width: 154px;
+  height: 3.25rem;
   /* background 관련 */
   background: #fff;
+  margin-bottom: 15px;
   /* border 관련 */
   border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
+  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #d9d9d9;')};
+  background-color: ${({ isLiked }) => (isLiked ? '#f4f1e9' : 'none')};
+
   /* animation 관련 */
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #f4f1e9;
+    cursor: pointer;
+  }
+`
+
+const BtnSpan = styled.span`
+  display: inline-block;
+  margin-right: 10px;
 `
 const ContentBodyBox = styled.div`
   /* display 관련 */

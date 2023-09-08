@@ -5,7 +5,7 @@ import Slide from '../components/Slide'
 import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, limit, query, where } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
-import defaultProfileImage from '../img/user.png'
+import defaultProfileImage from '../img/anonymous.png'
 interface Images {
   id: string
   image: string
@@ -125,11 +125,6 @@ function Main() {
       combinedImages.push(imageUrls[i])
     }
   }
-
-  console.log('게시글좋아요', imageUrls)
-  console.log('댓글왕', topUserImages)
-  console.log('img', combinedImages)
-
   const navigator = useNavigate()
   const listPageMove = () => {
     navigator('/listpage')
