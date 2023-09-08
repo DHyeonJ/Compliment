@@ -22,6 +22,7 @@ function Reply() {
   const [isEditing, setIsEditing] = useState(false) // 수정 모드 여부를 나타내는 상태 변수
   const [editedReplyContent, setEditedReplyContent] = useState('') // 수정할 내용을 저장하는 상태 변수
   const [editingReplyId, setEditingReplyId] = useState(null) // 현재 수정 중인 댓글 ID
+  const currentUserEmail = parsedUserData.email // 현재 로그인한 사용자의 이메일 가져오기
   const admin = 'admin@admin.com'
 
   const fetchReplyData = async () => {
@@ -138,7 +139,7 @@ function Reply() {
     <>
       <CommentHeaderBox>
         <img src={commentImg} alt="" />
-        칭찬 댓글
+        칭찬 댓글 {replyData.length}
       </CommentHeaderBox>
       <CommentBox>
         <CommentBodyBox>
@@ -161,8 +162,12 @@ function Reply() {
                   <DateBox>작성일 {comment.Date}</DateBox>
 
                   <div>
-                    <button onClick={() => onEditHandler(comment.id)}>수정</button>
-                    <button onClick={async () => await deleteComment(comment.id)}>삭제</button>
+                    {(currentUserEmail === comment.userEmail || currentUserEmail === 'admin@admin.com') && ( // 현재 로그인한 사용자의 이메일이 댓글의 이메일 또는 'admin' 계정 이메일과 일치하는지 확인
+                      <>
+                        <button onClick={() => onEditHandler(comment.id)}>수정</button>
+                        <button onClick={async () => await deleteComment(comment.id)}>삭제</button>
+                      </>
+                    )}
                   </div>
                 </>
               )}
