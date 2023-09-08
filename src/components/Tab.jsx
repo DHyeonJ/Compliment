@@ -2,41 +2,52 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { getLists } from '../api/ListsApi'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import HandClap from '../img/hand-clap.png'
-//
 import { auth, db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
+import defaultimg from '../img/user.png'
+​
 const Tab = () => {
   const navigate = useNavigate()
   const [currentTab, clickTab] = useState(0)
   const menuArr = [{ name: '나의 칭구들' }, { name: '내가 작성한 댓글' }]
+  // 추가
+  // const { data: listsData, isLoading } = useQuery(['lists'], getLists, {
+  //   staleTime: 5000, // 데이터를 10초마다 자동으로 갱신
+  // })
+  // 주석
+​
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
-
+​
   const selectMenuHandler = (index) => {
     clickTab(index)
   }
+​
+  const queryClient = useQueryClient()
   //
   const user = auth.currentUser
   const userUid = user ? user.uid : null
-  const [userData, setUserData] = useState([])
-
+  // 탭에 있는 내가 쓴 글 리스트
+​
+  // 주석
+​
   const fetchUserLists = async () => {
     if (userUid) {
       const listsRef = collection(db, 'lists')
       const q = query(listsRef, where('userId', '==', userUid))
       try {
         const querySnapshot = await getDocs(q)
-        console.log('querySnapshot', querySnapshot)
         const updatedUserData = []
         querySnapshot.forEach((doc) => {
           const userData = doc.data()
-          userData.id = doc.id // "id" 프로퍼티에 문서 ID를 추가
+          userData.id = doc.id
           updatedUserData.push(userData)
         })
-        setUserData(updatedUserData)
-        return userData
+        queryClient.setQueryData('lists', updatedUserData)
+        // queryClient.invalidateQueries('lists')
+        return updatedUserData
       } catch (error) {
         console.error('Error fetching user data:', error)
         return []
@@ -44,11 +55,11 @@ const Tab = () => {
     }
     return []
   }
-  console.log('userData', userData)
+​
   useEffect(() => {
     fetchUserLists()
-  }, [])
-
+  }, [userUid])
+​
   return (
     <>
       <div>
@@ -63,7 +74,7 @@ const Tab = () => {
           {currentTab === 0 ? (
             <>
               <ListContentts>
-                {userData?.map((item) => {
+                {listsData?.map((item) => {
                   // id값
                   return (
                     <List
@@ -76,16 +87,16 @@ const Tab = () => {
                         <Contents>
                           <ListContent>
                             <User>
-                              <UserImg src={item.photoUrl} alt="" />
+                              <UserImg src={item.photoUrl || defaultimg} alt="" />
                               <span>{item.userEmail}</span>
                             </User>
-
+​
                             <div>
                               <ListTitle>{item.title}</ListTitle>
                               <ListComments>{item.comments}</ListComments>
                             </div>
                           </ListContent>
-
+​
                           <HandClapBox>
                             <ListDate>작성일 </ListDate>
                             <Date>{item.Date}</Date>
@@ -93,7 +104,7 @@ const Tab = () => {
                             <Likes>{item.likes}</Likes>
                           </HandClapBox>
                         </Contents>
-
+​
                         <div>
                           <Thumbnail src={item.image} alt="" />
                         </div>
@@ -104,14 +115,62 @@ const Tab = () => {
               </ListContentts>
             </>
           ) : null}
+          {/* {currentTab === 0 ? (
+            <>
+              <ListContentts>
+                {Array.isArray(listsData) ? (
+                  listsData.map((item) => {
+                    // id값
+                    return (
+                      <List
+                        key={item.userId}
+                        onClick={() => {
+                          navigate(`/detail/${item.id}`)
+                        }}
+                      >
+                        <ListContentt>
+                          <Contents>
+                            <ListContent>
+                              <User>
+                                <UserImg src={item.photoUrl} alt="" />
+                                <span>{item.userEmail}</span>
+                              </User>
+​
+                              <div>
+                                <ListTitle>{item.title}</ListTitle>
+                                <ListComments>{item.comments}</ListComments>
+                              </div>
+                            </ListContent>
+​
+                            <HandClapBox>
+                              <ListDate>작성일 </ListDate>
+                              <Date>{item.Date}</Date>
+                              <Img src={HandClap} alt="HandClap" />
+                              <Likes>{item.likes}</Likes>
+                            </HandClapBox>
+                          </Contents>
+​
+                          <div>
+                            <Thumbnail src={item.image} alt="" />
+                          </div>
+                        </ListContentt>
+                      </List>
+                    )
+                  })
+                ) : (
+                  <p>Loading...</p> // 또는 오류 메시지를 표시할 수 있음
+                )}
+              </ListContentts>
+            </>
+          ) : null} */}
         </Desc>
       </div>
     </>
   )
 }
-
+​
 export default Tab
-
+​
 const ListContentts = styled.div`
   width: 100%;
   height: 860px;
@@ -124,18 +183,18 @@ const ListContentts = styled.div`
   &::-webkit-scrollbar {
     width: 10px;
   }
-
+​
   &::-webkit-scrollbar-thumb {
     height: 30%;
     background: rgba(153, 153, 153, 0.4);
     border-radius: 20px;
   }
-
+​
   &::-webkit-scrollbar-track {
     background: rgba(153, 153, 153, 0.1);
   }
 `
-
+​
 const TabMenu = styled.ul`
   display: flex;
   padding: 0px 56px;
@@ -144,7 +203,7 @@ const TabMenu = styled.ul`
   gap: 36px;
   align-self: stretch;
   background: #fff;
-
+​
   .submenu {
     // 기본 Tabmenu 에 대한 CSS를 구현
     display: flex;
@@ -157,19 +216,19 @@ const TabMenu = styled.ul`
     transition: 0.5s;
     border-radius: 10px 10px 0px 0px;
   }
-
+​
   .focused {
     //선택된 Tabmenu 에만 적용되는 CSS를 구현
     background-color: rgb(255, 255, 255);
     border-bottom: 2px solid #69535f;
     color: rgb(21, 20, 20);
   }
-
+​
   & div.desc {
     text-align: center;
   }
 `
-
+​
 const Desc = styled.div`
   display: flex;
   flex-direction: column;
@@ -198,7 +257,7 @@ const ListContentt = styled.div`
   align-items: flex-start;
   flex: 1 0 0;
 `
-
+​
 const Contents = styled.div`
   display: flex;
   min-width: 560px;
@@ -208,7 +267,7 @@ const Contents = styled.div`
   gap: 12px;
   flex: 1 0 0;
 `
-
+​
 const Likes = styled.span`
   color: #999;
   text-align: right;
@@ -223,7 +282,7 @@ const Img = styled.img`
   height: 20px;
   margin-right: 4px;
 `
-
+​
 const Date = styled.div`
   color: #999;
   text-align: right;
@@ -235,14 +294,14 @@ const Date = styled.div`
   margin-left: 8px;
   margin-right: 16px;
 `
-
+​
 const HandClapBox = styled.div`
   padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
 `
-
+​
 const List = styled.div`
   position: relative;
   display: flex;
@@ -263,7 +322,7 @@ const UserImg = styled.img`
   border-radius: 50%;
   margin-right: 8px;
 `
-
+​
 const User = styled.div`
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
@@ -276,7 +335,7 @@ const User = styled.div`
   justify-content: center;
   margin-bottom: 10px;
 `
-
+​
 const ListTitle = styled.h1`
   color: var(--text-01404040, #404040);
   font-family: LINE Seed Sans KR;
@@ -284,12 +343,12 @@ const ListTitle = styled.h1`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
+​
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
-
+​
 const ListComments = styled.p`
   width: 500px;
   height: 44px;
@@ -314,7 +373,7 @@ const ListDate = styled.p`
   font-weight: 500;
   line-height: 28px; /* 200% */
 `
-
+​
 const ListContent = styled.div`
   display: flex;
   width: 1192px;
