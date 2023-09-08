@@ -7,7 +7,8 @@ import { getProgressData } from '../api/progressApi'
 const ProgressBar = () => {
   const user = auth.currentUser
   const [progress, setProgress] = useState(0)
-
+  // 유저 정보 불러오기 -> 0
+  // cards.checked === true .length
   useEffect(() => {
     if (user) {
       // Fetch the doneMission count from Firestore
