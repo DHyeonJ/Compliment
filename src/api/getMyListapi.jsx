@@ -1,7 +1,7 @@
 import { collection, getDocs, getDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
-const getMyLists = async () => {
+const GetMyListapi = async () => {
   const user = auth.currentUser // 현재 사용자를 가져옵니다.
   const uid = user.uid // 현재 사용자의 UID를 가져옵니다.
 
@@ -23,4 +23,4 @@ const getMyLists = async () => {
   }
 }
 
-export { getMyLists }
+export { GetMyListapi }

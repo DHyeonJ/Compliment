@@ -15,6 +15,7 @@ import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
 import { faArrowRightFromBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons'
 interface User {
+  uid: string | null
   email: string | null
   photoURL: string | null
 }
@@ -65,9 +66,9 @@ function Layout(): JSX.Element {
       if (user) {
         setCurrentUser(user.email)
         setPhotoURL(user.photoURL)
-        console.log(user)
         // 로컬스토리지 저장
-        localStorage.setItem('user', JSON.stringify({ email: user.email, photoURL: user.photoURL ?? defaultProfileImage }))
+        localStorage.setItem('user', JSON.stringify({ userId: user.uid, email: user.email, photoURL: user.photoURL ?? defaultProfileImage }))
+        console.log('이게', user.uid)
       } else {
         setCurrentUser(null)
         setPhotoURL(null)

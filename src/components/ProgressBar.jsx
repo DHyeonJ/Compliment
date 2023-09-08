@@ -3,26 +3,30 @@ import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../firebase'
 import { getProgressData } from '../api/progressApi'
+import { useQuery, useQueryClient } from 'react-query'
 
 const ProgressBar = () => {
   const user = auth.currentUser
-  const [progress, setProgress] = useState(0)
+  // const [progress, setProgress] = useState(0)
+  const { data: mission, isLoading } = useQuery('mission', getProgressData)
+
+  const queryClient = useQueryClient()
+
   // 유저 정보 불러오기 -> 0
-  // cards.checked === true .length
   useEffect(() => {
     if (user) {
       // Fetch the doneMission count from Firestore
       getProgressData(user.uid)
         .then((doneMissionCount) => {
-          // Calculate progress percentage based on doneMission count
-          const calculatedProgress = (doneMissionCount / 4) * 100 // Assuming 4 is the maximum number of missions
-          setProgress(calculatedProgress)
+          const calculatedProgress = (doneMissionCount / 4) * 100
+          queryClient.setQueryData('mission', calculatedProgress)
+          queryClient.invalidateQueries('mission')
         })
         .catch((error) => {
           console.error('Error fetching doneMission count:', error)
         })
     }
-  }, [user, progress])
+  }, [user, queryClient])
 
   return (
     <>
@@ -31,11 +35,11 @@ const ProgressBar = () => {
       </TextBox>
       <ProgressInfoBox>
         <ProgressBox>
-          <ProgressColorBox percentage={progress} />
+          <ProgressColorBox percentage={mission} />
         </ProgressBox>
       </ProgressInfoBox>
       <ProgressPercentInfoBox>
-        <ProgressPercent>{progress}%</ProgressPercent>
+        <ProgressPercent>{mission}%</ProgressPercent>
       </ProgressPercentInfoBox>
     </>
   )
@@ -82,7 +86,7 @@ const ProgressColorBox = styled.div`
   width: 446px;
   height: 16px;
   flex-shrink: 0;
-  border-radius: 20px 0px 0px 20px;
+  border-radius: 20px;
   background: #f6b000;
   width: ${(props) => props.percentage}%;
 `
@@ -90,7 +94,7 @@ const ProgressColorBox = styled.div`
 const ProgressPercentInfoBox = styled.div`
   display: flex;
   height: 20px;
-  padding: 0px 371px 0px 462px;
+  margin: 0 auto;
   justify-content: flex-end;
   align-items: center;
 `
