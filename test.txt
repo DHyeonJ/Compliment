@@ -1,46 +1,106 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
 import MenuNav from '../../components/MenuNav'
-import { getMissionCards, updateMissionCard, getMyMissionCard } from '../../api/MissionCardsApi'
+import { getMissionCards, updateMissionCard, setMissionCard } from '../../api/MissionCardsApi'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { auth } from '../../firebase'
 import missionCard from '../../img/missionCard.png'
 import missionCardActive from '../../img/missionCardActive.png'
 
+// 1. 미션카드  -> 배열로 저장(선택한 것만 저장, True/false)
+// 2. 선택한 해당 일자만 저장
+// 3. 미션페이지 접근했을 때, 현재 일자를 Date를 통해서 가져오고
+
+// 4. 미션 저장한 일자가 있을 때 오늘 날짜랑 비교해서 새로운 카드 가져오고, 저장한 번호나 boolean값 초기화
+
+// 5. 일자가 같으면 저장한 카드만 그냥 가져오고 초기화는 하지 않음
+
+// 6. 데이터 베이스 Mission문서에는 일자와 선택한 카드에 대한 배열
+
 const MissionPage = () => {
-  const user = auth.currentUser
   const { data: missionData, isLoading } = useQuery('missionContents', getMissionCards)
+  const [randomCards, setRandomCards] = useState([]) // 랜덤하게 선택된 미션 카드 상태
+  const [selectedCardId, setSelectedCardId] = useState([false, false,false, false]) // 클릭한 미션 카드의 ID 상태
+  const [prevDate, setPrevDate] = useState(new Date())
 
-  const myMissionCards = useQuery('myMissionCard', getMyMissionCard)
+  //
+  const [doneMission, setDoneMission] = useState(0)
 
+  //
   const queryClient = useQueryClient()
 
   const { mutateAsync } = useMutation(updateMissionCard, {
     onSuccess: () => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      queryClient.invalidateQueries('myMissionCard')
+      queryClient.invalidateQueries('missionContents')
     },
   })
 
-  useEffect(() => {}, [])
+  useEffect(() => {
+    const updateMissionCards = async () => {
+      const newMissionData = await getMissionCards()
+      const newRandomCards = []
+      while (newRandomCards.length < 4) {
+        const randomIndex = Math.floor(Math.random() * newMissionData.length)
+        const randomCard = newMissionData[randomIndex]
+        if (!newRandomCards.some((card) => card.id === randomCard.id)) {
+          newRandomCards.push(randomCard)
+        }
+      }
+      setRandomCards(newRandomCards)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    updateMissionCards()
+
+    // 매일 자정마다 상태 초기화
+    const resetSelectedCards = async () => {
+      setSelectedCardId([])
+      const newMissionData = await getMissionCards()
+      const newRandomCards = []
+      while (newRandomCards.length < 4) {
+        const randomIndex = Math.floor(Math.random() * newMissionData.length)
+        const randomCard = newMissionData[randomIndex]
+        if (!newRandomCards.some((card) => card.id === randomCard.id)) {
+          newRandomCards.push(randomCard)
+        }
+      }
+      setRandomCards(newRandomCards)
+    }
+
+    const now = new Date()
+    // const timeUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) - now
+    // const resetInterval = setInterval(resetSelectedCards, timeUntilMidnight)
+    const resetInterval = setInterval(resetSelectedCards, 10000000000)
+
+    // Cleanup function to clear the interval
+    return () => clearInterval(resetInterval)
+  }, [])
 
   const handleCardClick = async (cardId) => {
     const userInfo = auth.currentUser
+    let resultCount
 
-    const newMissionCards = myMissionCards.data.cards.map((card) => {
-      if (card.id === cardId) return { ...card, checked: !card.checked }
-      return card
-    })
+    if (selectedCardId.includes(cardId)) {
+      resultCount = selectedCardId.length - 1
+      setSelectedCardId(selectedCardId.filter((id) => id !== cardId))
+      setDoneMission(selectedCardId.length - 1) // 선택한 카드 수 감소
+    } else {
+      resultCount = selectedCardId.length + 1
+      setSelectedCardId([...selectedCardId, cardId])
+      setDoneMission(selectedCardId.length + 1) // 선택한 카드 수 증가
+    }
+    // setter 뒤에 update된 state는 쓰면 안됨
 
     // 결과값 바로 전달
     try {
-      await mutateAsync({ targetId: userInfo.uid, editedMissionCards: newMissionCards })
+      await mutateAsync({ targetId: userInfo.uid, editedMissionCard: resultCount })
     } catch (e) {
       console.log(e)
     }
   }
 
-  if (isLoading || myMissionCards.isLoading) return <div>Loading...</div>
   return (
     <>
       <MenuNav />
@@ -58,16 +118,15 @@ const MissionPage = () => {
             <DailyMission>오늘의 미션!</DailyMission>
           </DailyMissionBox>
           <MissionCards>
-            {myMissionCards.data.cards?.map((item) => {
-              const [cardData] = missionData.filter((mission) => mission.id === item.id)
+            {randomCards?.map((item) => {
               return (
-                <MissionCard key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={item.checked}>
-                  <MissionCardFrame isSelected={item.checked}>
-                    <MissionCardTitle isSelected={item.checked}>{cardData.title}</MissionCardTitle>
-                    <LogoBox isSelected={item.checked}>
-                      <LogoImg src={item.checked ? missionCardActive : missionCard} alt={item.checked ? 'Active Mission Card' : 'Inactive Mission Card'} />
+                <MissionCard key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={selectedCardId.includes(item.id)}>
+                  <MissionCardFrame isSelected={selectedCardId.includes(item.id)}>
+                    <MissionCardTitle isSelected={selectedCardId.includes(item.id)}>{item.title}</MissionCardTitle>
+                    <LogoBox isSelected={selectedCardId.includes(item.id)}>
+                      <LogoImg src={selectedCardId.includes(item.id) ? missionCardActive : missionCard} alt={selectedCardId.includes(item.id) ? 'Active Mission Card' : 'Inactive Mission Card'} />
                     </LogoBox>
-                    <MissionCardContents isSelected={item.checked}>{cardData.content}</MissionCardContents>
+                    <MissionCardContents isSelected={selectedCardId.includes(item.id)}>{item.content}</MissionCardContents>
                   </MissionCardFrame>
                 </MissionCard>
               )

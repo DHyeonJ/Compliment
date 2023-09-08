@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
-import { setMissionCard } from '../../api/MissionCardsApi.jsx'
+// import { setMissionCard } from '../../api/MissionCardsApi.jsx'
 import { current } from '@reduxjs/toolkit'
 import { debounce } from 'lodash'
 
@@ -49,7 +49,7 @@ function Signup() {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
 
         // The provider which was used to authenticate the user.
-        await setMissionCard(userCredential.user.uid)
+        // await setMissionCard(userCredential.user.uid)
 
         alert('회원가입에 성공했습니다.')
 
