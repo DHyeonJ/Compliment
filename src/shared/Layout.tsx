@@ -61,7 +61,7 @@ function Layout(): JSX.Element {
   }
 
   useEffect(() => {
-    auth.onAuthStateChanged((user: any) => {
+    auth.onAuthStateChanged((user) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (user) {
         setCurrentUser(user.email)
