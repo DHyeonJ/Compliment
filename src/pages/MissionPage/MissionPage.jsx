@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { auth } from '../../firebase'
 import missionCard from '../../img/missionCard.png'
 import missionCardActive from '../../img/missionCardActive.png'
+import Loading from '../../components/Loading'
 
 const MissionPage = () => {
   const user = auth.currentUser
@@ -40,7 +41,10 @@ const MissionPage = () => {
     }
   }
 
-  if (isLoading || myMissionCards.isLoading) return <div>Loading...</div>
+  if (isLoading || myMissionCards.isLoading) {
+    return <Loading />
+  }
+
   return (
     <>
       <MenuNav />
