@@ -7,7 +7,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-
+import likesImg from '../img/hand-clapdd.png'
+import likedImg from '../img/hand-clap.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -187,6 +188,11 @@ function Detail() {
 }
 export default Detail
 
+const DetailAreaBox = styled.div`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+`
 const ContentImgBox = styled.div`
   width: 900px;
   height: 480px;
@@ -254,6 +260,7 @@ const UserImg = styled.img`
   /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
+  border-radius: 60px;
 `
 const UserName = styled.div`
   /* border 관련 */
@@ -278,6 +285,7 @@ const DateBox = styled.div`
   font-style: normal;
   font-weight: 400;
 `
+
 const ButtonBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -289,16 +297,39 @@ const Button = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  line-height: 1.25rem;
   /* size 관련 */
-  width: 6rem;
-  height: 2.25rem;
+  width: 154px;
+  height: 3.25rem;
   /* background 관련 */
   background: #fff;
+  margin-bottom: 15px;
   /* border 관련 */
-  border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
+
   /* animation 관련 */
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const LikeButton = styled.button`
+  width: 154px;
+  height: 3.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 5px;
+  color: ${({ isLiked }) => (isLiked ? '#FFFBF3' : ' #69535F;')};
+  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #69535F;')};
+  background-color: ${({ isLiked }) => (isLiked ? '#69535F' : 'none')};
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const BtnSpan = styled.span`
+  display: inline-block;
+  margin-right: 10px;
 `
 const ContentBodyBox = styled.div`
   /* display 관련 */

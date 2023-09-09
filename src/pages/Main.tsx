@@ -1,16 +1,22 @@
+/* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState } from 'react'
 import { styled } from 'styled-components'
 import Slide from '../components/Slide'
 import { useNavigate } from 'react-router-dom'
-import { collection, getDocs, orderBy, limit, query } from 'firebase/firestore' // query 함수 불러오기 추가
+import { collection, getDocs, orderBy, limit, query, where } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
-import defaultProfileImage from '../img/user.png'
+import defaultProfileImage from '../img/anonymous.png'
 interface Images {
   id: string
   image: string
   nickname: string
 }
-console.log(auth)
+
+interface Reply {
+  userEmail: string
+  photoURL?: string
+}
+
 function Main() {
   const [images, setImages] = useState<Images[]>([])
   useEffect(() => {
@@ -36,6 +42,90 @@ function Main() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     fetchData()
   }, [])
+
+  const [topUserList, setTopUserList] = useState<Reply[]>([])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const q = query(
+          collection(db, 'reply'), // 'reply' 컬렉션을 대상으로 쿼리 설정
+          orderBy('userEmail'), // 'userEmail' 필드를 기준으로 정렬
+          limit(50), // TOP 10개의 문서만 가져오기
+        )
+
+        const querySnapshot = await getDocs(q)
+        const userEmailCountMap: Record<string, number> = {}
+        const topUsers: Reply[] = []
+
+        await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const data = doc.data() as Reply
+            const { userEmail } = data
+
+            if (userEmail in userEmailCountMap) {
+              userEmailCountMap[userEmail]++
+            } else {
+              userEmailCountMap[userEmail] = 1
+            }
+          }),
+        )
+
+        const sortedUserEmails = Object.keys(userEmailCountMap).sort((a, b) => userEmailCountMap[b] - userEmailCountMap[a])
+
+        // 가장 갯수가 많은 userEmail의 데이터 가져오기
+        await Promise.all(
+          sortedUserEmails.slice(0, 10).map(async (topUserEmail) => {
+            // 각각의 가장 갯수가 많은 userEmail에 해당하는 문서 가져오기
+            const userDataQuerySnapshot = await getDocs(query(collection(db, 'reply'), where('userEmail', '==', topUserEmail)))
+
+            let addedUserData: Reply | null = null
+
+            userDataQuerySnapshot.forEach((doc) => {
+              if (!addedUserData) {
+                addedUserData = doc.data() as Reply
+              }
+            })
+
+            if (addedUserData) {
+              topUsers.push(addedUserData)
+            }
+          }),
+        )
+
+        setTopUserList(topUsers)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  console.log('user', topUserList)
+  const topUserImages = topUserList.map((user) => user.photoURL)
+  const imageUrls = images.map((item) => item.image)
+
+  // 가져온 url저장하는 빈배열
+  const combinedImages = []
+
+  // 두 배열 중 길이가 작은 것에 맞춰 반복문\.
+  const minLength = Math.min(topUserImages.length, imageUrls.length)
+
+  for (let i = 0; i < minLength; i++) {
+    combinedImages.push(topUserImages[i])
+    combinedImages.push(imageUrls[i])
+  }
+
+  // 만약 한 쪽 배열이 다른 쪽보다 요소가 더 많다면 남은 요소들도 추가
+  if (topUserImages.length > minLength) {
+    for (let i = minLength; i < topUserImages.length; i++) {
+      combinedImages.push(topUserImages[i])
+    }
+  } else if (imageUrls.length > minLength) {
+    for (let i = minLength; i < imageUrls.length; i++) {
+      combinedImages.push(imageUrls[i])
+    }
+  }
   const navigator = useNavigate()
   const listPageMove = () => {
     navigator('/listpage')
@@ -54,15 +144,11 @@ function Main() {
         <RankInfo>
           <RankTitleBox>이번 달도 잘 했어</RankTitleBox>
           <RankUserBox>
-            {images.map((item, index) => {
-              console.log(item)
-              return (
-                <RankUserInfo key={item.id}>
-                  <RankProFileBox isOdd={index % 2 !== 0} src={item.image ?? defaultProfileImage}></RankProFileBox>
-                  {/* <RankNickName>{item.userNickName}</RankNickName> */}
-                </RankUserInfo>
-              )
-            })}
+            {combinedImages.slice(0, 10).map((imageUrl, index) => (
+              <RankUserInfo key={index}>
+                <RankProFileBox isOdd={index % 2 !== 0} src={imageUrl ?? defaultProfileImage} alt={`image-${index}`}></RankProFileBox>{' '}
+              </RankUserInfo>
+            ))}
           </RankUserBox>
         </RankInfo>
         <LinkPageBox>

@@ -8,6 +8,9 @@ import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
 function Login() {
   const navigate = useNavigate()
+  const mainMove = () => {
+    navigate('/')
+  }
   const signUpPageMove = () => {
     navigate('/signup')
   }
@@ -97,7 +100,7 @@ function Login() {
     <>
       <LoginArea>
         <div>
-          <LogoImg src={logoImg}></LogoImg>
+          <LogoImg onClick={mainMove} src={logoImg}></LogoImg>
           <LogoTextBox>칭찬을 구해요, 칭구</LogoTextBox>
         </div>
         <LoginForm>
@@ -145,6 +148,7 @@ const LogoImg = styled.img`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  cursor: pointer;
 `
 const LogoTextBox = styled.div`
   margin-left: 275px;
