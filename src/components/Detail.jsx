@@ -4,6 +4,7 @@ import { styled } from 'styled-components'
 import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
+import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 
@@ -13,6 +14,7 @@ function Detail() {
   const auth = useAuth()
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const admin = 'admin@admin.com'
 
   // 좋아요 상태 초기화를 위한 useEffect
@@ -77,16 +79,18 @@ function Detail() {
     await toggleLike()
   }
   const fetchData = async () => {
+    setIsLoading(true) // 데이터를 가져오는 동안 로딩 상태를 true로 설정
     try {
       const docRef = doc(db, 'lists', id)
       const docSnap = await getDoc(docRef)
       console.log(docSnap.data())
       setData(docSnap.data())
+      setIsLoading(false) // 데이터를 성공적으로 가져온 후 로딩 상태를 false로 설정
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('데이터 가져오는 중 오류 발생:', error)
+      setIsLoading(false) // 오류가 발생한 경우 로딩 상태를 false로 설정
     }
   }
-  const detailItem = data
   useEffect(() => {
     // Firestore에서 데이터 가져오기
     fetchData()
@@ -142,37 +146,41 @@ function Detail() {
 
   return (
     <>
-      {data && (
-        <DetailContentsBox key={data.id}>
-          {/* 제목과 작성자 정보 */}
-          <HeaderBox>
-            <HeaderContentBox>
-              <TitleBox>{data.title}</TitleBox>
-              <MidleTitleBox>
-                <UserBox>
-                  <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                  <UserName>{data.userEmail}</UserName>
-                  <DateBox>작성일 {data.Date}</DateBox>
-                </UserBox>
-                {renderEditDeleteButtons()}
-              </MidleTitleBox>
-            </HeaderContentBox>
-          </HeaderBox>
-          {/* 내용과 이미지 */}
-          <ContentBodyBox>
-            <ContentImgBox>
-              <ContentImg src={data.image} alt="" />
-            </ContentImgBox>
-            <BodyContent>{data.comments}</BodyContent>
-          </ContentBodyBox>
-          {/* "좋아요" 버튼 추가 */}
-          <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{data ? data.likes : 0}</span>
-          {/* 댓글 영역 */}
-          <CommentAreaBox>
-            <Reply />
-          </CommentAreaBox>
-        </DetailContentsBox>
+      {isLoading ? ( // 로딩 중인 경우 로딩 콘텐츠를 렌더링
+        <Loading />
+      ) : (
+        data && (
+          <DetailContentsBox key={data.id}>
+            {/* 제목과 작성자 정보 */}
+            <HeaderBox>
+              <HeaderContentBox>
+                <TitleBox>{data.title}</TitleBox>
+                <MidleTitleBox>
+                  <UserBox>
+                    <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
+                    <UserName>{data.userEmail}</UserName>
+                    <DateBox>작성일 {data.Date}</DateBox>
+                  </UserBox>
+                  {renderEditDeleteButtons()}
+                </MidleTitleBox>
+              </HeaderContentBox>
+            </HeaderBox>
+            {/* 내용과 이미지 */}
+            <ContentBodyBox>
+              <ContentImgBox>
+                <ContentImg src={data.image} alt="" />
+              </ContentImgBox>
+              <BodyContent>{data.comments}</BodyContent>
+            </ContentBodyBox>
+            {/* "좋아요" 버튼 추가 */}
+            <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
+            <span>{data ? data.likes : 0}</span>
+            {/* 댓글 영역 */}
+            <CommentAreaBox>
+              <Reply />
+            </CommentAreaBox>
+          </DetailContentsBox>
+        )
       )}
     </>
   )
