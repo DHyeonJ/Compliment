@@ -11,7 +11,7 @@ const getLists = async () => {
 }
 
 const addList = async ({ newList, id }) => {
-  const newLists = await setDoc(doc(db, 'lists', id), newList)
+  const newLists = await setDoc(doc(db, 'listss', id), newList)
   return newLists
 }
 

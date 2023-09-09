@@ -7,8 +7,11 @@ import defaultProfileImage from '../../img/user.png'
 import ProgressBar from '../../components/ProgressBar'
 import Tab from '../../components/Tab'
 import userInfoEdit from '../../img/userInfoEdit.png'
+import Loading from '../../components/Loading'
 
 function Mypage() {
+  const [isLoading, setIsLoading] = useState(true)
+
   // 부모 컴포넌트에서 유저 정보 가져오기
   const localUser = JSON.parse(localStorage.getItem('user'))
 
@@ -34,6 +37,7 @@ function Mypage() {
   useEffect(() => {
     // 사용자 정보 가져오기
     const fetchUserInfo = async () => {
+      setIsLoading(true) // 데이터 가져오기가 시작될 때 isLoading을 true로 설정
       if (auth.currentUser) {
         try {
           const userUid = auth.currentUser.uid
@@ -45,37 +49,45 @@ function Mypage() {
           console.log(url)
           setImageUrl(url || defaultProfileImage)
         } catch (error) {
-          console.log('Error fetching image URL:', error)
+          console.log('이미지 URL 가져오기 오류:', error)
           setImageUrl(defaultProfileImage)
+        } finally {
+          setIsLoading(false) // 데이터 가져오기가 완료되면 isLoading을 false로 설정
         }
       }
     }
     fetchUserInfo()
   }, [])
+
   return (
     <>
-      <div>
-        <MypageBox>
-          <ProfileBox>
-            <ProfileImage alt="프로필 이미지" src={photoImg ?? defaultProfileImage} />
-            <TextBox>
-              <NicknameTextBox>
-                <Bold>{localStorageUserId}</Bold> 님 <br /> 안녕하세요.
-              </NicknameTextBox>
-              <SignEditBox onClick={EditUserpageMove}>
-                회원정보 수정
-                <UserButton src={userInfoEdit} />
-              </SignEditBox>
-            </TextBox>
-          </ProfileBox>
-          <RateBox>
-            <ProgressBar />
-          </RateBox>
-          <ListBox>
-            <Tab />
-          </ListBox>
-        </MypageBox>
-      </div>
+      {isLoading ? (
+        // 로딩 인디케이터를 여기에 렌더링합니다
+        <Loading />
+      ) : (
+        <div>
+          <MypageBox>
+            <ProfileBox>
+              <ProfileImage alt="프로필 이미지" src={photoImg ?? defaultProfileImage} />
+              <TextBox>
+                <NicknameTextBox>
+                  <Bold>{localStorageUserId}</Bold> 님 <br /> 안녕하세요.
+                </NicknameTextBox>
+                <SignEditBox onClick={EditUserpageMove}>
+                  회원정보 수정
+                  <UserButton src={userInfoEdit} />
+                </SignEditBox>
+              </TextBox>
+            </ProfileBox>
+            <RateBox>
+              <ProgressBar />
+            </RateBox>
+            <ListBox>
+              <Tab />
+            </ListBox>
+          </MypageBox>
+        </div>
+      )}
     </>
   )
 }

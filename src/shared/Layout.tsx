@@ -363,10 +363,10 @@ const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 44px;
-  height: 44px;
-  box-shadow: 5px 3px 7px 3px #c4c4c4;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  box-shadow: 3px 3px 5px 3px #c4c4c4;
+  border-radius: 60px;
 `
 const DropDown = styled.div`
   position: relative;

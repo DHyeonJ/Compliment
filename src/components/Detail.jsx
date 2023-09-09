@@ -4,15 +4,18 @@ import { styled } from 'styled-components'
 import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
+import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-
+import likesImg from '../img/hand-clapdd.png'
+import likedImg from '../img/hand-clap.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
   const auth = useAuth()
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const admin = 'admin@admin.com'
 
   // 좋아요 상태 초기화를 위한 useEffect
@@ -77,16 +80,18 @@ function Detail() {
     await toggleLike()
   }
   const fetchData = async () => {
+    setIsLoading(true) // 데이터를 가져오는 동안 로딩 상태를 true로 설정
     try {
       const docRef = doc(db, 'lists', id)
       const docSnap = await getDoc(docRef)
       console.log(docSnap.data())
       setData(docSnap.data())
+      setIsLoading(false) // 데이터를 성공적으로 가져온 후 로딩 상태를 false로 설정
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('데이터 가져오는 중 오류 발생:', error)
+      setIsLoading(false) // 오류가 발생한 경우 로딩 상태를 false로 설정
     }
   }
-  const detailItem = data
   useEffect(() => {
     // Firestore에서 데이터 가져오기
     fetchData()
@@ -142,43 +147,52 @@ function Detail() {
 
   return (
     <>
-      {data && (
-        <DetailContentsBox key={data.id}>
-          {/* 제목과 작성자 정보 */}
-          <HeaderBox>
-            <HeaderContentBox>
-              <TitleBox>{data.title}</TitleBox>
-              <MidleTitleBox>
-                <UserBox>
-                  <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                  <UserName>{data.userEmail}</UserName>
-                  <DateBox>작성일 {data.Date}</DateBox>
-                </UserBox>
-                {renderEditDeleteButtons()}
-              </MidleTitleBox>
-            </HeaderContentBox>
-          </HeaderBox>
-          {/* 내용과 이미지 */}
-          <ContentBodyBox>
-            <ContentImgBox>
-              <ContentImg src={data.image} alt="" />
-            </ContentImgBox>
-            <BodyContent>{data.comments}</BodyContent>
-          </ContentBodyBox>
-          {/* "좋아요" 버튼 추가 */}
-          <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{data ? data.likes : 0}</span>
-          {/* 댓글 영역 */}
-          <CommentAreaBox>
-            <Reply />
-          </CommentAreaBox>
-        </DetailContentsBox>
+      {isLoading ? ( // 로딩 중인 경우 로딩 콘텐츠를 렌더링
+        <Loading />
+      ) : (
+        data && (
+          <DetailContentsBox key={data.id}>
+            {/* 제목과 작성자 정보 */}
+            <HeaderBox>
+              <HeaderContentBox>
+                <TitleBox>{data.title}</TitleBox>
+                <MidleTitleBox>
+                  <UserBox>
+                    <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
+                    <UserName>{data.userEmail}</UserName>
+                    <DateBox>작성일 {data.Date}</DateBox>
+                  </UserBox>
+                  {renderEditDeleteButtons()}
+                </MidleTitleBox>
+              </HeaderContentBox>
+            </HeaderBox>
+            {/* 내용과 이미지 */}
+            <ContentBodyBox>
+              <ContentImgBox>
+                <ContentImg src={data.image} alt="" />
+              </ContentImgBox>
+              <BodyContent>{data.comments}</BodyContent>
+            </ContentBodyBox>
+            {/* "좋아요" 버튼 추가 */}
+            <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
+            <span>{data ? data.likes : 0}</span>
+            {/* 댓글 영역 */}
+            <CommentAreaBox>
+              <Reply />
+            </CommentAreaBox>
+          </DetailContentsBox>
+        )
       )}
     </>
   )
 }
 export default Detail
 
+const DetailAreaBox = styled.div`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+`
 const ContentImgBox = styled.div`
   width: 900px;
   height: 480px;
@@ -246,6 +260,7 @@ const UserImg = styled.img`
   /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
+  border-radius: 60px;
 `
 const UserName = styled.div`
   /* border 관련 */
@@ -270,6 +285,7 @@ const DateBox = styled.div`
   font-style: normal;
   font-weight: 400;
 `
+
 const ButtonBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -281,16 +297,39 @@ const Button = styled.button`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  line-height: 1.25rem;
   /* size 관련 */
-  width: 6rem;
-  height: 2.25rem;
+  width: 154px;
+  height: 3.25rem;
   /* background 관련 */
   background: #fff;
+  margin-bottom: 15px;
   /* border 관련 */
-  border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
+
   /* animation 관련 */
-  cursor: pointer;
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const LikeButton = styled.button`
+  width: 154px;
+  height: 3.25rem;
+  border-radius: 0.5rem;
+  margin-bottom: 5px;
+  color: ${({ isLiked }) => (isLiked ? '#FFFBF3' : ' #69535F;')};
+  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #69535F;')};
+  background-color: ${({ isLiked }) => (isLiked ? '#69535F' : 'none')};
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const BtnSpan = styled.span`
+  display: inline-block;
+  margin-right: 10px;
 `
 const ContentBodyBox = styled.div`
   /* display 관련 */
