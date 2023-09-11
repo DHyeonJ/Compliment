@@ -300,7 +300,7 @@ const SignupInput = styled.input`
   border-bottom-width: 1;
   color: #0e0d0d;
 
-  ::placeholder {
+  &::placeholder {
     color: #d9d9d9;
     font-weight: 500;
     line-height: normal;

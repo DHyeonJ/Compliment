@@ -8,7 +8,7 @@ import HandClap from '../img/hand-clap.png'
 import { auth, db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
 import defaultimg from '../img/user.png'
-
+import defualtContentsImg from '../img/defaultContentImg.png'
 const Tab = () => {
   const navigate = useNavigate()
   const [currentTab, clickTab] = useState(0)
@@ -133,7 +133,7 @@ const Tab = () => {
                         </Contents>
 
                         <div>
-                          <Thumbnail src={item.image} alt="" />
+                          <Thumbnail src={item.image || defualtContentsImg} alt="" />
                         </div>
                       </ListContentt>
                     </List>

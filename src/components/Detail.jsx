@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-import defualtContentsImg from '../img/logo_big.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()

@@ -6,6 +6,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import moment from 'moment'
 import { storage, db, auth } from '../firebase'
 import { collection, addDoc } from 'firebase/firestore'
+import Swal from 'sweetalert2'
 
 const AddBoardCp = () => {
   const user = auth.currentUser
@@ -96,7 +97,22 @@ const AddBoardCp = () => {
         console.error('이미지 업로드 오류: ', error)
       })
   }
-
+  const handleNavigateAway = () => {
+    if (title.trim() !== '' || content.trim() !== '') {
+      Swal.fire({
+        title: '작성 중인 글이 있습니다. ',
+        text: '정말로 이 페이지를 벗어나시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/listpage')
+        }
+      })
+    } else {
+      navigate('/listpage')
+    }
+  }
   return (
     <>
       <ContainerPageBox>
@@ -133,13 +149,7 @@ const AddBoardCp = () => {
                 </div>
                 <div>
                   <CancelAndAddBox>
-                    <CancelBoxBtn
-                      onClick={() => {
-                        navigate('/listpage')
-                      }}
-                    >
-                      취소
-                    </CancelBoxBtn>
+                    <CancelBoxBtn onClick={handleNavigateAway}>취소</CancelBoxBtn>
                     <AddListBoxBtn
                       onClick={() => {
                         // eslint-disable-next-line @typescript-eslint/no-floating-promises
