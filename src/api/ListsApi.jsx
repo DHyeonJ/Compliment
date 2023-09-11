@@ -1,5 +1,5 @@
 import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore'
-import { db } from '../firebase'
+import { db, useAuth } from '../firebase'
 
 const getLists = async () => {
   const querySnapShot = await getDocs(collection(db, 'lists'))
@@ -11,7 +11,7 @@ const getLists = async () => {
 }
 
 const addList = async ({ newList, id }) => {
-  const newLists = await setDoc(doc(db, 'lists', id), newList)
+  const newLists = await setDoc(doc(db, 'listss', id), newList)
   return newLists
 }
 
@@ -23,4 +23,13 @@ const updateList = async ({ targetId, editedList }) => {
   await updateDoc(doc(db, 'lists', targetId), editedPost)
 }
 
-export { getLists, addList, deleteList, updateList }
+const useIsAuthenticated = () => {
+  const auth = useAuth() // Firebase에서 인증 객체를 가져옵니다.
+
+  // 사용자가 인증되었는지 여부를 확인합니다.
+  const isAuthenticated = !!auth.currentUser
+
+  return isAuthenticated
+}
+
+export { getLists, addList, deleteList, updateList, useIsAuthenticated }

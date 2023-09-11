@@ -146,17 +146,11 @@ function EditUserInfo() {
             <EditInputLabelBox>아이디</EditInputLabelBox>
             <EditIdBox>{loggedInUserEmail}</EditIdBox>
           </EditInputAreaBox>
-          {user && !user.providerData.some((provider) => provider.providerId === 'google.com') && (
-            <>
-              <EditInputAreaBox>
-                <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
-                <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-              </EditInputAreaBox>
-              <EditInputAreaBox>
-                <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
-                <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-              </EditInputAreaBox>
-            </>
+          {user && user.providerData.some((provider) => provider.providerId === 'google.com') && (
+            <EditInputAreaBox>
+              <EditInputLabelBox>닉네임</EditInputLabelBox>
+              <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            </EditInputAreaBox>
           )}
           <EditInputAreaBox>
             <EditInputLabelBox>닉네임</EditInputLabelBox>

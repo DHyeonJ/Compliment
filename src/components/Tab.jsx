@@ -2,41 +2,53 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { getLists } from '../api/ListsApi'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import HandClap from '../img/hand-clap.png'
-//
 import { auth, db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
+import defaultimg from '../img/user.png'
+
 const Tab = () => {
   const navigate = useNavigate()
   const [currentTab, clickTab] = useState(0)
-  const menuArr = [{ name: '나의 칭구들' }, { name: '내가 작성한 댓글' }]
+  const menuArr = [{ name: '나의 칭구들' }, { name: '내가 칭찬한 글' }]
+
+  const [localUser, setLocalUser] = useState(JSON.parse(localStorage.getItem('user')))
+
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
+  console.log('!1', listsData)
+  console.log('whowhowho', localUser)
+  console.log('userId', localUser.userId)
+  // 리스트데이터 돌리면서 필드값에 user
 
   const selectMenuHandler = (index) => {
     clickTab(index)
   }
+
+  const queryClient = useQueryClient()
   //
   const user = auth.currentUser
-  const userUid = user ? user.uid : null
-  const [userData, setUserData] = useState([])
+  const userUid = localUser?.userId
 
+  // 탭에 있는 내가 쓴 글 리스트
+
+  // 주석
   const fetchUserLists = async () => {
     if (userUid) {
       const listsRef = collection(db, 'lists')
       const q = query(listsRef, where('userId', '==', userUid))
       try {
         const querySnapshot = await getDocs(q)
-        console.log('querySnapshot', querySnapshot)
         const updatedUserData = []
         querySnapshot.forEach((doc) => {
           const userData = doc.data()
-          userData.id = doc.id // "id" 프로퍼티에 문서 ID를 추가
+          userData.id = doc.id
           updatedUserData.push(userData)
         })
-        setUserData(updatedUserData)
-        return userData
+        queryClient.setQueryData('lists', updatedUserData)
+        // queryClient.invalidateQueries('lists')
+        return updatedUserData
       } catch (error) {
         console.error('Error fetching user data:', error)
         return []
@@ -44,10 +56,36 @@ const Tab = () => {
     }
     return []
   }
-  console.log('userData', userData)
+
+  const [likedPosts, setLikedPosts] = useState([])
+
+  const filterLikedLists = (listsData, userUid) => {
+    if (!listsData || !userUid) {
+      return []
+    }
+
+    const likedPosts = listsData.filter((item) => item.likedUser?.includes(userUid))
+    return likedPosts
+  }
+
   useEffect(() => {
     fetchUserLists()
-  }, [])
+  }, [userUid])
+
+  useEffect(() => {
+    const userUid = localUser?.userId
+
+    if (userUid) {
+      fetchUserLists(userUid)
+    }
+  }, [localUser])
+
+  useEffect(() => {
+    if (currentTab === 1) {
+      const likedLists = filterLikedLists(listsData, userUid)
+      setLikedPosts(likedLists)
+    }
+  }, [currentTab, listsData, userUid])
 
   return (
     <>
@@ -63,7 +101,7 @@ const Tab = () => {
           {currentTab === 0 ? (
             <>
               <ListContentts>
-                {userData?.map((item) => {
+                {listsData?.map((item) => {
                   // id값
                   return (
                     <List
@@ -76,7 +114,7 @@ const Tab = () => {
                         <Contents>
                           <ListContent>
                             <User>
-                              <UserImg src={item.photoUrl} alt="" />
+                              <UserImg src={item.photoUrl || defaultimg} alt="" />
                               <span>{item.userEmail}</span>
                             </User>
 
@@ -103,7 +141,51 @@ const Tab = () => {
                 })}
               </ListContentts>
             </>
-          ) : null}
+          ) : (
+            <>
+              <ListContentts>
+                {likedPosts?.map((item) => {
+                  // id값
+
+                  return (
+                    <List
+                      key={item.userId}
+                      onClick={() => {
+                        navigate(`/detail/${item.id}`)
+                      }}
+                    >
+                      <ListContentt>
+                        <Contents>
+                          <ListContent>
+                            <User>
+                              <UserImg src={item.photoUrl || defaultimg} alt="" />
+                              <span>{item.userEmail}</span>
+                            </User>
+
+                            <div>
+                              <ListTitle>{item.title}</ListTitle>
+                              <ListComments>{item.comments}</ListComments>
+                            </div>
+                          </ListContent>
+
+                          <HandClapBox>
+                            <ListDate>작성일 </ListDate>
+                            <Date>{item.Date}</Date>
+                            <Img src={HandClap} alt="HandClap" />
+                            <Likes>{item.likes}</Likes>
+                          </HandClapBox>
+                        </Contents>
+
+                        <div>
+                          <Thumbnail src={item.image} alt="" />
+                        </div>
+                      </ListContentt>
+                    </List>
+                  )
+                })}
+              </ListContentts>
+            </>
+          )}
         </Desc>
       </div>
     </>

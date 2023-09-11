@@ -132,7 +132,7 @@ const Box = styled.div`
 `
 
 const BannerContent = styled.div`
-  width: 451px;
+  /* width: 451px; */
   height: 84px;
   color: #000;
   font-family: LINE Seed Sans KR;
@@ -144,7 +144,7 @@ const BannerContent = styled.div`
 `
 
 const BannermiddleTitle = styled.div`
-  width: 366px;
+  /* width: 366px; */
   height: 36px;
   color: #000;
   font-family: LINE Seed Sans KR;
@@ -155,7 +155,7 @@ const BannermiddleTitle = styled.div`
 `
 
 const BannerTitle = styled.div`
-  width: 541px;
+  /* width: 541px; */
   height: 64px;
   color: #000;
   font-family: LINE Seed Sans KR;
@@ -166,7 +166,7 @@ const BannerTitle = styled.div`
 `
 
 const BannerContents = styled.div`
-  width: 366px;
+  /* width: 366px; */
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -175,7 +175,7 @@ const BannerContents = styled.div`
 `
 
 const ImgInfo = styled.div`
-  width: 300px;
+  /* width: 300px; */
   height: 328px;
   flex: 1;
   background-image: ${(props) => `url(${props.url})`};
