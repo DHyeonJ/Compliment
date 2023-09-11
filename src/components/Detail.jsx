@@ -7,8 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-import likesImg from '../img/hand-clapdd.png'
-import likedImg from '../img/hand-clap.png'
+import defualtContentsImg from '../img/logo_big.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -167,13 +166,11 @@ function Detail() {
               </HeaderContentBox>
             </HeaderBox>
             {/* 내용과 이미지 */}
-            {/* 이미지 없이 글 작성 가능하도록 수정해서 , 이미지 없을 경우 글만 보이도록 수정하였습니다. */}
-            {data && (
-              <ContentBodyBox>
-                {data.image && <ContentImg src={data.image} alt="" />}
-                <BodyContent>{data.comments}</BodyContent>
-              </ContentBodyBox>
-            )}
+            {/* 등록된 이미지가 없을 경우 디폴트 이미지가 보여지도록 수정하였습니다.  */}
+            <ContentBodyBox>
+              {data && data.image ? <ContentImg src={data.image} alt="" /> : <ContentDefualtImg src={defualtContentsImg} alt="" />}
+              <BodyContent>{data.comments}</BodyContent>
+            </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
             <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
             <span>{data ? data.likes : 0}</span>
@@ -199,6 +196,10 @@ const ContentImgBox = styled.div`
   height: 480px;
 `
 
+const ContentDefualtImg = styled.img`
+  width: 400px;
+  height: auto;
+`
 const DetailContentsBox = styled.div`
   /* display 관련 */
   display: flex;
