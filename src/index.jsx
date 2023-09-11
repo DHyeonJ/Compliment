@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import store from './redux/config/confingStore'
 import { Provider } from 'react-redux'
 import { QueryClientProvider, QueryClient } from 'react-query'
+import 'normalize.css' // Reset CSS
 
 const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root'))
