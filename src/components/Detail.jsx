@@ -167,12 +167,13 @@ function Detail() {
               </HeaderContentBox>
             </HeaderBox>
             {/* 내용과 이미지 */}
-            <ContentBodyBox>
-              <ContentImgBox>
-                <ContentImg src={data.image} alt="" />
-              </ContentImgBox>
-              <BodyContent>{data.comments}</BodyContent>
-            </ContentBodyBox>
+            {/* 이미지 없이 글 작성 가능하도록 수정해서 , 이미지 없을 경우 글만 보이도록 수정하였습니다. */}
+            {data && (
+              <ContentBodyBox>
+                {data.image && <ContentImg src={data.image} alt="" />}
+                <BodyContent>{data.comments}</BodyContent>
+              </ContentBodyBox>
+            )}
             {/* "좋아요" 버튼 추가 */}
             <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
             <span>{data ? data.likes : 0}</span>
