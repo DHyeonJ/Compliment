@@ -120,6 +120,8 @@ function Edit() {
         <div>
           <CommentContainerBox>
             <div>
+              <PreviewBox>{imgUrl && <ImagePreview src={imgUrl} alt="이미지 미리 보기" />}</PreviewBox>
+
               <CommentInputBox value={content} onChange={(e) => setContent(e.target.value)} />
             </div>
 
@@ -147,6 +149,18 @@ function Edit() {
 
 export default Edit
 
+const PreviewBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+const ImagePreview = styled.img`
+  max-width: 100%;
+  max-height: 300px;
+  margin-top: 10px;
+`
 const CancelAndAddContainerBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -257,7 +271,8 @@ const CustomFileInputLabel = styled.label`
   gap: 0.75rem; /* px에서 rem으로 변경 */
 
   /* size 관련 */
-  height: 2.75rem; /* px에서 rem으로 변경 */
+  height: 2.75rem;
+  width: 9.375rem;
 
   /* margin, padding */
   padding: 0 1.25rem; /* px에서 rem으로 변경 */

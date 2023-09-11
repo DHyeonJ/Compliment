@@ -291,6 +291,7 @@ const CustomFileInputLabel = styled.label`
 
   /* size 관련 */
   height: 2.75rem;
+  width: 9.375rem;
 
   /* margin, padding */
   padding: 0 1.25rem;
