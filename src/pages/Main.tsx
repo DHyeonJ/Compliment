@@ -189,7 +189,7 @@ const ContentBox = styled.div`
 `
 const RankInfo = styled.div`
   margin-top: 56px;
-  height: 271px;
+  /* height: 271px; */
 `
 const RankTitleBox = styled.div`
   font-size: 28px;
@@ -197,7 +197,7 @@ const RankTitleBox = styled.div`
   font-weight: bold;
 `
 const RankUserBox = styled.div`
-  height: 210px;
+  /* height: 210px; */
   border: 1px solid #d9d9d9;
   margin-top: 16px;
   border-radius: 8px;
@@ -227,7 +227,7 @@ const RankNickName = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 17px;
+  /* height: 17px; */
   margin-top: 12px;
   font-size: 14px;
   color: #000;
@@ -263,7 +263,7 @@ const ListTitle = styled.h2`
   line-height: normal;
 `
 const ListContentSpan = styled.span`
-  width: 380px;
+  /* width: 380px; */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 20px;
@@ -274,8 +274,8 @@ const ListContentSpan = styled.span`
 const MissionPageBox = styled.div`
   display: flex;
   align-items: center;
-  width: 704px;
-  height: 240px;
+  /* width: 704px; */
+  /* height: 240px; */
   border-radius: 20px;
   background-color: #f5f6cd;
   box-shadow: 5px 5px 5px -5px #333;
@@ -292,7 +292,7 @@ const MissionContentBox = styled.div`
   background: #f5f6cd;
 `
 const MissionTitle = styled.h2`
-  width: 281px;
+  /* width: 281px; */
   color: var(--text01_404040, #404040);
   font-family: LINE Seed Sans KR;
   font-size: 28px;
@@ -301,7 +301,7 @@ const MissionTitle = styled.h2`
   line-height: normal;
 `
 const MissionContentSpan = styled.span`
-  width: 380px;
+  /* width: 380px; */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 20px;
