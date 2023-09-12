@@ -7,8 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-import likesImg from '../img/hand-clapdd.png'
-import likedImg from '../img/hand-clap.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -167,10 +166,9 @@ function Detail() {
               </HeaderContentBox>
             </HeaderBox>
             {/* 내용과 이미지 */}
+            {/* 등록된 이미지가 없을 경우 디폴트 이미지가 보여지도록 수정하였습니다.  */}
             <ContentBodyBox>
-              <ContentImgBox>
-                <ContentImg src={data.image} alt="" />
-              </ContentImgBox>
+              {data && data.image ? <ContentImg src={data.image} alt="" /> : <ContentDefualtImg src={defualtContentsImg} alt="" />}
               <BodyContent>{data.comments}</BodyContent>
             </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
@@ -198,6 +196,10 @@ const ContentImgBox = styled.div`
   height: 480px;
 `
 
+const ContentDefualtImg = styled.img`
+  width: 400px;
+  height: auto;
+`
 const DetailContentsBox = styled.div`
   /* display 관련 */
   display: flex;

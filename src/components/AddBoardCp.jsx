@@ -6,6 +6,7 @@ import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import moment from 'moment'
 import { storage, db, auth } from '../firebase'
 import { collection, addDoc } from 'firebase/firestore'
+import Swal from 'sweetalert2'
 
 const AddBoardCp = () => {
   const user = auth.currentUser
@@ -35,17 +36,10 @@ const AddBoardCp = () => {
     // e.preventDefault()
     console.log()
     if (title.trim() === '') {
-      setModalMessage('제목을 입력해주세요.')
+      alert('제목을 입력해주세요.')
       return
     } else if (content.trim() === '') {
-      // setModalMessage('내용을 입력해주세요.')
-      return
-    } else if (fileName.trim() === '') {
-      // setModalMessage('업로드할 이미지를 선택해주세요.')
-      return
-    } else if (imgUrl.trim() === '') {
-      // setModalMessage('업로드할 이미지를 선택해주세요.')
-      alert('이미지가 없습니다')
+      alert('내용을 입력해주세요.')
       return
     }
 
@@ -103,7 +97,22 @@ const AddBoardCp = () => {
         console.error('이미지 업로드 오류: ', error)
       })
   }
-
+  const handleNavigateAway = () => {
+    if (title.trim() !== '' || content.trim() !== '') {
+      Swal.fire({
+        title: '작성 중인 글이 있습니다. ',
+        text: '정말로 이 페이지를 벗어나시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/listpage')
+        }
+      })
+    } else {
+      navigate('/listpage')
+    }
+  }
   return (
     <>
       <ContainerPageBox>
@@ -113,6 +122,7 @@ const AddBoardCp = () => {
               <TitleContainerBox>
                 <TitleContainerInput type="text" value={title} onChange={handleChangeTitle} placeholder="제목을 입력해주세요."></TitleContainerInput>
               </TitleContainerBox>
+              <Line></Line>
             </ListContainerBox>
           </div>
 
@@ -139,13 +149,7 @@ const AddBoardCp = () => {
                 </div>
                 <div>
                   <CancelAndAddBox>
-                    <CancelBoxBtn
-                      onClick={() => {
-                        navigate('/listpage')
-                      }}
-                    >
-                      취소
-                    </CancelBoxBtn>
+                    <CancelBoxBtn onClick={handleNavigateAway}>취소</CancelBoxBtn>
                     <AddListBoxBtn
                       onClick={() => {
                         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -340,12 +344,17 @@ const ContainerPageBox = styled.div`
   margin: 2rem 15rem 3rem; /* 변경 */
 
   /* background 관련 */
-  /* background: #fff; */
-  background-color: aliceblue;
-
+  background: #fff;
   /* border 관련 */
   border-radius: 1.25rem;
   box-shadow: 0 0.25rem 1rem 0 rgba(0, 0, 0, 0.14);
+`
+
+const Line = styled.div`
+  display: flex;
+  border-bottom: 1px solid black;
+  width: 70%;
+  height: 1px;
 `
 
 const ContainerBox = styled.div`
@@ -381,7 +390,8 @@ const TitleContainerInput = styled.input`
   outline: none;
 
   /* font 관련 */
-  color: #999;
+  color: #181818;
+
   font-family: LINE Seed Sans KR;
   font-size: 2.25rem; /* 변경 */
   font-style: normal;
@@ -428,19 +438,19 @@ const CommentInputBox = styled.textarea`
   resize: none;
 
   /* font 관련 */
-  color: #999;
+  color: #181818;
   font-family: Pretendard;
   font-size: 1rem;
   font-style: normal;
-  font-weight: 400;
+  font-weight: 500;
 
   input::placeholder {
-    color: #999999;
+    color: #aaa8a8;
     font-family: Pretendard;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
-    line-height: 28px; /* 175% */ /* 원하는 색상으로 변경하세요 */
+    line-height: 28px;
   }
 `
 
@@ -479,7 +489,7 @@ const TitleContainerBox = styled.div`
   padding: 2rem 15rem 3rem; /* 변경 */
 
   /* border 관련 */
-  border-bottom: 1px solid #999;
+  /* border-bottom: 1px solid #999; */
 `
 const ListContainerBox = styled.div`
   /* display 관련 */

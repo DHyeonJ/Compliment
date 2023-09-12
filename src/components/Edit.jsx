@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { collection, getDoc, doc, updateDoc } from 'firebase/firestore'
 import { db, useAuth, storage } from '../firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import Swal from 'sweetalert2'
 
 function Edit() {
   const navigate = useNavigate()
@@ -104,6 +105,23 @@ function Edit() {
     }
   }
 
+  const handleNavigateAway = () => {
+    if (title.trim() !== '' || content.trim() !== '') {
+      Swal.fire({
+        title: '작성 중인 글이 있습니다. ',
+        text: '정말로 이 페이지를 벗어나시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/listpage')
+        }
+      })
+    } else {
+      navigate('/listpage')
+    }
+  }
+
   return (
     <ContainerPageBox>
       <ContainerBox>
@@ -111,8 +129,9 @@ function Edit() {
         <div>
           <ListContainerBox>
             <TitleContainerBox>
-              <TitleContainer value={title} onChange={(e) => setTitle(e.target.value)} />
+              <TitleContainerInput value={title} onChange={(e) => setTitle(e.target.value)} />
             </TitleContainerBox>
+            <Line></Line>
           </ListContainerBox>
         </div>
 
@@ -135,7 +154,7 @@ function Edit() {
               </div>
               <div>
                 <CancelAndAddContainerBox>
-                  <CancelContainerBox onClick={() => navigate(`/detail/${id}`)}>취소</CancelContainerBox>
+                  <CancelContainerBox onClick={handleNavigateAway}>취소</CancelContainerBox>
                   <EditListContainerBox onClick={handleEdit}>수정</EditListContainerBox>
                 </CancelAndAddContainerBox>
               </div>
@@ -297,6 +316,12 @@ const CustomFileInputLabel = styled.label`
   cursor: pointer;
 `
 
+const Line = styled.div`
+  display: flex;
+  border-bottom: 1px solid black;
+  width: 70%;
+  height: 1px;
+`
 const CustomFileInput = styled.input`
   /* display 관련 */
   display: none;
@@ -313,7 +338,6 @@ const ContainerPageBox = styled.div`
 
   /* background 관련 */
   background: #fff;
-
   /* border 관련 */
   border-radius: 1.25rem; /* px에서 rem으로 변경 */
   box-shadow: 0px 0.25rem 1rem 0px rgba(0, 0, 0, 0.14);
@@ -402,13 +426,13 @@ const TitleContainerBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.625rem; /* px에서 rem으로 변경 */
+  gap: 1rem;
 
   /* margin, padding */
-  padding: 2rem 15rem 3rem 15rem; /* px에서 rem으로 변경 */
+  padding: 2rem 15rem 3rem;
 
   /* border 관련 */
-  border-bottom: 1px solid #999;
+  /* border-bottom: 1px solid #999; */
 `
 
 const ListContainerBox = styled.div`
@@ -421,12 +445,12 @@ const ListContainerBox = styled.div`
   width: 90rem; /* px에서 rem으로 변경 */
 
   /* margin, padding */
-  padding: 0 16.875rem; /* px에서 rem으로 변경 */
+  padding: 0 16.875rem;
 `
 
-const TitleContainer = styled.input`
+const TitleContainerInput = styled.input`
   /* size 관련 */
-  width: 49.25rem; /* px에서 rem으로 변경 */
+  width: 57rem; /* px에서 rem으로 변경 */
 
   /* margin, padding */
   line-height: normal;
@@ -441,10 +465,16 @@ const TitleContainer = styled.input`
   font-size: 2.25rem; /* px에서 rem으로 변경 */
   font-style: normal;
   font-weight: 400;
-
+  padding: 1rem 1.5rem;
   /* animation 관련 */
   &::placeholder {
     transition: opacity 0.1s ease-in-out;
+    color: #999999;
+    font-family: LINE Seed Sans KR;
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
   }
 
   &:focus::placeholder {
