@@ -45,10 +45,10 @@ function Layout(): JSX.Element {
   const [currentUser, setCurrentUser] = useState<string | null>(null)
   const [photoURL, setPhotoURL] = useState<string | null>(defaultProfileImage)
 
-  const user = auth.currentUser
-  console.log('userData', user)
   // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
-
+  const localUserid = JSON.parse(localStorage.getItem('user') || 'null')
+  const email = localUserid?.email
+  const localStorageUserId = email?.split('@')[0]
   const handleLogout = async () => {
     const confirmLogout = window.confirm('로그아웃하시겠습니까?')
     if (confirmLogout) {
@@ -82,8 +82,8 @@ function Layout(): JSX.Element {
     <LayOutBox>
       <HeaderAllBox>
         <HeaderBox>
-          <LogoTitleBox>
-            <ImgBox onClick={mainPageMove}>
+          <LogoTitleBox onClick={mainPageMove}>
+            <ImgBox>
               <Logo src={logoImg}></Logo>
             </ImgBox>
             <TitleSpan>칭찬을 구해요, 칭구</TitleSpan>
@@ -93,7 +93,7 @@ function Layout(): JSX.Element {
           <ButtonsBox>
             <DropDown>
               <UserNameBox>
-                {currentUser}
+                {localStorageUserId}
                 <Bold>&nbsp;님</Bold>
               </UserNameBox>
               <ProfileImage alt="프로필 이미지" src={photoURL ?? defaultProfileImage} />
@@ -144,7 +144,6 @@ const ButtonsBox = styled.div`
   position: absolute;
   right: 56px;
   gap: 12px;
-  width: 220px;
   height: 44px;
   justify-content: center;
   align-items: center;
@@ -175,23 +174,20 @@ const HeaderBox = styled.div`
   align-items: center;
 `
 const LogoTitleBox = styled.div`
-  // width: 207.66px;
   display: inline-flex;
   justify-content: center;
   align-items: center;
   gap: 12px;
-`
-
-const ImgBox = styled.div`
-  width: 39.66px;
-  height: 27.496px;
-  flex-shrink: 0;
-  fill: #ad7d83;
   cursor: pointer;
 `
 
+const ImgBox = styled.div`
+  height: 27.496px;
+  flex-shrink: 0;
+  fill: #ad7d83;
+`
+
 const Logo = styled.img`
-  width: 39.66px;
   height: 28px;
 `
 const TitleSpan = styled.span`
@@ -211,7 +207,7 @@ const LoginButton = styled.button`
   flex-shrink: 0;
   border-radius: 8px;
   background: #69535f;
-  color: #fff;
+  color: #ffffff;
   border: none;
   text-align: center;
   font-family: Pretendard;
@@ -221,6 +217,13 @@ const LoginButton = styled.button`
   line-height: normal;
 
   cursor: pointer;
+  &:hover {
+    background-color: #986c6c;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: Pretendard;
+    font-weight: bold;
+  }
 `
 const SignUpButton = styled.button`
   display: inline-flex;
@@ -234,12 +237,21 @@ const SignUpButton = styled.button`
   flex-shrink: 0;
   color: #69535f;
   text-align: center;
+  background-color: #ffffff;
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
   cursor: pointer;
+  &:hover {
+    background-color: #fffcf6;
+    border: 1px solid #69535f;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: Pretendard;
+    font-weight: bold;
+  }
 `
 const FooterBox = styled.div`
   display: flex;
@@ -322,11 +334,9 @@ const DropdownContents = styled.div`
   font-weight: 400;
   background-color: #f9f9f9;
   flex-direction: column;
-  width: 136px;
-  /* height: 117px; */
   align-items: center;
+  width: 136px;
   border-radius: 8px;
-  /* margin-top: 58px; */
   border: 1px solid #69535f;
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
   transition: display 0.3s; /* 추가: 애니메이션 효과 */
@@ -339,7 +349,7 @@ const DropdownContents = styled.div`
 const UserNameBox = styled.div`
   display: flex;
   height: 44px;
-  padding: 14px 24px;
+  padding: 10px;
   justify-content: center;
   align-items: center;
   color: #404040;
@@ -348,7 +358,6 @@ const UserNameBox = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
-  width: 115px;
   line-height: normal;
 `
 const Bold = styled.p`
@@ -363,7 +372,6 @@ const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 50px;
   height: 50px;
   box-shadow: 3px 3px 5px 3px #c4c4c4;
   border-radius: 60px;
@@ -375,7 +383,6 @@ const DropDown = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: 136px;
   height: 58px;
   cursor: pointer;
 
@@ -417,8 +424,10 @@ const DropdownContent = styled.div`
 
   &:hover {
     background-color: #fffdf8;
-    border-radius: 8px;
+    width: 104px;
+    height: 20px;
     padding: 22px 16px 16px 16px;
+    border-radius: 8px;
     color: #69515e; /* Hover 상태의 글자색 설정 */
   }
   & svg {
