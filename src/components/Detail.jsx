@@ -243,11 +243,12 @@ const ContentImgBox = styled.div`
 
 const DetailContentsBox = styled.div`
   /* display 관련 */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  margin: 0rem 15rem 3rem;
+
   /* background 관련 */
   background: #fff;
 `
