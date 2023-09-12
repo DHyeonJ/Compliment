@@ -3,6 +3,7 @@ import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../../src/img/user.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
@@ -38,7 +39,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image} alt="" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" />
               </div>
             </ListContentt>
           </List>
