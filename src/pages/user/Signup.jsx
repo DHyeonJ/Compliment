@@ -34,7 +34,7 @@ function Signup() {
     }
   }
 
-  const Signup = async (e) => {
+  const signup = async (e) => {
     e.preventDefault()
     if (email.length === 0) {
       alert('이메일을 입력해주세요')
@@ -170,7 +170,7 @@ function Signup() {
                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn onClick={Signup}>가입하기</SignupBtn>
+                  <SignupBtn onClick={signup}>가입하기</SignupBtn>
                 </SignInputAreaBox>
               </SignForm>
             </div>
