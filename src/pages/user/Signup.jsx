@@ -150,8 +150,8 @@ function Signup() {
             <div>
               <SignForm>
                 <SignInputAreaBox>
-                  <SignupInputLabel>아이디</SignupInputLabel>
-                  <SignupInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
+                  <SignupInputLabel>이메일</SignupInputLabel>
+                  <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
                   {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
                 </SignInputAreaBox>
                 <SignInputAreaBox>

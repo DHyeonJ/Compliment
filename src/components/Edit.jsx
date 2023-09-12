@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { collection, getDoc, doc, updateDoc } from 'firebase/firestore'
 import { db, useAuth, storage } from '../firebase'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import Swal from 'sweetalert2'
 
 function Edit() {
   const navigate = useNavigate()
@@ -104,6 +105,23 @@ function Edit() {
     }
   }
 
+  const handleNavigateAway = () => {
+    if (title.trim() !== '' || content.trim() !== '') {
+      Swal.fire({
+        title: '작성 중인 글이 있습니다. ',
+        text: '정말로 이 페이지를 벗어나시겠습니까?',
+        icon: 'warning',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/listpage')
+        }
+      })
+    } else {
+      navigate('/listpage')
+    }
+  }
+
   return (
     <ContainerPageBox>
       <ContainerBox>
@@ -136,7 +154,7 @@ function Edit() {
               </div>
               <div>
                 <CancelAndAddContainerBox>
-                  <CancelContainerBox onClick={() => navigate(`/detail/${id}`)}>취소</CancelContainerBox>
+                  <CancelContainerBox onClick={handleNavigateAway}>취소</CancelContainerBox>
                   <EditListContainerBox onClick={handleEdit}>수정</EditListContainerBox>
                 </CancelAndAddContainerBox>
               </div>
