@@ -136,6 +136,7 @@ function Main() {
       alert('로그인 후에 확인 하실 수 있습니다.')
     }
   }
+  
   return (
     <MainBox>
       <ContentBox>

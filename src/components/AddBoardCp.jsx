@@ -7,7 +7,6 @@ import moment from 'moment'
 import { storage, db, auth } from '../firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
-
 const AddBoardCp = () => {
   const user = auth.currentUser
   const [title, setTitle] = useState('')
@@ -113,6 +112,7 @@ const AddBoardCp = () => {
       navigate('/listpage')
     }
   }
+
   return (
     <>
       <ContainerPageBox>
