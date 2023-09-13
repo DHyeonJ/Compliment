@@ -215,7 +215,7 @@ const Button = styled.button`
   justify-content: center;
   align-items: center;
   gap: 12px;
-  border-radius: 30%;
+  border-radius: 50%;
   color: ${({ isLiked }) => (isLiked ? 'white' : '#69535f')};
   background-color: ${({ isLiked }) => (isLiked ? '#69535f' : 'transparent')};
   border: 1px solid #69535f;
@@ -226,7 +226,7 @@ const Button = styled.button`
   &:hover {
     cursor: pointer;
     color: white;
-    background-color: #69535f;
+    background-color: #886e7c;
   }
 `
 
