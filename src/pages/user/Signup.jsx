@@ -34,8 +34,7 @@ function Signup() {
     }
   }
 
-  const Signup = async (e) => {
-    e.preventDefault()
+  const signup = async (e) => {
     if (email.length === 0) {
       alert('이메일을 입력해주세요')
     } else if (password.length === 0 || confirmPassword.length === 0) {
@@ -150,8 +149,8 @@ function Signup() {
             <div>
               <SignForm>
                 <SignInputAreaBox>
-                  <SignupInputLabel>아이디</SignupInputLabel>
-                  <SignupInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
+                  <SignupInputLabel>이메일</SignupInputLabel>
+                  <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
                   {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
@@ -170,7 +169,9 @@ function Signup() {
                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn onClick={Signup}>가입하기</SignupBtn>
+                  <SignupBtn isValidEmail={validEmail} onClick={signup} disabled={!validEmail}>
+                    가입하기
+                  </SignupBtn>
                 </SignInputAreaBox>
               </SignForm>
             </div>
@@ -300,7 +301,7 @@ const SignupInput = styled.input`
   border-bottom-width: 1;
   color: #0e0d0d;
 
-  ::placeholder {
+  &::placeholder {
     color: #d9d9d9;
     font-weight: 500;
     line-height: normal;
@@ -318,7 +319,7 @@ const SignupBtn = styled.button`
   margin-top: 48px;
   margin-bottom: 48px;
   padding: 13px 32px;
-  background: #69535f;
+  background: ${({ isValidEmail }) => (isValidEmail ? '#69535f' : '#ccc')};
   border-radius: 8px;
   border: none;
   color: #fff;
@@ -328,7 +329,7 @@ const SignupBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  cursor: pointer;
+  cursor: ${({ isValidEmail }) => (isValidEmail ? 'pointer' : 'not-allowed')};
 `
 const SignWithGoogleArea = styled.div`
   margin-left: 128px;

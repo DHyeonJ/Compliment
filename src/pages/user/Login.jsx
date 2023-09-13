@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import 'firebase/firestore'
@@ -6,16 +6,25 @@ import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 
 import { useNavigate } from 'react-router-dom'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
+import { debounce } from 'lodash'
+import { LoginComplite } from '../../components/Alert.jsx'
 function Login() {
   const navigate = useNavigate()
+  const mainMove = () => {
+    navigate('/')
+  }
   const signUpPageMove = () => {
     navigate('/signup')
   }
 
+  const notFountPageMove = () => {
+    navigate('*')
+  }
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [googleUserData, setGoogleUserData] = useState(null)
+  const [isValidEmail, setIsValidEmail] = useState(true)
 
   function handleGoogleLogin() {
     const provider = new GoogleAuthProvider()
@@ -53,10 +62,6 @@ function Login() {
     alert('사용자를 찾을 수 없습니다.')
   }
 
-  const invalidEmail = () => {
-    alert('유효하지 않은 이메일 주소입니다.')
-  }
-
   const worngPassword = () => {
     alert('비밀번호가 잘못되었습니다.')
   }
@@ -77,12 +82,11 @@ function Login() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      LoginComplite()
       navigate('/')
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
         userNotFound()
-      } else if (error.code === 'auth/invalid-email') {
-        invalidEmail()
       } else if (error.code === 'auth/wrong-password') {
         worngPassword()
       } else {
@@ -93,17 +97,36 @@ function Login() {
     setPassword('')
   }
 
+  const [validEmail, setValidEmail] = useState(true)
+
+  const validateEmail = (email) => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    return re.test(String(email).toLowerCase())
+  }
+
+  const debounceValidateEmail = debounce((email) => {
+    const result = validateEmail(email)
+    setValidEmail(result)
+  }, 500)
+
+  useEffect(() => {
+    if (email) {
+      debounceValidateEmail(email)
+    }
+  }, [email])
+
   return (
     <>
       <LoginArea>
         <div>
-          <LogoImg src={logoImg}></LogoImg>
+          <LogoImg onClick={mainMove} src={logoImg}></LogoImg>
           <LogoTextBox>칭찬을 구해요, 칭구</LogoTextBox>
         </div>
         <LoginForm>
           <LoginInputArea>
-            <LoginInputLabel>아이디</LoginInputLabel>
-            <LoginInput placeholder="아이디는 이메일 형식입니다." type="email" name="email" value={email} onChange={onChange} />
+            <LoginInputLabel>이메일</LoginInputLabel>
+            <LoginInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
+            {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
           </LoginInputArea>
           <LoginInputArea>
             <LoginInputLabel>비밀번호</LoginInputLabel>
@@ -117,7 +140,7 @@ function Login() {
           <GoogleLogoImg src={google}></GoogleLogoImg>Google로 로그인하기
         </SignWithGoogleBtn>
         <LoginTextArea>
-          <LoginText>아이디/ 비밀번호 찾기</LoginText>
+          <LoginText onClick={notFountPageMove}>아이디/ 비밀번호 찾기</LoginText>
           <LoginText onClick={signUpPageMove}> │ 회원가입</LoginText>
         </LoginTextArea>
       </LoginArea>
@@ -145,6 +168,7 @@ const LogoImg = styled.img`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  cursor: pointer;
 `
 const LogoTextBox = styled.div`
   margin-left: 275px;
@@ -191,7 +215,12 @@ const LoginInput = styled.input`
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 1;
-  color: #d9d9d9;
+  color: #1a1919;
+  &::placeholder {
+    color: #d9d9d9;
+    font-weight: 500;
+    line-height: normal;
+  }
 `
 const LoginBtn = styled.button`
   display: flex;
@@ -261,4 +290,12 @@ const LoginBlank = styled.div`
 const GoogleLogoImg = styled.img`
   width: 25px;
   height: 25px;
+`
+const DebounceTextBox = styled.div`
+  color: #e36f6f;
+  font-family: Noto Sans;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `

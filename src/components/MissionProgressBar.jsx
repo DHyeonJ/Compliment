@@ -31,16 +31,13 @@ const ProgressBar = () => {
   return (
     <>
       <TextBox>
-        <RateTitleBox>미션 달성률</RateTitleBox>
+        <RateTitleBox>미션 달성률 {mission}%</RateTitleBox>
       </TextBox>
       <ProgressInfoBox>
         <ProgressBox>
           <ProgressColorBox percentage={mission} />
         </ProgressBox>
       </ProgressInfoBox>
-      <ProgressPercentInfoBox>
-        <ProgressPercent>{mission}%</ProgressPercent>
-      </ProgressPercentInfoBox>
     </>
   )
 }
@@ -48,25 +45,20 @@ const ProgressBar = () => {
 export default ProgressBar
 const TextBox = styled.div`
   display: flex;
-  padding: 0px 40px;
-  width: 100%;
-  align-items: left;
-  gap: 8px;
   align-self: stretch;
   border-radius: 8px;
   background: var(--white, #fff);
 `
 const RateTitleBox = styled.div`
-  color: #404040;
+  color: #333333;
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
-  font-weight: 500;
+  font-weight: bold;
   line-height: 110%; /* 17.6px */
 `
 const ProgressInfoBox = styled.div`
   display: flex;
-  padding: 12px 24px;
   justify-content: center;
   align-items: flex-start;
   gap: 64px;
@@ -75,34 +67,16 @@ const ProgressInfoBox = styled.div`
 const ProgressBox = styled.div`
   width: 100%;
   display: flex;
-  padding: 8px;
   align-items: flex-start;
   flex-shrink: 0;
   align-self: stretch;
   border-radius: 20px;
-  border: 1px solid lightgrey;
+  border: 1px solid #d9d9d9;
 `
 const ProgressColorBox = styled.div`
-  width: 446px;
   height: 16px;
   flex-shrink: 0;
   border-radius: 20px;
-  background: #f6b000;
+  background: #d9af88;
   width: ${(props) => props.percentage}%;
-`
-
-const ProgressPercentInfoBox = styled.div`
-  display: flex;
-  height: 20px;
-  margin: 0 auto;
-  justify-content: flex-end;
-  align-items: center;
-`
-const ProgressPercent = styled.div`
-  color: #404040;
-  font-family: Pretendard;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 110%; /* 19.8px */
 `

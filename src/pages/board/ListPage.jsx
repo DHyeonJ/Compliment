@@ -5,13 +5,17 @@ import { styled } from 'styled-components'
 import Search from '../../components/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
-import { getLists } from '../../api/ListsApi'
+import { getLists, useIsAuthenticated } from '../../api/ListsApi'
 import { useQuery } from 'react-query'
 import moment from 'moment'
+import Loading from '../../components/Loading'
 
 function ListPage() {
   const navigate = useNavigate()
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
+
+  // 사용자가 인증되었는지 확인
+  const isAuthenticated = useIsAuthenticated()
 
   // 칭찬순, 최신순이 active할 때를 만들어주는 state
   const [activeSort, setActiveSort] = useState('latest')
@@ -42,7 +46,13 @@ function ListPage() {
   }
 
   const createBoardPageMove = () => {
-    navigate('/addboard')
+    if (isAuthenticated) {
+      // 사용자가 인증된 경우에만 "글쓰기" 페이지로 이동합니다.
+      navigate('/addboard')
+    } else {
+      // 사용자에게 로그인하도록 메시지를 표시하거나 로그인을 요청할 수도 있습니다.
+      alert('로그인 후에 글을 작성할 수 있습니다.')
+    }
   }
 
   const loadMoreData = () => {
@@ -76,44 +86,51 @@ function ListPage() {
   useEffect(() => {
     if (listsData) {
       latestSort()
+      setIsLoadingMore(false) // 데이터가 로드되면 isLoading을 false로 설정합니다
     }
   }, [listsData])
 
   console.log('listsData', listsData)
   return (
-    <ListPageBox>
-      <MenuNav />
-      <ListBox>
-        <ContentBox>
-          <BannerBox>
-            <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
-            <BannerContentBox>
-              오늘 하루는 모두에게 어떤 일이 있었을까요?
-              <br />
-              일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
-            </BannerContentBox>
-          </BannerBox>
-          <ChoiceBox>
-            <FilterBox>
-              <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
-                최신순
-              </NewSpan>
-              <BlockBox />
-              <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
-                칭찬순
-              </RankingSpan>
-            </FilterBox>
-            <SerchPlusAreaBox>
-              <Search handleSearchClick={handleSearchClick} />
-              <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
-            </SerchPlusAreaBox>
-          </ChoiceBox>
-          <ListContainer>
-            <Lists data={displayData} />
-          </ListContainer>
-        </ContentBox>
-      </ListBox>
-    </ListPageBox>
+    <>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <ListPageBox>
+          <MenuNav />
+          <ListBox>
+            <ContentBox>
+              <BannerBox>
+                <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
+                <BannerContentBox>
+                  오늘 하루는 모두에게 어떤 일이 있었을까요?
+                  <br />
+                  일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
+                </BannerContentBox>
+              </BannerBox>
+              <ChoiceBox>
+                <FilterBox>
+                  <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
+                    최신순
+                  </NewSpan>
+                  <BlockBox />
+                  <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
+                    칭찬순
+                  </RankingSpan>
+                </FilterBox>
+                <SerchPlusAreaBox>
+                  <Search handleSearchClick={handleSearchClick} />
+                  <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
+                </SerchPlusAreaBox>
+              </ChoiceBox>
+              <ListContainer>
+                <Lists data={displayData} />
+              </ListContainer>
+            </ContentBox>
+          </ListBox>
+        </ListPageBox>
+      )}
+    </>
   )
 }
 

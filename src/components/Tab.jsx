@@ -2,52 +2,110 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { getLists } from '../api/ListsApi'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import HandClap from '../img/hand-clap.png'
-//
 import { auth, db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
+import defaultimg from '../img/user.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 const Tab = () => {
   const navigate = useNavigate()
   const [currentTab, clickTab] = useState(0)
-  const menuArr = [{ name: '나의 칭구들' }, { name: '내가 작성한 댓글' }]
+  const menuArr = [{ name: '나의 칭구들' }, { name: '내가 칭찬한 글' }]
+
+  const localUser = JSON.parse(localStorage.getItem('user'))
+
   const { data: listsData, isLoading } = useQuery(['lists'], getLists)
 
   const selectMenuHandler = (index) => {
     clickTab(index)
   }
-  //
-  const user = auth.currentUser
-  const userUid = user ? user.uid : null
-  const [userData, setUserData] = useState([])
 
-  const fetchUserLists = async () => {
-    if (userUid) {
-      const listsRef = collection(db, 'lists')
-      const q = query(listsRef, where('userId', '==', userUid))
-      try {
-        const querySnapshot = await getDocs(q)
-        console.log('querySnapshot', querySnapshot)
-        const updatedUserData = []
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data()
-          userData.id = doc.id // "id" 프로퍼티에 문서 ID를 추가
-          updatedUserData.push(userData)
-        })
-        setUserData(updatedUserData)
-        return userData
-      } catch (error) {
-        console.error('Error fetching user data:', error)
-        return []
-      }
+  const queryClient = useQueryClient()
+  const user = auth.currentUser
+  const userUid = localUser?.userId
+
+  // 탭에 있는 내가 쓴 글 리스트
+
+  // "나의 칭구들" 탭에서 현재 로그인한 사용자의 이메일로 작성한 게시물을 필터링하여 표시
+  const filterMyPosts = (listsData, userEmail) => {
+    if (!listsData || !userEmail) {
+      return []
     }
-    return []
+
+    const myPosts = listsData.filter((item) => item.userEmail === userEmail)
+    return myPosts
   }
-  console.log('userData', userData)
+
   useEffect(() => {
-    fetchUserLists()
-  }, [])
+    // '내가 칭찬한 글' 탭으로 돌아갈 때 데이터를 다시 로드
+    if (currentTab === 1) {
+      queryClient.invalidateQueries('lists')
+    }
+  }, [currentTab, queryClient])
+
+  // 주석
+  const fetchUserLists = async (userUid) => {
+    if (!userUid) {
+      return []
+    }
+
+    const listsRef = collection(db, 'lists')
+    const q = query(listsRef, where('userId', '==', userUid))
+
+    try {
+      const querySnapshot = await getDocs(q)
+      const updatedUserData = []
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data()
+        userData.id = doc.id
+        updatedUserData.push(userData)
+      })
+      queryClient.setQueryData('lists', updatedUserData)
+      return updatedUserData
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+      return []
+    }
+  }
+
+  const fetchLikedPosts = async () => {
+    if (!userUid) {
+      return []
+    }
+
+    const likedPostsRef = collection(db, 'lists')
+    const q = query(likedPostsRef, where('likedUser', 'array-contains', userUid))
+
+    try {
+      const querySnapshot = await getDocs(q)
+      const likedPostsData = []
+      querySnapshot.forEach((doc) => {
+        const postData = doc.data()
+        postData.id = doc.id
+        likedPostsData.push(postData)
+      })
+      return likedPostsData
+    } catch (error) {
+      console.error('Error fetching liked posts:', error)
+      return []
+    }
+  }
+
+  const [likedPosts, setLikedPosts] = useState([])
+
+  useEffect(() => {
+    if (currentTab === 0) {
+      // '나의 칭구들' 탭에서 데이터를 가져오기
+      fetchUserLists(userUid)
+    } else if (currentTab === 1) {
+      // '내가 칭찬한 글' 탭에서 데이터를 가져오기
+      fetchLikedPosts().then((likedPostsData) => {
+        setLikedPosts(likedPostsData)
+      })
+    }
+  }, [currentTab, userUid])
 
   return (
     <>
@@ -63,47 +121,84 @@ const Tab = () => {
           {currentTab === 0 ? (
             <>
               <ListContentts>
-                {userData?.map((item) => {
-                  // id값
-                  return (
-                    <List
-                      key={item.userId}
-                      onClick={() => {
-                        navigate(`/detail/${item.id}`)
-                      }}
-                    >
-                      <ListContentt>
-                        <Contents>
-                          <ListContent>
-                            <User>
-                              <UserImg src={item.photoUrl} alt="" />
-                              <span>{item.userEmail}</span>
-                            </User>
+                {filterMyPosts(listsData, user?.email).map((item) => (
+                  <List
+                    key={item.userId}
+                    onClick={() => {
+                      navigate(`/detail/${item.id}`)
+                    }}
+                  >
+                    <ListContentt>
+                      <Contents>
+                        <ListContent>
+                          <User>
+                            <UserImg src={item.photoUrl || defaultimg} alt="" />
+                            <span>{item.userEmail}</span>
+                          </User>
 
-                            <div>
-                              <ListTitle>{item.title}</ListTitle>
-                              <ListComments>{item.comments}</ListComments>
-                            </div>
-                          </ListContent>
+                          <div>
+                            <ListTitle>{item.title}</ListTitle>
+                            <ListComments>{item.comments}</ListComments>
+                          </div>
+                        </ListContent>
 
-                          <HandClapBox>
-                            <ListDate>작성일 </ListDate>
-                            <Date>{item.Date}</Date>
-                            <Img src={HandClap} alt="HandClap" />
-                            <Likes>{item.likes}</Likes>
-                          </HandClapBox>
-                        </Contents>
+                        <HandClapBox>
+                          <ListDate>작성일 </ListDate>
+                          <Date>{item.Date}</Date>
+                          <Img src={HandClap} alt="HandClap" />
+                          <Likes>{item.likes}</Likes>
+                        </HandClapBox>
+                      </Contents>
 
-                        <div>
-                          <Thumbnail src={item.image} alt="" />
-                        </div>
-                      </ListContentt>
-                    </List>
-                  )
-                })}
+                      <div>
+                        <Thumbnail src={item.image || defualtContentsImg} alt="" />
+                      </div>
+                    </ListContentt>
+                  </List>
+                ))}
               </ListContentts>
             </>
-          ) : null}
+          ) : (
+            <>
+              <ListContentts>
+                {likedPosts?.map((item) => (
+                  <List
+                    key={item.userId}
+                    onClick={() => {
+                      navigate(`/detail/${item.id}`)
+                    }}
+                  >
+                    <ListContentt>
+                      <Contents>
+                        <ListContent>
+                          <User>
+                            <UserImg src={item.photoUrl || defaultimg} alt="" />
+                            <span>{item.userEmail}</span>
+                          </User>
+
+                          <div>
+                            <ListTitle>{item.title}</ListTitle>
+                            <ListComments>{item.comments}</ListComments>
+                          </div>
+                        </ListContent>
+
+                        <HandClapBox>
+                          <ListDate>작성일 </ListDate>
+                          <Date>{item.Date}</Date>
+                          <Img src={HandClap} alt="HandClap" />
+                          <Likes>{item.likes}</Likes>
+                        </HandClapBox>
+                      </Contents>
+
+                      <div>
+                        <Thumbnail src={item.image} alt="" />
+                      </div>
+                    </ListContentt>
+                  </List>
+                ))}
+              </ListContentts>
+            </>
+          )}
         </Desc>
       </div>
     </>
@@ -113,14 +208,14 @@ const Tab = () => {
 export default Tab
 
 const ListContentts = styled.div`
-  width: 100%;
-  height: 860px;
+  /* width: 100%; */
+  /* height: 560px; */
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -144,10 +239,12 @@ const TabMenu = styled.ul`
   gap: 36px;
   align-self: stretch;
   background: #fff;
+  padding: 20px;
 
   .submenu {
     // 기본 Tabmenu 에 대한 CSS를 구현
     display: flex;
+    justify-content: center;
     /* justify-content: space-between;
     width: 380px;
     heigth: 30px; */
@@ -160,6 +257,7 @@ const TabMenu = styled.ul`
 
   .focused {
     //선택된 Tabmenu 에만 적용되는 CSS를 구현
+    justify-content: center;
     background-color: rgb(255, 255, 255);
     border-bottom: 2px solid #69535f;
     color: rgb(21, 20, 20);
@@ -317,8 +415,8 @@ const ListDate = styled.p`
 
 const ListContent = styled.div`
   display: flex;
-  width: 1192px;
-  height: 120px;
+  /* width: 1192px;
+  height: 120px; */
   padding: 0px 24px;
   flex-direction: column;
   align-items: flex-start;

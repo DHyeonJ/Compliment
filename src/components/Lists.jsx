@@ -3,10 +3,10 @@ import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
 import defaultProfileImage from '../../src/img/user.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
-  console.log('data', data)
 
   return (
     <>
@@ -23,7 +23,7 @@ const Lists = ({ data }) => {
                 <ListContent>
                   <User>
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
-                    <span>{item.userEmail}</span>
+                    <span>{item.userEmail.split('@')[0]}</span>
                   </User>
                   <div>
                     <ListTitle>{item.title}</ListTitle>
@@ -38,7 +38,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image} alt="" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" />
               </div>
             </ListContentt>
           </List>

@@ -4,8 +4,11 @@ import { styled } from 'styled-components'
 import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
+import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
+import defualtContentsImg from '../img/defaultContentImg.png'
+import likedImg from '../img/hand-clap.png'
 
 function Detail() {
   const [data, setData] = useState(null)
@@ -13,7 +16,13 @@ function Detail() {
   const auth = useAuth()
   const navigate = useNavigate()
   const [isLiked, setIsLiked] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const admin = 'admin@admin.com'
+
+  //
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
   // 좋아요 상태 초기화를 위한 useEffect
   useEffect(() => {
@@ -77,23 +86,25 @@ function Detail() {
     await toggleLike()
   }
   const fetchData = async () => {
+    setIsLoading(true) // 데이터를 가져오는 동안 로딩 상태를 true로 설정
     try {
       const docRef = doc(db, 'lists', id)
       const docSnap = await getDoc(docRef)
       console.log(docSnap.data())
       setData(docSnap.data())
+      setIsLoading(false) // 데이터를 성공적으로 가져온 후 로딩 상태를 false로 설정
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('데이터 가져오는 중 오류 발생:', error)
+      setIsLoading(false) // 오류가 발생한 경우 로딩 상태를 false로 설정
     }
   }
-  const detailItem = data
   useEffect(() => {
     // Firestore에서 데이터 가져오기
     fetchData()
   }, [])
   // 삭제 기능
   const handleDelete = async () => {
-    if (auth.currentUser && (auth.currentUser.email === detailItem.userEmail || auth.currentUser.email === admin)) {
+    if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
       try {
         await deleteDoc(doc(db, 'lists', id))
         console.log('문서가 성공적으로 삭제되었습니다!')
@@ -126,7 +137,7 @@ function Detail() {
   // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
   const renderEditDeleteButtons = () => {
     if (!data) {
-      // detailItem이 없는 경우에 대한 처리
+      // data가 없는 경우에 대한 처리
       return null
     }
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
@@ -142,55 +153,160 @@ function Detail() {
 
   return (
     <>
-      {data && (
-        <DetailContentsBox key={data.id}>
-          {/* 제목과 작성자 정보 */}
-          <HeaderBox>
-            <HeaderContentBox>
-              <TitleBox>{data.title}</TitleBox>
-              <MidleTitleBox>
-                <UserBox>
-                  <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                  <UserName>{data.userEmail}</UserName>
-                  <DateBox>작성일 {data.Date}</DateBox>
-                </UserBox>
-                {renderEditDeleteButtons()}
-              </MidleTitleBox>
-            </HeaderContentBox>
-          </HeaderBox>
-          {/* 내용과 이미지 */}
-          <ContentBodyBox>
-            <ContentImgBox>
-              <ContentImg src={data.image} alt="" />
-            </ContentImgBox>
-            <BodyContent>{data.comments}</BodyContent>
-          </ContentBodyBox>
-          {/* "좋아요" 버튼 추가 */}
-          <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-          <span>{data ? data.likes : 0}</span>
-          {/* 댓글 영역 */}
-          <CommentAreaBox>
-            <Reply />
-          </CommentAreaBox>
-        </DetailContentsBox>
+      {isLoading ? ( // 로딩 중인 경우 로딩 콘텐츠를 렌더링
+        <Loading />
+      ) : (
+        data && (
+          <DetailContentsBox key={data.id}>
+            {/* 제목과 작성자 정보 */}
+            <HeaderBox>
+              <HeaderContentBox>
+                <TitleBox>{data.title}</TitleBox>
+                <MidleTitleBox>
+                  <UserBox>
+                    <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
+                    <UserName>{data.userEmail.split('@')[0]}</UserName>
+                    <DateBox>작성일 {data.Date}</DateBox>
+                  </UserBox>
+                  {renderEditDeleteButtons()}
+                </MidleTitleBox>
+              </HeaderContentBox>
+            </HeaderBox>
+            {/* 내용과 이미지 */}
+            {/* 등록된 이미지가 없을 경우 디폴트 이미지가 보여지도록 수정하였습니다.  */}
+            <ContentBodyBox>
+              {data && data.image ? <ContentImg src={data.image} alt="" /> : <ContentDefualtImg src={defualtContentsImg} alt="" />}
+              <BodyContent>{data.comments}</BodyContent>
+            </ContentBodyBox>
+            {/* "좋아요" 버튼 추가 */}
+            <ButtonCircle onClick={handleLikeButtonClick}>
+              <Hands src={likedImg} alt="" />
+              <Likes>{data ? data.likes : 0}</Likes>
+              {/* {isLiked ? '칭찬 취소' : '칭찬해요'} */}
+            </ButtonCircle>
+            {/* 댓글 영역 */}
+            <CommentAreaBox>
+              <Reply />
+            </CommentAreaBox>
+          </DetailContentsBox>
+        )
       )}
     </>
   )
 }
 export default Detail
 
+const Likes = styled.div`
+  padding: 0;
+`
+
+const ButtonCircle = styled.button`
+  width: 56px;
+  height: 56px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 2px 3px 4px #868284;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  gap: 5px;
+  color: ${({ isLiked }) => (isLiked ? 'white' : '#986C6C')};
+  background-color: ${({ isLiked }) => (isLiked ? '#986C6C' : 'transparent')};
+  border: 1px solid #986c6c;
+  margin-bottom: 44px;
+  color: white;
+  background-color: #986c6c;
+  /* animation 관련 */
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #69535f;
+  }
+
+  & img {
+    background-color: inherit;
+  }
+`
+
+const Hands = styled.img`
+  display: inline-block;
+  width: 21.555px;
+  height: 23.695px;
+  margin-top: 8px;
+  flex-shrink: 0;
+  background-color: #986c6c;
+
+  /* transition: all ease-in-out 0.1s; */
+  &:hover {
+    background-color: #69535f;
+    transform: scale(1.08);
+  }
+`
+
+const Button = styled.button`
+  display: flex;
+  width: 96px;
+  height: 36px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: var(--text01_404040, #404040);
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 137.5% */
+  /* animation 관련 */
+  &:hover {
+    cursor: pointer;
+    display: flex;
+    width: 96px;
+    height: 36px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
+    background: #fff;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 137.5% */
+  }
+`
+
+const DetailAreaBox = styled.div`
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+`
 const ContentImgBox = styled.div`
   width: 900px;
   height: 480px;
 `
 
+const ContentDefualtImg = styled.img`
+  width: 400px;
+  height: auto;
+`
 const DetailContentsBox = styled.div`
   /* display 관련 */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  margin: 0rem 15rem 3rem;
+
   /* background 관련 */
   background: #fff;
 `
@@ -246,6 +362,7 @@ const UserImg = styled.img`
   /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
+  border-radius: 60px;
 `
 const UserName = styled.div`
   /* border 관련 */
@@ -270,27 +387,30 @@ const DateBox = styled.div`
   font-style: normal;
   font-weight: 400;
 `
+
 const ButtonBox = styled.div`
   /* display 관련 */
   display: flex;
   gap: 1rem;
 `
-const Button = styled.button`
-  /* display 관련 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* size 관련 */
-  width: 6rem;
-  height: 2.25rem;
-  /* background 관련 */
-  background: #fff;
-  /* border 관련 */
+
+const LikeButton = styled.button`
+  width: 154px;
+  height: 3.25rem;
   border-radius: 0.5rem;
-  border: 1px solid #d9d9d9;
-  /* animation 관련 */
-  cursor: pointer;
+  margin-bottom: 5px;
+  color: ${({ isLiked }) => (isLiked ? '#FFFBF3' : ' #69535F;')};
+  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #69535F;')};
+  background-color: ${({ isLiked }) => (isLiked ? '#69535F' : 'none')};
+  &:hover {
+    cursor: pointer;
+    border: 3px solid #c7c3b8;
+  }
+`
+
+const BtnSpan = styled.span`
+  display: inline-block;
+  margin-right: 10px;
 `
 const ContentBodyBox = styled.div`
   /* display 관련 */
