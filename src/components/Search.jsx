@@ -12,24 +12,23 @@ const Search = ({ handleSearchClick }) => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      setValue(inputValue)
+      handleSearchClick(value)
     }
   }
 
   return (
-    <>
-      <SearchBox>
-        <SearchIcon
-          icon={faMagnifyingGlass}
-          onClick={() => {
-            handleSearchClick(value)
-          }}
-        />
-        <KeywordInput type="text" placeholder="찾고 싶은 이야기를 검색하세요." value={value} onChange={handleSearchChange} />
-      </SearchBox>
-    </>
+    <SearchBox>
+      <KeywordInput type="text" placeholder="찾고 싶은 이야기를 검색하세요." value={value} onChange={handleSearchChange} onKeyPress={handleKeyPress} />
+      <SearchIcon
+        icon={faMagnifyingGlass}
+        onClick={() => {
+          handleSearchClick(value)
+        }}
+      />
+    </SearchBox>
   )
 }
+
 export default Search
 
 const SearchBox = styled.div`
