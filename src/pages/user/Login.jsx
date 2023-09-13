@@ -24,6 +24,7 @@ function Login() {
   const [password, setPassword] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [googleUserData, setGoogleUserData] = useState(null)
+  const [isValidEmail, setIsValidEmail] = useState(true)
 
   function handleGoogleLogin() {
     const provider = new GoogleAuthProvider()
