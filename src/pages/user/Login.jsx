@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
 import { debounce } from 'lodash'
-
+import { LoginComplite } from '../../components/Alert.jsx'
 function Login() {
   const navigate = useNavigate()
   const mainMove = () => {
@@ -24,6 +24,7 @@ function Login() {
   const [password, setPassword] = useState('')
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [googleUserData, setGoogleUserData] = useState(null)
+  const [isValidEmail, setIsValidEmail] = useState(true)
 
   function handleGoogleLogin() {
     const provider = new GoogleAuthProvider()
@@ -81,6 +82,7 @@ function Login() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      LoginComplite()
       navigate('/')
     } catch (error) {
       if (error.code === 'auth/user-not-found') {

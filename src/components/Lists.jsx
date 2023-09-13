@@ -7,7 +7,6 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
-  console.log('data', data)
 
   return (
     <>
@@ -24,7 +23,7 @@ const Lists = ({ data }) => {
                 <ListContent>
                   <User>
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
-                    <span>{item.userEmail}</span>
+                    <span>{item.userEmail.split('@')[0]}</span>
                   </User>
                   <div>
                     <ListTitle>{item.title}</ListTitle>

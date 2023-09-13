@@ -35,7 +35,6 @@ function Signup() {
   }
 
   const signup = async (e) => {
-    e.preventDefault()
     if (email.length === 0) {
       alert('이메일을 입력해주세요')
     } else if (password.length === 0 || confirmPassword.length === 0) {
@@ -170,7 +169,9 @@ function Signup() {
                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn onClick={signup}>가입하기</SignupBtn>
+                  <SignupBtn isValidEmail={validEmail} onClick={signup} disabled={!validEmail}>
+                    가입하기
+                  </SignupBtn>
                 </SignInputAreaBox>
               </SignForm>
             </div>
@@ -318,7 +319,7 @@ const SignupBtn = styled.button`
   margin-top: 48px;
   margin-bottom: 48px;
   padding: 13px 32px;
-  background: #69535f;
+  background: ${({ isValidEmail }) => (isValidEmail ? '#69535f' : '#ccc')};
   border-radius: 8px;
   border: none;
   color: #fff;
@@ -328,7 +329,7 @@ const SignupBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  cursor: pointer;
+  cursor: ${({ isValidEmail }) => (isValidEmail ? 'pointer' : 'not-allowed')};
 `
 const SignWithGoogleArea = styled.div`
   margin-left: 128px;

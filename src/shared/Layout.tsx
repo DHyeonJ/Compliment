@@ -14,6 +14,7 @@ import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
 import { faArrowRightFromBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons'
+import { Logout } from '../components/Alert.jsx'
 interface User {
   uid: string | null
   email: string | null
