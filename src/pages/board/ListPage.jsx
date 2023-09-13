@@ -13,7 +13,7 @@ import { observe } from 'react-intersection-observer'
 
 function ListPage() {
   const navigate = useNavigate()
-
+  
   const divRef = useRef(null)
 
   // 실제로 라이브러리에서 제공하는 변수
@@ -28,15 +28,18 @@ function ListPage() {
 
     const { fetchData, totalCount } = await getLists(count)
 
+
     if (fetchData.length === totalCount) {
       setHasNext(false)
     } else {
       setHasNext(true)
     }
 
+
     setList(fetchData)
     setLoading(false)
   }, [count])
+
 
   useEffect(() => {
     fetchDate()
@@ -46,6 +49,7 @@ function ListPage() {
   useEffect(() => {
     if (!divRef.current) return
 
+
     const observer = new IntersectionObserver(
       ([{ isIntersecting }]) => {
         if (isIntersecting) {
@@ -54,6 +58,7 @@ function ListPage() {
       },
       { root: null, rootMargin: '0px', threshold: 0.5 },
     )
+
 
     observer.observe(divRef.current)
   }, [])
@@ -67,6 +72,7 @@ function ListPage() {
 
   //   return data
   // })
+
 
   // 사용자가 인증되었는지 확인
   const isAuthenticated = useIsAuthenticated()
@@ -177,7 +183,8 @@ function ListPage() {
               </ChoiceBox>
               <ListContainer>
                 <Lists data={list} />
-                {hasNext && (
+{hasNext && (
+
                   <div style={{ border: '3px solid black', height: '50px' }} ref={divRef}>
                     loading...
                   </div>
