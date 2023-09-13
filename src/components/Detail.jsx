@@ -9,6 +9,7 @@ import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
 import likedImg from '../img/hand-clap.png'
+
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()
@@ -178,11 +179,11 @@ function Detail() {
               <BodyContent>{data.comments}</BodyContent>
             </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
-            <Button onClick={handleLikeButtonClick}>
+            <ButtonCircle onClick={handleLikeButtonClick}>
               <Hands src={likedImg} alt="" />
-              {data ? data.likes : 0}
+              <Likes>{data ? data.likes : 0}</Likes>
               {/* {isLiked ? '칭찬 취소' : '칭찬해요'} */}
-            </Button>
+            </ButtonCircle>
             {/* 댓글 영역 */}
             <CommentAreaBox>
               <Reply />
@@ -195,38 +196,92 @@ function Detail() {
 }
 export default Detail
 
+const Likes = styled.div`
+  padding: 0;
+`
+
+const ButtonCircle = styled.button`
+  width: 56px;
+  height: 56px;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 2px 3px 4px #868284;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  gap: 5px;
+  color: ${({ isLiked }) => (isLiked ? 'white' : '#986C6C')};
+  background-color: ${({ isLiked }) => (isLiked ? '#986C6C' : 'transparent')};
+  border: 1px solid #986c6c;
+  margin-bottom: 44px;
+  color: white;
+  background-color: #986c6c;
+  /* animation 관련 */
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #69535f;
+  }
+
+  & img {
+    background-color: inherit;
+  }
+`
+
 const Hands = styled.img`
   display: inline-block;
-  width: 32px;
-  height: 32px;
-  background-color: #69535f;
-  transition: all ease-in-out 0.1s;
+  width: 21.555px;
+  height: 23.695px;
+  margin-top: 8px;
+  flex-shrink: 0;
+  background-color: #986c6c;
+
+  /* transition: all ease-in-out 0.1s; */
   &:hover {
+    background-color: #69535f;
     transform: scale(1.08);
   }
 `
 
 const Button = styled.button`
-  font-size: 20px;
-  font-weight: 700;
-  box-shadow: 2px 3px 4px #868284;
   display: flex;
-  padding: 20px 20px;
+  width: 96px;
+  height: 36px;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  border-radius: 50%;
-  color: ${({ isLiked }) => (isLiked ? 'white' : '#69535f')};
-  background-color: ${({ isLiked }) => (isLiked ? '#69535f' : 'transparent')};
-  border: 1px solid #69535f;
-  margin-bottom: 44px;
-  color: white;
-  background-color: #69535f;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  color: var(--text01_404040, #404040);
+  font-family: Pretendard;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px; /* 137.5% */
   /* animation 관련 */
   &:hover {
     cursor: pointer;
-    color: white;
-    background-color: #886e7c;
+    display: flex;
+    width: 96px;
+    height: 36px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
+    background: #fff;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 137.5% */
   }
 `
 
