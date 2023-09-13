@@ -145,7 +145,7 @@ const AddBoardCp = () => {
 
               <ButtonsBox>
                 <div>
-                  <CustomFileInput ref={fileInput} type="file" onChange={handleChange} />
+                  <CustomFileInput ref={fileInput} type="file" accept="image/*" onChange={handleChange} />
                   <span>{fileName}</span>
                   <CustomFileInputLabel htmlFor="fileInput" onClick={handleUploadClick}>
                     이미지 업로드
