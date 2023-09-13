@@ -94,7 +94,7 @@ function Mypage() {
 export default Mypage
 const MypageBox = styled.div`
   display: flex;
-  height: 100vh;
+  /* height: 100vh; */
   margin-top: 84px;
   flex-direction: column;
   align-items: center;
@@ -166,8 +166,8 @@ const RateBox = styled.div`
 `
 const ListBox = styled.div`
   display: flex;
-  width: 880px;
-  height: 812px;
+  /* width: 880px;
+  height: 812px; */
   padding: 0px 88px;
   justify-content: center;
   align-items: flex-start;
