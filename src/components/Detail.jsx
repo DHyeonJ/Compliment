@@ -8,6 +8,7 @@ import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
+import likedImg from '../img/hand-clap.png'
 function Detail() {
   const [data, setData] = useState(null)
   const { id } = useParams()

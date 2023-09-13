@@ -7,9 +7,9 @@ import { collection, getDocs, orderBy, limit, query, where } from 'firebase/fire
 import { db, auth } from '../firebase.js'
 import defaultProfileImage from '../img/anonymous.png'
 interface Images {
+  userEmail: string
   id: string
   image: string
-  nickname: string
 }
 
 interface Reply {
@@ -19,6 +19,7 @@ interface Reply {
 
 function Main() {
   const [images, setImages] = useState<Images[]>([])
+
   useEffect(() => {
     // 'lists' 컬렉션에서 칭찬순으로 상위 10개의 데이터 가져오기
     const fetchData = async () => {
@@ -28,12 +29,15 @@ function Main() {
           orderBy('likes', 'desc'), // 'likes' 필드를 내림차순으로 정렬
           limit(10), // 상위 10개의 문서만 가져오기
         )
+
         const querySnapshot = await getDocs(q)
+
         const data = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           image: doc.data().photoURL,
-          nickname: doc.data().nickname,
+          userEmail: doc.data().userEmail,
         }))
+
         setImages(data)
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -49,8 +53,8 @@ function Main() {
       try {
         const q = query(
           collection(db, 'reply'), // 'reply' 컬렉션을 대상으로 쿼리 설정
-          orderBy('userEmail'), // 'userEmail' 필드를 기준으로 정렬
-          limit(50), // TOP 10개의 문서만 가져오기
+          orderBy('userEmail', 'desc'), // 'userEmail' 필드를 기준으로 정렬
+          limit(10),
         )
 
         const querySnapshot = await getDocs(q)
@@ -61,7 +65,6 @@ function Main() {
           querySnapshot.docs.map(async (doc) => {
             const data = doc.data() as Reply
             const { userEmail } = data
-
             if (userEmail in userEmailCountMap) {
               userEmailCountMap[userEmail]++
             } else {
@@ -101,40 +104,27 @@ function Main() {
     fetchData()
   }, [])
 
-  console.log('user', topUserList)
-  const topUserImages = topUserList.map((user) => user.photoURL)
-  const imageUrls = images.map((item) => item.image)
-
-  // 가져온 url저장하는 빈배열
-  const combinedImages = []
-
-  // 두 배열 중 길이가 작은 것에 맞춰 반복문\.
-  const minLength = Math.min(topUserImages.length, imageUrls.length)
-
-  for (let i = 0; i < minLength; i++) {
-    combinedImages.push(topUserImages[i])
-    combinedImages.push(imageUrls[i])
-  }
-
-  // 만약 한 쪽 배열이 다른 쪽보다 요소가 더 많다면 남은 요소들도 추가
-  if (topUserImages.length > minLength) {
-    for (let i = minLength; i < topUserImages.length; i++) {
-      combinedImages.push(topUserImages[i])
+  const combinedUsers: Reply[] = []
+  for (let i = 0; i < Math.max(topUserList.length, images.length); i++) {
+    if (i < topUserList.length) {
+      combinedUsers.push(topUserList[i])
     }
-  } else if (imageUrls.length > minLength) {
-    for (let i = minLength; i < imageUrls.length; i++) {
-      combinedImages.push(imageUrls[i])
+    if (i < images.length) {
+      combinedUsers.push({ userEmail: images[i].userEmail, photoURL: images[i].image })
     }
   }
-  const navigator = useNavigate()
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+
+  const navigate = useNavigate()
   const listPageMove = () => {
-    navigator('/listpage')
+    navigate('/listpage')
   }
   const missionPageMove = () => {
     if (auth.currentUser) {
-      navigator('/missionpage')
+      navigate('/missionpage')
     } else {
       alert('로그인 후에 확인 하실 수 있습니다.')
+      navigate('/login')
     }
   }
   return (
@@ -142,13 +132,21 @@ function Main() {
       <ContentBox>
         <Slide />
         <RankInfo>
-          <RankTitleBox>이번 달도 잘 했어</RankTitleBox>
+          <RankTitleBox>Best 칭구 Ranking!</RankTitleBox>
+          <SubTitleBox>
+            칭찬 <b className="replyRanking">댓글</b>과 <b className="complimentRanking">칭찬</b>을 많이 받은 글에 대한 상위 5명씩 교차로 실시간으로 순위가 산정이 되고 있습니다! 지금 랭킹에 도전해보세요!
+          </SubTitleBox>
           <RankUserBox>
-            {combinedImages.slice(0, 10).map((imageUrl, index) => (
-              <RankUserInfo key={index}>
-                <RankProFileBox isOdd={index % 2 !== 0} src={imageUrl ?? defaultProfileImage} alt={`image-${index}`}></RankProFileBox>{' '}
-              </RankUserInfo>
-            ))}
+            {combinedUsers.slice(0, 10).map((user, index) => {
+              const email = user.userEmail
+              const localStorageUserId = email?.split('@')[0]
+              return (
+                <RankUserInfo key={index}>
+                  <RankProFileBox isOdd={index % 2 !== 0} src={user.photoURL ?? defaultProfileImage} alt={`image-${index}`}></RankProFileBox>
+                  <RankNickName>{localStorageUserId}</RankNickName>
+                </RankUserInfo>
+              )
+            })}
           </RankUserBox>
         </RankInfo>
         <LinkPageBox>
@@ -160,13 +158,11 @@ function Main() {
             </ListContentSpan>
           </ListPageBox>
           <MissionPageBox onClick={missionPageMove}>
-            <MissionContentBox>
-              <MissionTitle>미션 수행 하러가기</MissionTitle>
-              <MissionContentSpan>
-                칭찬과 함께 긍정의 경험 나누기
-                <br /> 어디서 부터 시작할지 막연하신신가요?
-              </MissionContentSpan>
-            </MissionContentBox>
+            <MissionTitle>미션 수행 하러가기</MissionTitle>
+            <MissionContentSpan>
+              칭찬과 함께 긍정의 경험 나누기
+              <br /> 어디서 부터 시작할지 막연하신가요?
+            </MissionContentSpan>
           </MissionPageBox>
         </LinkPageBox>
       </ContentBox>
@@ -180,25 +176,41 @@ const MainBox = styled.div`
   align-items: center;
   flex-direction: column;
   width: 100vw;
-  height: 1101px;
+  height: 1200px;
 `
 const ContentBox = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
+  align-items: center;
+  gap: 80px;
 `
 const RankInfo = styled.div`
-  margin-top: 56px;
-  /* height: 271px; */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 `
 const RankTitleBox = styled.div`
   font-size: 28px;
   color: #404040;
   font-weight: bold;
 `
+const SubTitleBox = styled.div`
+  font-size: 20px;
+  color: #404040;
+  font-weight: 600;
+  font-family: pretendard;
+  .replyRanking {
+    color: #d9876d;
+    font-weight: bold;
+  }
+  .complimentRanking {
+    color: #f6b000;
+    font-weight: bold;
+  }
+`
 const RankUserBox = styled.div`
-  /* height: 210px; */
-  border: 1px solid #d9d9d9;
   margin-top: 16px;
   border-radius: 8px;
   display: flex;
@@ -221,13 +233,11 @@ const RankProFileBox = styled.img<{ isOdd: boolean }>`
   background-color: #d9d9d9;
   border-radius: 50%;
   border: 4px solid ${(props) => (props.isOdd ? '#F6B000' : '#D9876D')};
-  cursor: pointer;
 `
 const RankNickName = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  /* height: 17px; */
   margin-top: 12px;
   font-size: 14px;
   color: #000;
@@ -238,21 +248,26 @@ const RankNickName = styled.div`
 `
 const LinkPageBox = styled.div`
   display: flex;
-  flex-direction: row;
-  margin-top: 56px;
-  gap: 32px;
+  width: 100%;
 `
 const ListPageBox = styled.div`
+  width: 100%;
+  height: 264.5px;
+  box-sizing: border-box;
+  margin-right: 32px;
   display: flex;
-  padding: 44px 280px 88px 44px;
+  padding: 44px;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
-  flex: 1 0 0;
   border-radius: 20px;
   background: #feedcd;
   box-shadow: 5px 5px 5px -5px #333;
   cursor: pointer;
+  transition: 0.8s;
+  &:hover {
+    width: 130%;
+  }
 `
 const ListTitle = styled.h2`
   color: var(--text01_404040, #404040);
@@ -263,7 +278,6 @@ const ListTitle = styled.h2`
   line-height: normal;
 `
 const ListContentSpan = styled.span`
-  /* width: 380px; */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 20px;
@@ -272,27 +286,24 @@ const ListContentSpan = styled.span`
   line-height: 28px; /* 140% */
 `
 const MissionPageBox = styled.div`
+  width: 100%;
+  height: 264.5px;
+  box-sizing: border-box;
   display: flex;
-  align-items: center;
-  /* width: 704px; */
-  /* height: 240px; */
+  padding: 44px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
   border-radius: 20px;
   background-color: #f5f6cd;
   box-shadow: 5px 5px 5px -5px #333;
   cursor: pointer;
-`
-const MissionContentBox = styled.div`
-  display: flex;
-  padding: 44px 280px 88px 44px;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 15px;
-  flex: 1 0 0;
-  border-radius: 20px;
-  background: #f5f6cd;
+  transition: 0.8s;
+  &:hover {
+    width: 130%;
+  }
 `
 const MissionTitle = styled.h2`
-  /* width: 281px; */
   color: var(--text01_404040, #404040);
   font-family: LINE Seed Sans KR;
   font-size: 28px;
@@ -301,7 +312,6 @@ const MissionTitle = styled.h2`
   line-height: normal;
 `
 const MissionContentSpan = styled.span`
-  /* width: 380px; */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 20px;
