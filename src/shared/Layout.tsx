@@ -182,13 +182,12 @@ const LogoTitleBox = styled.div`
 `
 
 const ImgBox = styled.div`
-  height: 27.496px;
   flex-shrink: 0;
   fill: #ad7d83;
 `
 
 const Logo = styled.img`
-  height: 28px;
+  height: 75px;
 `
 const TitleSpan = styled.span`
   font-family: 'LINE SEED Sans KR';
@@ -332,10 +331,10 @@ const DropdownContents = styled.div`
   position: absolute;
   z-index: 1;
   font-weight: 400;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   flex-direction: column;
   align-items: center;
-  width: 136px;
+  /* width: 136px; */
   border-radius: 8px;
   border: 1px solid #69535f;
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
@@ -408,7 +407,7 @@ const MypageBox = styled.div`
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `
 const DropdownContent = styled.div`
@@ -419,16 +418,16 @@ const DropdownContent = styled.div`
   align-items: flex-end;
   cursor: pointer;
   gap: 6px;
-  color: #69535f4c;
+  color: #69535f;
   border-radius: 8px 8px 0px 0px;
+  font-weight: 500;
 
   &:hover {
-    background-color: #fffdf8;
+    background-color: #986c6c;
     width: 104px;
-    height: 20px;
-    padding: 22px 16px 16px 16px;
     border-radius: 8px;
-    color: #69515e; /* Hover 상태의 글자색 설정 */
+    color: #fffbf3; /* Hover 상태의 글자색 설정 */
+    font-weight: bold;
   }
   & svg {
     width: 24px;

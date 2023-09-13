@@ -1,6 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
+import { auth } from '../firebase.js'
 
 export default function MenuNav() {
   const navigate = useNavigate()
@@ -10,9 +11,13 @@ export default function MenuNav() {
   }
 
   const missionPageMove = () => {
-    navigate('/missionpage')
+    if (auth.currentUser) {
+      navigate('/missionpage')
+    } else {
+      alert('로그인 후에 확인 하실 수 있습니다.')
+      navigate('/login')
+    }
   }
-
   return (
     <NavBox>
       <ListBox isActive={location.pathname === '/listpage'}>

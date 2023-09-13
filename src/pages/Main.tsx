@@ -54,6 +54,7 @@ function Main() {
         const q = query(
           collection(db, 'reply'), // 'reply' 컬렉션을 대상으로 쿼리 설정
           orderBy('userEmail', 'desc'), // 'userEmail' 필드를 기준으로 정렬
+          limit(10),
         )
 
         const querySnapshot = await getDocs(q)
@@ -114,15 +115,16 @@ function Main() {
   }
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 
-  const navigator = useNavigate()
+  const navigate = useNavigate()
   const listPageMove = () => {
-    navigator('/listpage')
+    navigate('/listpage')
   }
   const missionPageMove = () => {
     if (auth.currentUser) {
-      navigator('/missionpage')
+      navigate('/missionpage')
     } else {
       alert('로그인 후에 확인 하실 수 있습니다.')
+      navigate('/login')
     }
   }
   return (
