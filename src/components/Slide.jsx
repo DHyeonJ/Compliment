@@ -15,23 +15,30 @@ function Slide() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    draggable: false,
+    draggable: true,
     autoplay: true, // 자동 스크롤 사용 여부
-    autoplaySpeed: 10000, // 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
+    autoplaySpeed: 5000, // 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
     responsive: [
       // 반응형 웹 구현 옵션
       {
         breakpoint: 960, // 화면 사이즈 960px일 때
         settings: {
           // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-          slidesToShow: 3,
+          slidesToShow: 1,
         },
       },
       {
         breakpoint: 768, // 화면 사이즈 768px일 때
         settings: {
           // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
-          slidesToShow: 2,
+          slidesToShow: 1,
+        },
+      },
+      {
+        breakpoint: 350, // 화면 사이즈 768px일 때
+        settings: {
+          // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
+          slidesToShow: 1,
         },
       },
     ],
@@ -40,7 +47,7 @@ function Slide() {
     {
       title: '칭찬을 구해요, 칭구',
       middeleTitle: '칭찬에 익숙해지세요.',
-      content: '우리는 일상 속에서 자랑스러운 순간들을 늘 경험하고 있습니다. 오늘도 내 소중한 순간들을 그냥 흘려보내고 있지는 않으신가요? 이런 순간들에 대해 때론, 인정과 칭찬이 필요한 법입니다.',
+      content: '우리는 일상 속에서 자랑스러운 순간들을 늘 경험하고 있습니다.\n 오늘도 내 소중한 순간들을 그냥 흘려보내고 있지는 않으신가요? \n이런 순간들에 대해 때론, 인정과 칭찬이 필요한 법입니다.',
       img: mainBanner1Image,
     },
     {
@@ -60,7 +67,6 @@ function Slide() {
   return (
     <StyledSlider {...settings}>
       {data?.map((item, index) => (
-        // 이친구는 무조건 있어야함
         <div key={index}>
           <Box>
             <BannerContents>
@@ -84,16 +90,13 @@ const StyledSlider = styled(Slider)`
   align-items: center;
   border-radius: 20px;
   background: #f4f1e9;
-  gap: 16px;
+  height: 450px;
+  width: 100%;
   .slick-slide {
     margin: 0 auto;
   }
   .slick-list {
-    width: 1279px;
-    height: 328px;
-  }
-  .slick-track {
-    height: 328px;
+    width: 1280px;
   }
   .slick-dots {
     position: absolute;
@@ -127,13 +130,11 @@ const Box = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 1244px;
-  height: 328px;
+  width: 100%;
+  margin: 0 auto;
 `
 
 const BannerContent = styled.div`
-  /* width: 451px; */
-  height: 84px;
   color: #000;
   font-family: LINE Seed Sans KR;
   font-size: 18px;
@@ -144,7 +145,6 @@ const BannerContent = styled.div`
 `
 
 const BannermiddleTitle = styled.div`
-  /* width: 366px; */
   height: 36px;
   color: #000;
   font-family: LINE Seed Sans KR;
@@ -155,7 +155,6 @@ const BannermiddleTitle = styled.div`
 `
 
 const BannerTitle = styled.div`
-  /* width: 541px; */
   height: 64px;
   color: #000;
   font-family: LINE Seed Sans KR;
@@ -166,18 +165,23 @@ const BannerTitle = styled.div`
 `
 
 const BannerContents = styled.div`
-  /* width: 366px; */
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
+  justify-content: center;
+  height: 450px;
+  padding-left: 44px;
+  box-sizing: border-box;
 `
 
 const ImgInfo = styled.div`
-  /* width: 300px; */
-  height: 328px;
+  height: 450px;
   flex: 1;
   background-image: ${(props) => `url(${props.url})`};
   background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  border-radius: 20px;
 `
