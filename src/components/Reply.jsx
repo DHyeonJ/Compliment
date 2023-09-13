@@ -58,6 +58,9 @@ function Reply() {
           updatedReplyData.push(replyData)
         })
         setReplyData(updatedReplyData)
+
+        const totalCommentCount = querySnapshot.size
+        setTotalComments(totalCommentCount)
       } catch (error) {
         console.error('댓글 가져오기 오류:', error)
       }
@@ -95,6 +98,7 @@ function Reply() {
       await addReply({ newReplyList, replyId })
       setReplyData([...replyData, newReplyList])
       setReplyContent('')
+      updateTotalComments()
     } catch (error) {
       console.error('문서 추가 오류: ', error)
     }
@@ -206,63 +210,74 @@ function Reply() {
         <img src={commentImg} alt="" />
         칭찬 댓글 ({totalComments}개) {/* totalComments를 추가하여 표시 */}
       </CommentHeaderBox>
-      <CommentBox>
-        <CommentBodyBox>
-          {replyData?.map((comment) => (
-            <CommentAreaBox key={comment.id}>
-              {isEditing && editingReplyId === comment.id ? (
-                <div>
-                  <UserBox>
-                    <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                  </UserBox>
-                  <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
-                  <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
-                  <DateBox>작성일 {comment.Date}</DateBox>
-                </div>
-              ) : (
-                <>
-                  <UserBox>
-                    <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                  </UserBox>
-                  <CommentTextBox>{comment.reply}</CommentTextBox>
-                  <DateBox>작성일 {comment.Date}</DateBox>
 
-                  <BtnAreaBox>
-                    {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
-                      <UserBtnBox>
-                        <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
-                        <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
-                      </UserBtnBox>
-                    )}
-                  </BtnAreaBox>
-                </>
-              )}
-            </CommentAreaBox>
-          ))}
-        </CommentBodyBox>
-      </CommentBox>
-      {/* "더 보기" 버튼 추가 */}
-      {replyData.length < totalComments && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+      <Boxs>
+        <CommentBox>
+          <CommentBodyBox>
+            {replyData?.map((comment) => (
+              <CommentAreaBox key={comment.id}>
+                {isEditing && editingReplyId === comment.id ? (
+                  <div>
+                    <UserBox>
+                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                    </UserBox>
+                    <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
+                    <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
+                    <DateBox>작성일 {comment.Date}</DateBox>
+                  </div>
+                ) : (
+                  <>
+                    <UserBox>
+                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                    </UserBox>
+                    <CommentTextBox>{comment.reply}</CommentTextBox>
+                    <DateBox>작성일 {comment.Date}</DateBox>
 
-      <CommentInputAreaBox>
-        <CommentInputMiddleBox>
-          <UserBox>
-            <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
-            <UserName>{user?.email.split('@')[0]}</UserName>
-          </UserBox>
-          <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
-          <ButtonBox>
-            <Button onClick={addNewReply}>등록</Button>
-          </ButtonBox>
-        </CommentInputMiddleBox>
-      </CommentInputAreaBox>
+                    <BtnAreaBox>
+                      {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
+                        <UserBtnBox>
+                          <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
+                          <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
+                        </UserBtnBox>
+                      )}
+                    </BtnAreaBox>
+                  </>
+                )}
+              </CommentAreaBox>
+            ))}
+          </CommentBodyBox>
+        </CommentBox>
+        {/* "더 보기" 버튼 추가 */}
+        {replyData.length < totalComments && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+
+        <CommentInputAreaBox>
+          <CommentInputMiddleBox>
+            <UserBox>
+              <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
+              <UserName>{user?.email.split('@')[0]}</UserName>
+            </UserBox>
+            <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
+            <ButtonBox>
+              <Button onClick={addNewReply}>등록</Button>
+            </ButtonBox>
+          </CommentInputMiddleBox>
+        </CommentInputAreaBox>
+      </Boxs>
     </>
   )
 }
 
 export default Reply
+
+const Boxs = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
+
 const LoadMoreButton = styled.button`
   margin-right: 8px;
   display: flex;
@@ -414,7 +429,8 @@ const CommentHeaderBox = styled.div`
 const CommentBox = styled.div`
   /* display 관련 */
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
   gap: 1.5rem;
   align-self: stretch;
   /* size 관련 */
@@ -438,7 +454,7 @@ const CommentInputAreaBox = styled.div`
   /* display 관련 */
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
   position: relative;
   /* size 관련 */

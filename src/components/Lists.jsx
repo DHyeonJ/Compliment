@@ -7,7 +7,6 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
-  console.log('data', data)
 
   return (
     <>
