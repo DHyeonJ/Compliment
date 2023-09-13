@@ -7,22 +7,23 @@ import moment from 'moment'
 import { storage, db, auth } from '../firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
-
 const AddBoardCp = () => {
   const user = auth.currentUser
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [imgUrl, setImgUrl] = useState('')
   const [fileName, setFileName] = useState('')
-  const [imagePreview, setImagePreview] = useState('') // 이미지 미리 보기 URL 추가
+  const [imagePreview, setImagePreview] = useState('')
   const fileInput = React.useRef(null)
   const navigate = useNavigate()
   const nowTime = moment().format('YYYY-MM-DD HH:mm')
   const timeSort = Date.now()
   const photoURL = user?.photoURL ?? null
+
+  const MAX_FILE_SIZE_MB = 5
+
   const mutationAdd = useMutation(
-    // eslint-disable-next-line @typescript-eslint/promise-function-async
-    (data) => {
+    async (data) => {
       return addDoc(collection(db, 'lists'), data)
     },
     {
@@ -32,9 +33,7 @@ const AddBoardCp = () => {
     },
   )
 
-  const handleSaveClick = async (e) => {
-    // e.preventDefault()
-    console.log()
+  const handleSaveClick = async () => {
     if (title.trim() === '') {
       alert('제목을 입력해주세요.')
       return
@@ -45,7 +44,7 @@ const AddBoardCp = () => {
 
     try {
       await mutationAdd.mutateAsync({
-        userId: user.uid, // 사용자 ID 추가
+        userId: user.uid,
         userEmail: user.email,
         title,
         comments: content,
@@ -56,8 +55,6 @@ const AddBoardCp = () => {
         photoURL,
         timeSort,
       })
-      // setModalMessage('게시물이 작성되었습니다.')
-      // setIsModalOpen(true)
     } catch (error) {
       console.error('Error adding document: ', error)
     }
@@ -71,32 +68,38 @@ const AddBoardCp = () => {
     setContent(e.target.value)
   }
 
-  const handleUploadClick = (e) => {
+  const handleUploadClick = () => {
     fileInput.current.click()
   }
 
-  const handleChange = (e) => {
-    console.log(e.target.files[0])
-    e.preventDefault()
-    const file = e.target.files
+  const handleChange = async (e) => {
+    const file = e.target.files[0]
     if (!file) return null
 
-    const storageRef = ref(storage, `files/${file[0].name}`)
-    const uploadTask = uploadBytes(storageRef, file[0])
-    setFileName(e.target.files[0].name)
+    // 이미지 크기 체크
+    const fileSizeMB = file.size / (1024 * 1024) // 파일 크기를 메가바이트 단위로 변환
+    if (fileSizeMB > MAX_FILE_SIZE_MB) {
+      alert(`이미지 파일 크기는 ${MAX_FILE_SIZE_MB}MB 이하여야 합니다.`)
+      return
+    }
+
+    const storageRef = ref(storage, `files/${file.name}`)
+    const uploadTask = uploadBytes(storageRef, file)
+    setFileName(file.name)
 
     uploadTask
       .then((snapshot) => {
         e.target.value = ''
         getDownloadURL(snapshot.ref).then((downloadURL) => {
           setImgUrl(downloadURL)
-          setImagePreview(downloadURL) // 이미지 미리 보기 URL 설정
+          setImagePreview(downloadURL)
         })
       })
       .catch((error) => {
         console.error('이미지 업로드 오류: ', error)
       })
   }
+
   const handleNavigateAway = () => {
     if (title.trim() !== '' || content.trim() !== '') {
       Swal.fire({
@@ -113,6 +116,7 @@ const AddBoardCp = () => {
       navigate('/listpage')
     }
   }
+
   return (
     <>
       <ContainerPageBox>

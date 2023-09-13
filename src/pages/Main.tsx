@@ -127,6 +127,7 @@ function Main() {
       navigate('/login')
     }
   }
+
   return (
     <MainBox>
       <ContentBox>

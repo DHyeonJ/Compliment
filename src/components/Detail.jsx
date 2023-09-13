@@ -142,7 +142,7 @@ function Detail() {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
       return (
         <ButtonBox>
-          {/* <Button onClick={handleEditMove}>수정</Button> */}
+          <Button onClick={handleEditMove}>수정</Button>
           <Button onClick={handleDeleteClick}>삭제</Button>
         </ButtonBox>
       )
