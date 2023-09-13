@@ -59,7 +59,13 @@ function EditUserInfo() {
   const handleImageUpload = async (event) => {
     const file = event.target.files[0]
     if (!file) {
-      return // 파일을 선택하지 않았을 경우 아무 작업도 수행하지 않습니다.
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      // 5MB를 초과하는 경우
+      alert('이미지 크기는 5MB를 초과할 수 없습니다.')
+      return
     }
 
     const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
@@ -79,13 +85,12 @@ function EditUserInfo() {
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
             setImageUrl(downloadURL)
 
-            // Upload successful, now update the user profile.
             if (user) {
               await updateProfile(user, { photoURL: downloadURL })
               console.log('User profile updated.')
             }
 
-            console.log('이미지주소', downloadURL)
+            console.log('이미지 주소', downloadURL)
           } catch (downloadError) {
             console.error('Error getting download URL:', downloadError)
           }
@@ -152,10 +157,10 @@ function EditUserInfo() {
               <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
             </EditInputAreaBox>
           )}
-          <EditInputAreaBox>
+          {/* <EditInputAreaBox>
             <EditInputLabelBox>닉네임</EditInputLabelBox>
             <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
-          </EditInputAreaBox>
+          </EditInputAreaBox> */}
           <EditInputAreaBox>
             <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
             <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />

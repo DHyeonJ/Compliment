@@ -7,7 +7,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
-import likesImg from '../img/hand-clapdd.png'
+import defualtContentsImg from '../img/defaultContentImg.png'
 import likedImg from '../img/hand-clap.png'
 function Detail() {
   const [data, setData] = useState(null)
@@ -17,6 +17,11 @@ function Detail() {
   const [isLiked, setIsLiked] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const admin = 'admin@admin.com'
+
+  //
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
   // 좋아요 상태 초기화를 위한 useEffect
   useEffect(() => {
@@ -159,7 +164,7 @@ function Detail() {
                 <MidleTitleBox>
                   <UserBox>
                     <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{data.userEmail}</UserName>
+                    <UserName>{data.userEmail.split('@')[0]}</UserName>
                     <DateBox>작성일 {data.Date}</DateBox>
                   </UserBox>
                   {renderEditDeleteButtons()}
@@ -167,15 +172,17 @@ function Detail() {
               </HeaderContentBox>
             </HeaderBox>
             {/* 내용과 이미지 */}
+            {/* 등록된 이미지가 없을 경우 디폴트 이미지가 보여지도록 수정하였습니다.  */}
             <ContentBodyBox>
-              <ContentImgBox>
-                <ContentImg src={data.image} alt="" />
-              </ContentImgBox>
+              {data && data.image ? <ContentImg src={data.image} alt="" /> : <ContentDefualtImg src={defualtContentsImg} alt="" />}
               <BodyContent>{data.comments}</BodyContent>
             </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
-            <Button onClick={handleLikeButtonClick}>{isLiked ? '좋아요 취소' : '좋아요'}</Button>
-            <span>{data ? data.likes : 0}</span>
+            <Button onClick={handleLikeButtonClick}>
+              <Hands src={likedImg} alt="" />
+              {data ? data.likes : 0}
+              {/* {isLiked ? '칭찬 취소' : '칭찬해요'} */}
+            </Button>
             {/* 댓글 영역 */}
             <CommentAreaBox>
               <Reply />
@@ -188,6 +195,41 @@ function Detail() {
 }
 export default Detail
 
+const Hands = styled.img`
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-color: #69535f;
+  transition: all ease-in-out 0.1s;
+  &:hover {
+    transform: scale(1.08);
+  }
+`
+
+const Button = styled.button`
+  font-size: 20px;
+  font-weight: 700;
+  box-shadow: 2px 3px 4px #868284;
+  display: flex;
+  padding: 20px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border-radius: 50%;
+  color: ${({ isLiked }) => (isLiked ? 'white' : '#69535f')};
+  background-color: ${({ isLiked }) => (isLiked ? '#69535f' : 'transparent')};
+  border: 1px solid #69535f;
+  margin-bottom: 44px;
+  color: white;
+  background-color: #69535f;
+  /* animation 관련 */
+  &:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #886e7c;
+  }
+`
+
 const DetailAreaBox = styled.div`
   width: 80%;
   margin-left: auto;
@@ -198,13 +240,18 @@ const ContentImgBox = styled.div`
   height: 480px;
 `
 
+const ContentDefualtImg = styled.img`
+  width: 400px;
+  height: auto;
+`
 const DetailContentsBox = styled.div`
   /* display 관련 */
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  margin: 0rem 15rem 3rem;
+
   /* background 관련 */
   background: #fff;
 `
@@ -290,27 +337,6 @@ const ButtonBox = styled.div`
   /* display 관련 */
   display: flex;
   gap: 1rem;
-`
-const Button = styled.button`
-  /* display 관련 */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  line-height: 1.25rem;
-  /* size 관련 */
-  width: 154px;
-  height: 3.25rem;
-  /* background 관련 */
-  background: #fff;
-  margin-bottom: 15px;
-  /* border 관련 */
-
-  /* animation 관련 */
-  &:hover {
-    cursor: pointer;
-    border: 3px solid #c7c3b8;
-  }
 `
 
 const LikeButton = styled.button`

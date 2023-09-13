@@ -34,7 +34,7 @@ function Signup() {
     }
   }
 
-  const Signup = async (e) => {
+  const signup = async (e) => {
     e.preventDefault()
     if (email.length === 0) {
       alert('이메일을 입력해주세요')
@@ -150,8 +150,8 @@ function Signup() {
             <div>
               <SignForm>
                 <SignInputAreaBox>
-                  <SignupInputLabel>아이디</SignupInputLabel>
-                  <SignupInput placeholder="아이디를 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
+                  <SignupInputLabel>이메일</SignupInputLabel>
+                  <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
                   {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
@@ -170,7 +170,7 @@ function Signup() {
                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn onClick={Signup}>가입하기</SignupBtn>
+                  <SignupBtn onClick={signup}>가입하기</SignupBtn>
                 </SignInputAreaBox>
               </SignForm>
             </div>
@@ -300,7 +300,7 @@ const SignupInput = styled.input`
   border-bottom-width: 1;
   color: #0e0d0d;
 
-  ::placeholder {
+  &::placeholder {
     color: #d9d9d9;
     font-weight: 500;
     line-height: normal;

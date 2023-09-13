@@ -5,7 +5,7 @@ import commentImg from '../img/comment.png'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from 'react-query'
-import { collection, query, where, getDocs } from 'firebase/firestore'
+import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
 
@@ -19,6 +19,14 @@ function Reply() {
   const [isEditing, setIsEditing] = useState(false)
   const [editedReplyContent, setEditedReplyContent] = useState('')
   const [editingReplyId, setEditingReplyId] = useState(null)
+  const [commentLimit, setCommentLimit] = useState(4) // 한 번에 가져올 댓글 수
+  const [totalComments, setTotalComments] = useState(0) // 전체 댓글 수
+  const [showLoadMoreButton, setShowLoadMoreButton] = useState(true)
+
+  //
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
   useEffect(() => {
     // Firebase에서 사용자 로그인 상태를 관찰합니다.
@@ -39,7 +47,7 @@ function Reply() {
   const fetchReplyData = async () => {
     if (id) {
       const replyRef = collection(db, 'reply')
-      const q = query(replyRef, where('ContentId', '==', id))
+      const q = query(replyRef, where('ContentId', '==', id), limit(commentLimit)) // 지정된 한도로 댓글을 가져오도록 쿼리 수정
 
       try {
         const querySnapshot = await getDocs(q)
@@ -136,20 +144,67 @@ function Reply() {
   }
 
   const deleteComment = async (replyId) => {
-    try {
-      await deleteReply(replyId)
-      const updatedReplyData = replyData.filter((comment) => comment.id !== replyId)
-      setReplyData(updatedReplyData)
-    } catch (error) {
-      console.error('댓글 삭제 오류: ', error)
+    const shouldDelete = window.confirm('정말로 삭제하시겠습니까?')
+    if (shouldDelete) {
+      try {
+        await deleteReply(replyId)
+        const updatedReplyData = replyData.filter((comment) => comment.id !== replyId)
+        setReplyData(updatedReplyData)
+      } catch (error) {
+        console.error('댓글 삭제 오류: ', error)
+      }
     }
   }
+
+  //
+
+  const loadMoreComments = () => {
+    // 한 번에 가져올 댓글 수를 더 늘립니다.
+    setCommentLimit(commentLimit + 5) // 예를 들어, 추가로 4개의 댓글을 가져올 수 있도록 증가시킵니다.
+  }
+  // ...
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      // 엔터 키를 누르면 댓글을 등록합니다.
+      addNewReply()
+    }
+  }
+
+  useEffect(() => {
+    fetchReplyData()
+  }, [commentLimit]) // commentLimit가 변경될 때 fetchReplyData 함수를 호출합니다.
+
+  //
+
+  useEffect(() => {
+    fetchReplyData()
+  }, [commentLimit])
+
+  // totalComments를 업데이트할 함수 추가
+  const updateTotalComments = async () => {
+    if (id) {
+      const replyRef = collection(db, 'reply')
+      const q = query(replyRef, where('ContentId', '==', id))
+
+      try {
+        const querySnapshot = await getDocs(q)
+        setTotalComments(querySnapshot.size) // 전체 댓글 수 업데이트
+      } catch (error) {
+        console.error('댓글 가져오기 오류:', error)
+      }
+    }
+  }
+
+  useEffect(() => {
+    updateTotalComments()
+  }, [id]) // 게시글 ID가 변경될 때 totalComments를 업데이트합니다.
 
   return (
     <>
       <CommentHeaderBox>
         <img src={commentImg} alt="" />
-        칭찬 댓글 {replyData.length}
+        칭찬 댓글 ({totalComments}개) {/* totalComments를 추가하여 표시 */}
       </CommentHeaderBox>
       <CommentBox>
         <CommentBodyBox>
@@ -159,7 +214,7 @@ function Reply() {
                 <div>
                   <UserBox>
                     <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{comment.userEmail}</UserName>
+                    <UserName>{comment.userEmail.split('@')[0]}</UserName>
                   </UserBox>
                   <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
                   <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
@@ -169,7 +224,7 @@ function Reply() {
                 <>
                   <UserBox>
                     <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{comment.userEmail}</UserName>
+                    <UserName>{comment.userEmail.split('@')[0]}</UserName>
                   </UserBox>
                   <CommentTextBox>{comment.reply}</CommentTextBox>
                   <DateBox>작성일 {comment.Date}</DateBox>
@@ -188,13 +243,16 @@ function Reply() {
           ))}
         </CommentBodyBox>
       </CommentBox>
+      {/* "더 보기" 버튼 추가 */}
+      {replyData.length < totalComments && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+
       <CommentInputAreaBox>
         <CommentInputMiddleBox>
           <UserBox>
             <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
-            <UserName>{user?.email}</UserName>
+            <UserName>{user?.email.split('@')[0]}</UserName>
           </UserBox>
-          <CommentInputBox value={replyContent} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
+          <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
           <ButtonBox>
             <Button onClick={addNewReply}>등록</Button>
           </ButtonBox>
@@ -205,6 +263,48 @@ function Reply() {
 }
 
 export default Reply
+const LoadMoreButton = styled.button`
+  margin-right: 8px;
+  display: flex;
+  width: 80px;
+  height: 32px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  color: #666666;
+  background-color: transparent;
+  margin-bottom: 20px;
+
+  &:hover {
+    background-color: transparent;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 157.143% */
+    display: flex;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 157.143% */
+    width: 80px;
+    height: 32px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
+    cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
+  }
+`
+
 const UserBox = styled.div`
   /* display 관련 */
   display: flex;
@@ -284,7 +384,9 @@ const Button = styled.button`
   /* animation 관련 */
   &:hover {
     cursor: pointer;
-    background-color: #f4f1e9;
+    border-radius: 8px;
+    background: #986c6c;
+    color: white;
     border: none;
   }
 `
@@ -388,34 +490,66 @@ const BtnAreaBox = styled.div`
 `
 
 const UserBtnBox = styled.div`
+  display: flex;
+
   position: absolute;
   right: 0rem;
   bottom: 0rem;
 `
 
 const EditInput = styled.input`
-  width: 80%;
-  height: 200%;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  width: 100%;
+  height: 600%;
   border: 1px solid #d9d9d9;
   margin-right: 30px;
   font-size: 16px;
+  border-radius: 8px;
 
   padding: 3px 15px 3px 15px;
   &:focus {
     outline: none;
+    border-radius: 8px;
   }
 `
 const EditBtn = styled.button`
+  margin-right: 8px;
+  display: flex;
   width: 80px;
-  height: 30px;
-  border-radius: 10px;
-  background-color: #f4f1e9;
-  margin-right: 5px;
-  border: none;
+  height: 32px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  color: #666666;
+  background-color: transparent;
 
   &:hover {
-    background-color: #999999;
-    color: #f4f1e9;
+    background-color: transparent;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 157.143% */
+    display: flex;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 157.143% */
+    width: 80px;
+    height: 32px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
     cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
   }
 `

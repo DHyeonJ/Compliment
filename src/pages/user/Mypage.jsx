@@ -10,21 +10,12 @@ import userInfoEdit from '../../img/userInfoEdit.png'
 import Loading from '../../components/Loading'
 
 function Mypage() {
-  const [isLoading, setIsLoading] = useState(true)
-
-  // 부모 컴포넌트에서 유저 정보 가져오기
-  const localUser = JSON.parse(localStorage.getItem('user'))
-
   const navigator = useNavigate()
-
-  const user = auth.currentUser
-  const [highlightedButton, setHighlightedButton] = useState('detail')
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState(defaultProfileImage)
 
   const EditUserpageMove = () => {
     navigator('/EditUserInfo')
   }
-  const photoURL = user ? user.photoURL : null
   // 이메일에서 id값만 불러오기
   const localUserid = JSON.parse(localStorage.getItem('user'))
 
@@ -34,35 +25,44 @@ function Mypage() {
   // 프로필 불러오기 값만 불러오기
   const photoImg = localUserid?.photoURL
 
-  useEffect(() => {
-    // 사용자 정보 가져오기
-    const fetchUserInfo = async () => {
-      setIsLoading(true) // 데이터 가져오기가 시작될 때 isLoading을 true로 설정
-      if (auth.currentUser) {
-        try {
-          const userUid = auth.currentUser.uid
-          const path = `profileImages/${userUid}/photoURL`
-          const storageRef = ref(storage, path)
+  // 데이터 로딩 상태
+  const [isLoading, setIsLoading] = useState(true)
 
-          // 스토리지 참조를 생성한 후에 다운로드 URL을 가져옵니다.
-          const url = await getDownloadURL(storageRef)
-          console.log(url)
-          setImageUrl(url || defaultProfileImage)
-        } catch (error) {
-          console.log('이미지 URL 가져오기 오류:', error)
-          setImageUrl(defaultProfileImage)
-        } finally {
-          setIsLoading(false) // 데이터 가져오기가 완료되면 isLoading을 false로 설정
-        }
+  // 사용자 정보 가져오기
+  const fetchUserInfo = async () => {
+    if (auth.currentUser) {
+      try {
+        const userUid = auth.currentUser.uid
+        const path = `profileImages/${userUid}/photoURL`
+        const storageRef = ref(storage, path)
+
+        // 스토리지 참조를 생성한 후에 다운로드 URL을 가져옵니다.
+        const url = await getDownloadURL(storageRef)
+        setImageUrl(url)
+      } catch (error) {
+        console.log('이미지 URL 가져오기 오류:', error)
+      } finally {
+        setIsLoading(false) // 데이터 가져오기가 완료되면 isLoading을 false로 설정
       }
     }
-    fetchUserInfo()
+  }
+
+  useEffect(() => {
+    const checkAuthentication = () => {
+      if (auth.currentUser) {
+        fetchUserInfo()
+      } else {
+        // 로그인이 필요한 경우 로그인 페이지로 이동하도록 처리
+        // 예: navigate('/login');
+        setIsLoading(false) // 데이터 가져오기가 완료되지 않았을 경우 isLoading을 false로 설정
+      }
+    }
+    checkAuthentication()
   }, [])
 
   return (
     <>
       {isLoading ? (
-        // 로딩 인디케이터를 여기에 렌더링합니다
         <Loading />
       ) : (
         <div>
@@ -94,7 +94,7 @@ function Mypage() {
 export default Mypage
 const MypageBox = styled.div`
   display: flex;
-  height: 100vh;
+  /* height: 100vh; */
   margin-top: 84px;
   flex-direction: column;
   align-items: center;
@@ -166,8 +166,8 @@ const RateBox = styled.div`
 `
 const ListBox = styled.div`
   display: flex;
-  width: 880px;
-  height: 812px;
+  /* width: 880px;
+  height: 812px; */
   padding: 0px 88px;
   justify-content: center;
   align-items: flex-start;
