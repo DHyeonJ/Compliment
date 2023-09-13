@@ -138,11 +138,11 @@ function Edit() {
         {/* 본문 부분 */}
         <div>
           <CommentContainerBox>
-            <div>
+            <pre>
               <PreviewBox>{imgUrl && <ImagePreview src={imgUrl} alt="이미지 미리 보기" />}</PreviewBox>
 
               <CommentInputBox value={content} onChange={(e) => setContent(e.target.value)} />
-            </div>
+            </pre>
 
             <ButtonsBox>
               <div>
@@ -368,7 +368,7 @@ const ButtonsBox = styled.div`
   padding: 0.25rem 1.5rem; /* px에서 rem으로 변경 */
 `
 
-const CommentInputBox = styled.pre`
+const CommentInputBox = styled.textarea`
   /* display 관련 */
   display: flex;
   flex-direction: column;
@@ -407,7 +407,7 @@ const CommentInputBox = styled.pre`
 //   line-height: 28px; /* 175% */
 // `
 
-const CommentContainerBox = styled.div`
+const CommentContainerBox = styled.pre`
   /* display 관련 */
   display: flex;
   flex-direction: column;
