@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import MenuNav from '../../components/MenuNav'
 import Lists from '../../components/Lists'
 import { styled } from 'styled-components'
@@ -6,14 +6,68 @@ import Search from '../../components/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists, useIsAuthenticated } from '../../api/ListsApi'
-import { useQuery } from 'react-query'
+import { useQuery, useInfiniteQuery } from 'react-query'
 import moment from 'moment'
 import Loading from '../../components/Loading'
-
+import { observe } from 'react-intersection-observer'
+​
 function ListPage() {
   const navigate = useNavigate()
-  const { data: listsData, isLoading } = useQuery(['lists'], getLists)
-
+  ​
+  const divRef = useRef(null)
+​
+  // 실제로 라이브러리에서 제공하는 변수
+  const [isLoading, setLoading] = useState(false)
+  const [hasNext, setHasNext] = useState(true)
+​
+  const [count, setCount] = useState(5)
+  const [list, setList] = useState([])
+​
+  const fetchDate = useCallback(async () => {
+    setLoading(true)
+​
+    const { fetchData, totalCount } = await getLists(count)
+​
+    if (fetchData.length === totalCount) {
+      setHasNext(false)
+    } else {
+      setHasNext(true)
+    }
+​
+    setList(fetchData)
+    setLoading(false)
+  }, [count])
+​
+  useEffect(() => {
+    fetchDate()
+  }, [fetchDate])
+  // 라이브러리에서 대체할 수 있는 코드
+​
+  useEffect(() => {
+    if (!divRef.current) return
+​
+    const observer = new IntersectionObserver(
+      ([{ isIntersecting }]) => {
+        if (isIntersecting) {
+          setCount((prev) => prev + 5)
+        }
+      },
+      { root: null, rootMargin: '0px', threshold: 0.5 },
+    )
+​
+    observer.observe(divRef.current)
+  }, [])
+​
+  const listsData = []
+​
+  // const isLoading = false
+​
+  // const { data: listsData, isLoading } = useQuery(['lists'], async () => {
+  //   const data = await getLists(10)
+​
+  //   return data
+  // })
+​
   // 사용자가 인증되었는지 확인
   const isAuthenticated = useIsAuthenticated()
 
@@ -124,7 +178,12 @@ function ListPage() {
                 </SerchPlusAreaBox>
               </ChoiceBox>
               <ListContainer>
-                <Lists data={displayData} />
+                <Lists data={list} />
+{hasNext && (
+                  <div style={{ border: '3px solid black', height: '50px' }} ref={divRef}>
+                    loading...
+                  </div>
+                )}
               </ListContainer>
             </ContentBox>
           </ListBox>
