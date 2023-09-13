@@ -424,7 +424,6 @@ const DropdownContent = styled.div`
 
   &:hover {
     background-color: #986c6c;
-    width: 104px;
     border-radius: 8px;
     color: #fffbf3; /* Hover 상태의 글자색 설정 */
     font-weight: bold;
