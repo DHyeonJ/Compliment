@@ -51,6 +51,7 @@ function EditUserInfo() {
 
       if (error.code === 'auth/requires-recent-login') {
         alert('비밀번호 변경을 위해선 재로그인이 필요합니다.')
+        navigate('/login')
       } else {
         alert('비밀번호 변경 실패: ' + error.message)
       }
