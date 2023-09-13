@@ -329,7 +329,7 @@ const ButtonsBox = styled.div`
   padding: 0.25rem 1.5rem; /* px에서 rem으로 변경 */
 `
 
-const CommentInputBox = styled.textarea`
+const CommentInputBox = styled.pre`
   /* display 관련 */
   display: flex;
   flex-direction: column;
