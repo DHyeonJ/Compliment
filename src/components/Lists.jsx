@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
-import HandClap from '../img/hand-clap.png'
+import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
 import LoadingModal from './LoadingModal'
 import defaultProfileImage from '../../src/img/user.png'
@@ -8,6 +8,9 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
   return (
     <>
@@ -48,6 +51,7 @@ const Lists = ({ data }) => {
     </>
   )
 }
+
 const ListContentt = styled.div`
   display: flex;
   justify-content: space-between;
@@ -77,6 +81,8 @@ const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
+  /* filter: grayscale(100%); */
+  /* color: black; */
 `
 const Date = styled.div`
   color: #999;

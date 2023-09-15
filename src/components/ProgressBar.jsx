@@ -7,7 +7,6 @@ import { useQuery, useQueryClient } from 'react-query'
 
 const ProgressBar = () => {
   const user = auth.currentUser
-  // const [progress, setProgress] = useState(0)
   const { data: mission, isLoading } = useQuery('mission', getProgressData)
 
   const queryClient = useQueryClient()

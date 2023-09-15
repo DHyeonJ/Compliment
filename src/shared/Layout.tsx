@@ -123,6 +123,7 @@ function Layout(): JSX.Element {
           </ButtonsBox>
         )}
       </HeaderAllBox>
+
       <Outlet />
       <FooterBox>
         <ContentBox>
@@ -145,7 +146,7 @@ const ButtonsBox = styled.div`
   position: absolute;
   right: 56px;
   gap: 12px;
-  height: 44px;
+  /* height: 44px; */
   justify-content: center;
   align-items: center;
 `
@@ -156,8 +157,8 @@ const LayOutBox = styled.div`
 `
 const HeaderAllBox = styled.div`
   display: flex;
-  height: 56px;
-  width: 100vw;
+  /* height: 56px; */
+  /* width: 100vw; */
   padding: 12px 0px;
   justify-content: center;
   align-items: center;
@@ -199,7 +200,7 @@ const TitleSpan = styled.span`
 
 const LoginButton = styled.button`
   display: inline-flex;
-  height: 44px;
+  /* height: 44px; */
   padding: 14px 28px;
   justify-content: center;
   align-items: center;
@@ -275,8 +276,8 @@ const FooterLogo = styled.img`
   justify-content: center;
   align-items: center;
 
-  width: 57px;
-  height: 40px;
+  /* width: 57px;
+  height: 40px; */
 
   margin-bottom: 12px;
 `
@@ -335,7 +336,6 @@ const DropdownContents = styled.div`
   background-color: #ffffff;
   flex-direction: column;
   align-items: center;
-  /* width: 136px; */
   border-radius: 8px;
   border: 1px solid #69535f;
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
@@ -348,7 +348,7 @@ const DropdownContents = styled.div`
 `
 const UserNameBox = styled.div`
   display: flex;
-  height: 44px;
+  /* height: 44px; */
   padding: 10px;
   justify-content: center;
   align-items: center;
@@ -373,6 +373,7 @@ const ProfileImage = styled.img`
   flex-direction: column;
   align-items: center;
   height: 50px;
+  width: 50px;
   box-shadow: 3px 3px 5px 3px #c4c4c4;
   border-radius: 60px;
 `
@@ -383,7 +384,7 @@ const DropDown = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
-  height: 58px;
+  /* height: 58px; */
   cursor: pointer;
 
   &:active ${DropdownContents} {
@@ -413,12 +414,11 @@ const MypageBox = styled.div`
 `
 const DropdownContent = styled.div`
   display: flex;
-  height: 20px;
-  padding: 22px 16px 16px 16px;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   cursor: pointer;
   gap: 6px;
+  height: 48px;
   color: #69535f;
   border-radius: 8px 8px 0px 0px;
   font-weight: 500;
@@ -428,6 +428,8 @@ const DropdownContent = styled.div`
     border-radius: 8px;
     color: #fffbf3; /* Hover 상태의 글자색 설정 */
     font-weight: bold;
+    margin: 0;
+    width: 100%;
   }
   & svg {
     width: 24px;

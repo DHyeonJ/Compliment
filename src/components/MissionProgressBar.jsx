@@ -5,44 +5,43 @@ import { auth } from '../firebase'
 import { getProgressData } from '../api/progressApi'
 import { useQuery, useQueryClient } from 'react-query'
 
-const ProgressBar = () => {
-  const user = auth.currentUser
-  // const [progress, setProgress] = useState(0)
-  const { data: mission, isLoading } = useQuery('mission', getProgressData)
-
-  const queryClient = useQueryClient()
+const MissionProgressBar = ({ completedMissionCards, totalMissionCards }) => {
+  // const user = auth.currentUser
+  // const { data: mission, isLoading } = useQuery('mission', getProgressData)
+  // const queryClient = useQueryClient()
+  const progress = (completedMissionCards.length / totalMissionCards) * 100
 
   // 유저 정보 불러오기 -> 0
-  useEffect(() => {
-    if (user) {
-      // Fetch the doneMission count from Firestore
-      getProgressData(user.uid)
-        .then((doneMissionCount) => {
-          const calculatedProgress = (doneMissionCount / 4) * 100
-          queryClient.setQueryData('mission', calculatedProgress)
-          queryClient.invalidateQueries('mission')
-        })
-        .catch((error) => {
-          console.error('Error fetching doneMission count:', error)
-        })
-    }
-  }, [user, queryClient])
+  // useEffect(() => {
+  //   if (user) {
+  //     getProgressData(user.uid)
+  //       .then((doneMissionCount) => {
+  //         const calculatedProgress = (doneMissionCount / 4) * 100
+  //         queryClient.setQueryData('mission', calculatedProgress)
+  //         queryClient.invalidateQueries('mission')
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error fetching doneMission count:', error)
+  //       })
+  //   }
+  // }, [user, queryClient])
 
   return (
     <>
       <TextBox>
-        <RateTitleBox>미션 달성률 {mission}%</RateTitleBox>
+        <RateTitleBox>미션 달성률 {progress}%</RateTitleBox>
       </TextBox>
       <ProgressInfoBox>
         <ProgressBox>
-          <ProgressColorBox percentage={mission} />
+          <ProgressColorBox percentage={progress} />
         </ProgressBox>
       </ProgressInfoBox>
     </>
   )
 }
 
-export default ProgressBar
+export default MissionProgressBar
+
 const TextBox = styled.div`
   display: flex;
   align-self: stretch;

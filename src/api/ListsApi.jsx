@@ -1,17 +1,15 @@
 import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc, query, where, limit, startAt } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 
-const getLists = async (count = 10) => {
+const getLists = async () => {
   const temp = collection(db, 'lists')
 
-  const totalCount = query(temp)
-  const q = query(temp, limit(count))
+  const q = query(temp)
 
   const querySnapShot = await getDocs(q)
   // console.log(querySnapShot.data().count)
 
   // count를 위한 api 호출
-  const countSnapShot = await getDocs(totalCount)
 
   const fetchData = querySnapShot.docs.map((doc) => ({
     ...doc.data(),
@@ -20,7 +18,7 @@ const getLists = async (count = 10) => {
 
   // countSnapShot.size 이게 데이터 전체 길이를 반환
 
-  return { totalCount: countSnapShot.size, fetchData }
+  return fetchData
 }
 
 const getMyFriends = async (uid) => {

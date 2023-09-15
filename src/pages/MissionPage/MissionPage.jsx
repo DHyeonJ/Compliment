@@ -3,7 +3,6 @@ import { styled } from 'styled-components'
 import MenuNav from '../../components/MenuNav'
 import { getMissionCards, updateMissionCard, getMyMissionCard } from '../../api/MissionCardsApi'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { useLocation } from 'react-router-dom'
 import { auth } from '../../firebase'
 import missionCard from '../../img/missionCard.png'
 import missionCardActive from '../../img/missionCardActive.png'
@@ -17,7 +16,6 @@ const MissionPage = () => {
   const myMissionCards = useQuery('myMissionCard', getMyMissionCard)
 
   const queryClient = useQueryClient()
-  const { pathname } = useLocation()
 
   const { mutateAsync } = useMutation(updateMissionCard, {
     onSuccess: () => {
@@ -25,12 +23,6 @@ const MissionPage = () => {
       queryClient.invalidateQueries('myMissionCard')
     },
   })
-
-  // useEffect(() => {}, [])
-  useEffect(() => {
-    // Scroll to the top of the page when the route changes
-    window.scrollTo(0, 0)
-  }, [pathname])
 
   const handleCardClick = async (cardId) => {
     const userInfo = auth.currentUser
@@ -40,14 +32,12 @@ const MissionPage = () => {
       return card
     })
 
-    // 결과값 바로 전달
     try {
       await mutateAsync({ targetId: userInfo.uid, editedMissionCards: newMissionCards })
     } catch (e) {
       console.log(e)
     }
   }
-
   if (isLoading || myMissionCards.isLoading) {
     return <Loading />
   }
@@ -61,12 +51,12 @@ const MissionPage = () => {
             <BannerTitle>미션 도착!</BannerTitle>
             <BannerContent>
               매일 칭찬 미션이 도착합니다. <br /> 수행하면서, 칭찬에 대한 영감을 얻고 긍정의 에너지를 나눠보세요.
-              <br /> 오늘 하루 미션 성공에 도전해보세요!
+              <br /> 오늘 하루 미션 성공에 도전해보세요! <br /> 미션 달성률은 마이페이지에서도 확인하실 수 있습니다.
             </BannerContent>
           </BannerContainer>
         </BannerBox>
         <RateBox>
-          <MissionProgressBar />
+          <MissionProgressBar completedMissionCards={myMissionCards.data.cards.filter((card) => card.checked)} totalMissionCards={myMissionCards.data.cards.length} />
         </RateBox>
         <MissionCardBox>
           <DailyMissionBox>
@@ -179,7 +169,7 @@ const DailyMission = styled.div`
   line-height: 160%; /* 25.6px */
   p {
     display: inline;
-    box-shadow: inset 0 -10px 0 yellow;
+    box-shadow: inset 0 -2px 0 #f6b000;
   }
 `
 const MissionCards = styled.div`
