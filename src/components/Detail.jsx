@@ -5,6 +5,7 @@ import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
+import LoadingModal from './LoadingModal'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
@@ -154,7 +155,7 @@ function Detail() {
   return (
     <>
       {isLoading ? ( // 로딩 중인 경우 로딩 콘텐츠를 렌더링
-        <Loading />
+        <LoadingModal isOpen={true} />
       ) : (
         data && (
           <DetailContentsBox key={data.id}>

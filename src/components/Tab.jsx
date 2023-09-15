@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { getLists } from '../api/ListsApi'
+import { getLists, getMyFriends, getMyLikeFriends } from '../api/ListsApi'
 import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import HandClap from '../img/hand-clap.png'
@@ -11,101 +11,21 @@ import defaultimg from '../img/user.png'
 import defualtContentsImg from '../img/defaultContentImg.png'
 const Tab = () => {
   const navigate = useNavigate()
-  const [currentTab, clickTab] = useState(0)
-  const menuArr = [{ name: '나의 칭구들' }, { name: '내가 칭찬한 글' }]
-
+  const [currentTab, setcurrentTab] = useState(0) // 초기 상태를 0으로 설정
+  const menuArr = [{ name: '내가 작성한 칭구' }, { name: '내가 칭찬한 글' }]
   const localUser = JSON.parse(localStorage.getItem('user'))
-
-  const { data: listsData, isLoading } = useQuery(['lists'], getLists)
+  const userUid = localUser?.userId
+  const { data: listsData, isLoading } = useQuery(['lists', currentTab], async () => {
+    if (currentTab === 0) {
+      return await getMyFriends(userUid)
+    } else if (currentTab === 1) {
+      return await getMyLikeFriends(userUid)
+    }
+  })
 
   const selectMenuHandler = (index) => {
-    clickTab(index)
+    setcurrentTab(index)
   }
-
-  const queryClient = useQueryClient()
-  const user = auth.currentUser
-  const userUid = localUser?.userId
-
-  // 탭에 있는 내가 쓴 글 리스트
-
-  // "나의 칭구들" 탭에서 현재 로그인한 사용자의 이메일로 작성한 게시물을 필터링하여 표시
-  const filterMyPosts = (listsData, userEmail) => {
-    if (!listsData || !userEmail) {
-      return []
-    }
-
-    const myPosts = listsData.filter((item) => item.userEmail === userEmail)
-    return myPosts
-  }
-
-  useEffect(() => {
-    // '내가 칭찬한 글' 탭으로 돌아갈 때 데이터를 다시 로드
-    if (currentTab === 1) {
-      queryClient.invalidateQueries('lists')
-    }
-  }, [currentTab, queryClient])
-
-  // 주석
-  const fetchUserLists = async (userUid) => {
-    if (!userUid) {
-      return []
-    }
-
-    const listsRef = collection(db, 'lists')
-    const q = query(listsRef, where('userId', '==', userUid))
-
-    try {
-      const querySnapshot = await getDocs(q)
-      const updatedUserData = []
-      querySnapshot.forEach((doc) => {
-        const userData = doc.data()
-        userData.id = doc.id
-        updatedUserData.push(userData)
-      })
-      queryClient.setQueryData('lists', updatedUserData)
-      return updatedUserData
-    } catch (error) {
-      console.error('Error fetching user data:', error)
-      return []
-    }
-  }
-
-  const fetchLikedPosts = async () => {
-    if (!userUid) {
-      return []
-    }
-
-    const likedPostsRef = collection(db, 'lists')
-    const q = query(likedPostsRef, where('likedUser', 'array-contains', userUid))
-
-    try {
-      const querySnapshot = await getDocs(q)
-      const likedPostsData = []
-      querySnapshot.forEach((doc) => {
-        const postData = doc.data()
-        postData.id = doc.id
-        likedPostsData.push(postData)
-      })
-      return likedPostsData
-    } catch (error) {
-      console.error('Error fetching liked posts:', error)
-      return []
-    }
-  }
-
-  const [likedPosts, setLikedPosts] = useState([])
-
-  useEffect(() => {
-    if (currentTab === 0) {
-      // '나의 칭구들' 탭에서 데이터를 가져오기
-      fetchUserLists(userUid)
-    } else if (currentTab === 1) {
-      // '내가 칭찬한 글' 탭에서 데이터를 가져오기
-      fetchLikedPosts().then((likedPostsData) => {
-        setLikedPosts(likedPostsData)
-      })
-    }
-  }, [currentTab, userUid])
 
   return (
     <>
@@ -121,9 +41,9 @@ const Tab = () => {
           {currentTab === 0 ? (
             <>
               <ListContentts>
-                {filterMyPosts(listsData, user?.email).map((item) => (
+                {listsData?.data.map((item) => (
                   <List
-                    key={item.userId}
+                    key={item.id}
                     onClick={() => {
                       navigate(`/detail/${item.id}`)
                     }}
@@ -161,9 +81,9 @@ const Tab = () => {
           ) : (
             <>
               <ListContentts>
-                {likedPosts?.map((item) => (
+                {listsData?.data.map((item) => (
                   <List
-                    key={item.userId}
+                    key={item.id}
                     onClick={() => {
                       navigate(`/detail/${item.id}`)
                     }}
@@ -191,7 +111,7 @@ const Tab = () => {
                       </Contents>
 
                       <div>
-                        <Thumbnail src={item.image} alt="" />
+                        <Thumbnail src={item.image || defualtContentsImg} alt="" />
                       </div>
                     </ListContentt>
                   </List>
@@ -253,6 +173,7 @@ const TabMenu = styled.ul`
     font-size: 15px;
     transition: 0.5s;
     border-radius: 10px 10px 0px 0px;
+    cursor: pointer;
   }
 
   .focused {
@@ -305,6 +226,7 @@ const Contents = styled.div`
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
+  cursor: pointer;
 `
 
 const Likes = styled.span`

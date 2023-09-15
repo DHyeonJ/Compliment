@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clap.png'
 import { useNavigate } from 'react-router-dom'
+import LoadingModal from './LoadingModal'
 import defaultProfileImage from '../../src/img/user.png'
 import defualtContentsImg from '../img/defaultContentImg.png'
 

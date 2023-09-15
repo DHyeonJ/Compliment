@@ -10,10 +10,11 @@ import { useQuery, useInfiniteQuery } from 'react-query'
 import moment from 'moment'
 import Loading from '../../components/Loading'
 import { observe } from 'react-intersection-observer'
+import LoadingModal from '../../components/LoadingModal'
 
 function ListPage() {
   const navigate = useNavigate()
-  
+
   const divRef = useRef(null)
 
   // 실제로 라이브러리에서 제공하는 변수
@@ -28,18 +29,15 @@ function ListPage() {
 
     const { fetchData, totalCount } = await getLists(count)
 
-
     if (fetchData.length === totalCount) {
       setHasNext(false)
     } else {
       setHasNext(true)
     }
 
-
     setList(fetchData)
     setLoading(false)
   }, [count])
-
 
   useEffect(() => {
     fetchDate()
@@ -49,7 +47,6 @@ function ListPage() {
   useEffect(() => {
     if (!divRef.current) return
 
-
     const observer = new IntersectionObserver(
       ([{ isIntersecting }]) => {
         if (isIntersecting) {
@@ -58,7 +55,6 @@ function ListPage() {
       },
       { root: null, rootMargin: '0px', threshold: 0.5 },
     )
-
 
     observer.observe(divRef.current)
   }, [])
@@ -72,7 +68,6 @@ function ListPage() {
 
   //   return data
   // })
-
 
   // 사용자가 인증되었는지 확인
   const isAuthenticated = useIsAuthenticated()
@@ -183,8 +178,8 @@ function ListPage() {
               </ChoiceBox>
               <ListContainer>
                 <Lists data={list} />
-{hasNext && (
-
+                {isLoading && <LoadingModal />}
+                {hasNext && (
                   <div style={{ border: '3px solid black', height: '50px' }} ref={divRef}>
                     loading...
                   </div>
@@ -214,7 +209,7 @@ const ListPageBox = styled.div`
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: 2168px;
+  /* height: 2168px; */
   flex-direction: column;
 `
 
@@ -224,13 +219,13 @@ const ListBox = styled.div`
   justify-content: center;
   flex-direction: column;
   width: calc(100vw - 120px);
-  height: 2238px;
+  /* height: 2238px; */
   margin-top: 16px;
 `
 
 const ContentBox = styled.div`
   width: 1520px;
-  height: 2100px;
+  /* height: 2100px; */
   flex-direction: column;
   gap: 42px 0;
 `
