@@ -29,10 +29,10 @@ const Lists = ({ data }) => {
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
                     <span>{item.userEmail.split('@')[0]}</span>
                   </User>
-                  <div>
+                  <pre>
                     <ListTitle>{item.title}</ListTitle>
                     <ListComments>{item.comments}</ListComments>
-                  </div>
+                  </pre>
                 </ListContent>
                 <HandClapBox>
                   <ListDate>작성일 </ListDate>
@@ -173,7 +173,7 @@ const ListDate = styled.p`
   font-weight: 500;
   line-height: 28px; /* 200% */
 `
-const ListContent = styled.div`
+const ListContent = styled.pre`
   display: flex;
   width: 1192px;
   height: 120px;

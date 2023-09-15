@@ -69,7 +69,6 @@ function Layout(): JSX.Element {
         setPhotoURL(user.photoURL)
         // 로컬스토리지 저장
         localStorage.setItem('user', JSON.stringify({ userId: user.uid, email: user.email, photoURL: user.photoURL ?? defaultProfileImage }))
-        console.log('이게', user.uid)
       } else {
         setCurrentUser(null)
         setPhotoURL(null)

@@ -30,6 +30,7 @@ const Search = ({ handleSearchClick }) => {
     </>
   )
 }
+
 export default Search
 
 const SearchBox = styled.div`

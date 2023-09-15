@@ -414,7 +414,7 @@ const BtnSpan = styled.span`
   display: inline-block;
   margin-right: 10px;
 `
-const ContentBodyBox = styled.div`
+const ContentBodyBox = styled.pre`
   /* display 관련 */
   display: flex;
   flex-direction: column;
