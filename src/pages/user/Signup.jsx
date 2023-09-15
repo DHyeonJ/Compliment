@@ -35,7 +35,6 @@ function Signup() {
   }
 
   const signup = async (e) => {
-    e.preventDefault()
     if (email.length === 0) {
       alert('이메일을 입력해주세요')
     } else if (password.length === 0 || confirmPassword.length === 0) {
@@ -117,7 +116,7 @@ function Signup() {
     } else {
       setValidpassword('')
     }
-  }, 1000)
+  }, 100)
 
   useEffect(() => {
     debounceValidatePassword(password)
@@ -128,12 +127,13 @@ function Signup() {
   }, [password, confirmPassword])
 
   const debounceValidateConfirmPassword = debounce((password, confirmPassword) => {
-    if (password !== confirmPassword) {
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      // confirmPassword가 비어있지 않은지 확인합니다.
       setConfirmPasswordError('비밀번호가 일치하지 않습니다')
     } else {
       setConfirmPasswordError('')
     }
-  }, 1000)
+  }, 100)
 
   return (
     <>
@@ -150,17 +150,17 @@ function Signup() {
             <div>
               <SignForm>
                 <SignInputAreaBox>
-                  <SignupInputLabel>이메일</SignupInputLabel>
+                  <SignupInputLabel htmlFor="email">이메일</SignupInputLabel>
                   <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
                   {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
-                  <SignupInputLabel>비밀번호</SignupInputLabel>
+                  <SignupInputLabel htmlFor="password">비밀번호</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="password" value={password} onChange={onChange} />
                   {password.length > 0 && password.length < 6 && <DebounceTextBox>비밀번호는 6자 이상이어야 합니다.</DebounceTextBox>}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
-                  <SignupInputLabel>비밀번호 확인</SignupInputLabel>
+                  <SignupInputLabel htmlFor="confirmPassword">비밀번호 확인</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="confirmPassword" value={confirmPassword} onChange={onChange} />
                   {confirmPasswordError && <DebounceTextBox>{confirmPasswordError}</DebounceTextBox>}
                 </SignInputAreaBox>
@@ -170,7 +170,9 @@ function Signup() {
                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn onClick={signup}>가입하기</SignupBtn>
+                  <SignupBtn isValidEmail={validEmail} onClick={signup} disabled={!validEmail}>
+                    가입하기
+                  </SignupBtn>
                 </SignInputAreaBox>
               </SignForm>
             </div>
@@ -275,7 +277,7 @@ const SignInputAreaBox = styled.div`
   margin-right: 128px;
 `
 
-const SignupInputLabel = styled.div`
+const SignupInputLabel = styled.label`
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -318,7 +320,7 @@ const SignupBtn = styled.button`
   margin-top: 48px;
   margin-bottom: 48px;
   padding: 13px 32px;
-  background: #69535f;
+  background: ${({ isValidEmail }) => (isValidEmail ? '#69535f' : '#ccc')};
   border-radius: 8px;
   border: none;
   color: #fff;
@@ -328,7 +330,7 @@ const SignupBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  cursor: pointer;
+  cursor: ${({ isValidEmail }) => (isValidEmail ? 'pointer' : 'not-allowed')};
 `
 const SignWithGoogleArea = styled.div`
   margin-left: 128px;

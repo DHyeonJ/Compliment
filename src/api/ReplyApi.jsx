@@ -1,15 +1,27 @@
-import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc, addDoc } from 'firebase/firestore'
+import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc, addDoc, query, where, limit, orderBy } from 'firebase/firestore'
 import { auth, db } from '../firebase'
 
 // 매개변수 ID로 받아서 query where사용
-const getReplyApi = async () => {
-  const querySnapShot = await getDocs(collection(db, 'reply'))
-  const fetchData = querySnapShot.docs.map((doc) => ({
+const getReplyApi = async ({ id, count }) => {
+  let q
+  const replyRef = collection(db, 'reply')
+
+  if (!count) {
+    q = query(replyRef, where('ContentId', '==', id), orderBy('timeSort', 'desc'))
+  } else {
+    q = query(replyRef, where('ContentId', '==', id), orderBy('timeSort', 'desc'), limit(count))
+  }
+
+  const querySnapshot = await getDocs(q)
+
+  const result = querySnapshot.docs.map((doc) => ({
     ...doc.data(),
     id: doc.id,
   }))
-  return fetchData
+
+  return result
 }
+
 const addReply = async ({ newReplyList, replyId }) => {
   const newReply = await setDoc(doc(db, 'reply', replyId), newReplyList)
   return newReply

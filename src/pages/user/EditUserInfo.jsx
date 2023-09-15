@@ -6,15 +6,14 @@
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 // eslint-disable-next-line import/first
-import React, { useState, u } from 'react'
+import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth, storage, db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
-import { updatePassword, updateProfile } from 'firebase/auth'
+import { updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { doc, updateDoc } from 'firebase/firestore'
 import defaultImg from '../../img/user.png'
-
 function EditUserInfo() {
   const navigate = useNavigate()
   const MainpageMove = () => {
@@ -22,23 +21,32 @@ function EditUserInfo() {
   }
   const [error, setError] = useState(null)
   const user = auth.currentUser
-  const photoURL = user.photoURL
   const loggedInUserEmail = user ? user.email : null
   const [imageUrl, setImageUrl] = useState(null)
+  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [nickname, setNickname] = useState('')
   const handlePasswordUpdate = async (event) => {
     event.preventDefault()
 
-    if (newPassword !== confirmNewPassword) {
-      alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+    if (!currentPassword) {
+      alert('현재 비밀번호를 입력해주세요.')
       return
     }
 
     try {
       if (!user) {
         alert('사용자 정보를 가져올 수 없습니다.')
+        return
+      }
+
+      const credentials = EmailAuthProvider.credential(loggedInUserEmail, currentPassword) // 현재 이메일과 비밀번호를 사용하여 자격 증명(credential)을 생성합니다.
+      await reauthenticateWithCredential(user, credentials) // 현재 비밀번호가 올바른지 확인합니다.
+
+      // 다시 인증이 성공하면 비밀번호를 업데이트합니다.
+      if (newPassword !== confirmNewPassword) {
+        alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
         return
       }
 
@@ -49,13 +57,18 @@ function EditUserInfo() {
     } catch (error) {
       console.error('회원 정보 변경 오류:', error)
 
-      if (error.code === 'auth/requires-recent-login') {
+      if (error.code === 'auth/wrong-password') {
+        // 잘못된 현재 비밀번호 처리
+        alert('현재 비밀번호가 올바르지 않습니다.')
+      } else if (error.code === 'auth/requires-recent-login') {
         alert('비밀번호 변경을 위해선 재로그인이 필요합니다.')
+        navigate('/login')
       } else {
         alert('비밀번호 변경 실패: ' + error.message)
       }
     }
   }
+
   const handleImageUpload = async (event) => {
     const file = event.target.files[0]
     if (!file) {
@@ -70,9 +83,9 @@ function EditUserInfo() {
 
     const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
     try {
-      const uploadTask = uploadBytesResumable(storageRef, file)
-      uploadTask.on(
-        'state_changed',
+      const uploadTask = uploadBytes(storageRef, file) // uploadBytes로 수정
+
+      uploadTask.then(
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           console.log(`Upload is ${progress}% done`)
@@ -80,9 +93,12 @@ function EditUserInfo() {
         (error) => {
           console.error('Error uploading image:', error)
         },
-        async () => {
+      )
+
+      uploadTask
+        .then(async () => {
           try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref)
+            const downloadURL = await getDownloadURL(storageRef)
             setImageUrl(downloadURL)
 
             if (user) {
@@ -94,8 +110,10 @@ function EditUserInfo() {
           } catch (downloadError) {
             console.error('Error getting download URL:', downloadError)
           }
-        },
-      )
+        })
+        .catch((uploadError) => {
+          console.error('Error uploading image:', uploadError)
+        })
     } catch (uploadError) {
       console.error('Error uploading image:', uploadError)
     }
@@ -106,31 +124,30 @@ function EditUserInfo() {
       setError('프로필 이미지를 업로드해주세요.')
       return
     }
-
+    const updateInfoRef = doc(db, 'profileImages', user.uid)
+    if (!(await docExists(updateInfoRef))) {
+      await setDoc(updateInfoRef, {})
+    }
     try {
       const updateInfoRef = doc(db, 'profileImages', user.uid)
 
       await updateDoc(updateInfoRef, {
         name: loggedInUserEmail,
         imgfile: imageUrl,
-        nickname: nickname,
       })
-
-      if (user) {
-        // 사용자의 닉네임 업데이트
-        await updateProfile(auth.currentUser, { displayName: nickname })
-        console.log('User profile updated.')
-      }
 
       setError(null)
 
-      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl, nickname)
+      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
       window.alert('프로필 정보를 저장했습니다.')
-      console.log(photoURL)
     } catch (error) {
       console.error('프로필 정보 저장 실패:', error.message)
       setError('프로필 정보 저장에 실패했습니다. 다시 시도해주세요.')
     }
+  }
+  async function docExists(docRef) {
+    const docSnap = await getDoc(docRef)
+    return docSnap.exists()
   }
 
   return (
@@ -142,9 +159,13 @@ function EditUserInfo() {
         </div>
         <ProfileImageBox>
           <ProfileImagePreview src={imageUrl || defaultImg} alt="프로필사진 미리보기" />
-          <ProfileImageInput placeholder="프로필사진 등록하기" type="file" accept="image/*" onChange={handleImageUpload} />
-          <ProfileImageBtn onClick={handleSave}>이미지 업로드</ProfileImageBtn>
-          {error && <p>{error}</p>}
+          {user && !user.providerData.some((provider) => provider.providerId === 'google.com') && (
+            <label htmlFor="file">
+              <ProfileImageBoxBtn>프로필 이미지 변경</ProfileImageBoxBtn>
+            </label>
+          )}
+          <ProfileImageInput type="file" name="file" id="file" accept="image/*" onChange={handleImageUpload}></ProfileImageInput>
+          {/* {error && <p>{error}</p>} */}
         </ProfileImageBox>
         <EditForm onSubmit={handlePasswordUpdate}>
           <EditInputAreaBox>
@@ -161,6 +182,10 @@ function EditUserInfo() {
             <EditInputLabelBox>닉네임</EditInputLabelBox>
             <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
           </EditInputAreaBox> */}
+          <EditInputAreaBox>
+            <EditInputLabelBox>현재 비밀번호</EditInputLabelBox>
+            <EditInput placeholder="현재 비밀번호를 입력해주세요" type="password" name="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          </EditInputAreaBox>
           <EditInputAreaBox>
             <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
             <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
@@ -234,14 +259,22 @@ const ProfileImageBox = styled.div`
   align-items: center;
 `
 
+const ProfileImageBoxBtn = styled.div`
+  cursor: pointer;
+  color: var(--text01_404040, #404040);
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  &:hover {
+    color: #69535f;
+  }
+`
+
 const ProfileImageInput = styled.input`
-  display: inline-block;
-  vertical-align: middle;
-  height: 30px;
-  width: 78%;
-  padding: 10px 10px 10px 10px;
-  border: 1px solid #dddddd;
-  color: #999999;
+  display: none;
 `
 
 const ProfileImageBtn = styled.button`
@@ -251,7 +284,7 @@ const ProfileImageBtn = styled.button`
   border-right-width: 0;
   border-top-width: 0;
   border-bottom-width: 0;
-  color: #8f8989;
+  color: #69535f;
   cursor: pointer;
 `
 
@@ -352,4 +385,8 @@ const CancleBtn = styled.button`
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
+`
+const TextBox = styled.div`
+  width: 480px;
+  margin: 20px 128px 20px 128px;
 `

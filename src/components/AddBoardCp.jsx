@@ -132,7 +132,7 @@ const AddBoardCp = () => {
 
           <div>
             <CommentContainerBox>
-              <div>
+              <pre>
                 <PreviewBox>{imagePreview && <ImagePreview src={imagePreview} alt="이미지 미리 보기" />}</PreviewBox>
                 <CommentInputBox
                   placeholder="오늘은 어떤 일이 있었나요? 
@@ -141,11 +141,11 @@ const AddBoardCp = () => {
                   value={content}
                   onChange={handleChangeContent}
                 ></CommentInputBox>
-              </div>
+              </pre>
 
               <ButtonsBox>
                 <div>
-                  <CustomFileInput ref={fileInput} type="file" onChange={handleChange} />
+                  <CustomFileInput ref={fileInput} type="file" accept="image/*" onChange={handleChange} />
                   <span>{fileName}</span>
                   <CustomFileInputLabel htmlFor="fileInput" onClick={handleUploadClick}>
                     이미지 업로드
