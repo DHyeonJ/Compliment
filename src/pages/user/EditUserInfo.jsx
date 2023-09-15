@@ -10,9 +10,9 @@ import React, { useState } from 'react'
 import { styled } from 'styled-components'
 import { auth, storage, db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
-import { updatePassword, updateProfile } from 'firebase/auth'
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore'
+import { updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
+import { doc, updateDoc } from 'firebase/firestore'
 import defaultImg from '../../img/user.png'
 function EditUserInfo() {
   const navigate = useNavigate()
@@ -23,21 +23,30 @@ function EditUserInfo() {
   const user = auth.currentUser
   const loggedInUserEmail = user ? user.email : null
   const [imageUrl, setImageUrl] = useState(null)
+  const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
   const [nickname, setNickname] = useState('')
   const handlePasswordUpdate = async (event) => {
     event.preventDefault()
 
-    const storedImgData = localStorage.getItem('photoURL')
-    if (newPassword !== confirmNewPassword) {
-      alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+    if (!currentPassword) {
+      alert('현재 비밀번호를 입력해주세요.')
       return
     }
 
     try {
       if (!user) {
         alert('사용자 정보를 가져올 수 없습니다.')
+        return
+      }
+
+      const credentials = EmailAuthProvider.credential(loggedInUserEmail, currentPassword) // 현재 이메일과 비밀번호를 사용하여 자격 증명(credential)을 생성합니다.
+      await reauthenticateWithCredential(user, credentials) // 현재 비밀번호가 올바른지 확인합니다.
+
+      // 다시 인증이 성공하면 비밀번호를 업데이트합니다.
+      if (newPassword !== confirmNewPassword) {
+        alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
         return
       }
 
@@ -48,7 +57,10 @@ function EditUserInfo() {
     } catch (error) {
       console.error('회원 정보 변경 오류:', error)
 
-      if (error.code === 'auth/requires-recent-login') {
+      if (error.code === 'auth/wrong-password') {
+        // 잘못된 현재 비밀번호 처리
+        alert('현재 비밀번호가 올바르지 않습니다.')
+      } else if (error.code === 'auth/requires-recent-login') {
         alert('비밀번호 변경을 위해선 재로그인이 필요합니다.')
         navigate('/login')
       } else {
@@ -160,26 +172,33 @@ function EditUserInfo() {
             <EditInputLabelBox>아이디</EditInputLabelBox>
             <EditIdBox>{loggedInUserEmail}</EditIdBox>
           </EditInputAreaBox>
-
-          {user && user.providerData.some((provider) => provider.providerId === 'google.com') ? (
-            <TextBox>구글 로그인 회원에게는 회원정보 수정기능이 지원되지 않습니다. </TextBox>
-          ) : (
-            <>
-              <EditInputAreaBox>
-                <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
-                <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-              </EditInputAreaBox>
-              <EditInputAreaBox>
-                <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
-                <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
-              </EditInputAreaBox>{' '}
-              <EditInputAreaBox>
-                <EditSaveBtn type="submit" onClick={handleSave}>
-                  저장하기
-                </EditSaveBtn>
-              </EditInputAreaBox>
-            </>
+          {user && user.providerData.some((provider) => provider.providerId === 'google.com') && (
+            <EditInputAreaBox>
+              <EditInputLabelBox>닉네임</EditInputLabelBox>
+              <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+            </EditInputAreaBox>
           )}
+          {/* <EditInputAreaBox>
+            <EditInputLabelBox>닉네임</EditInputLabelBox>
+            <EditInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" value={nickname} onChange={(e) => setNickname(e.target.value)} />
+          </EditInputAreaBox> */}
+          <EditInputAreaBox>
+            <EditInputLabelBox>현재 비밀번호</EditInputLabelBox>
+            <EditInput placeholder="현재 비밀번호를 입력해주세요" type="password" name="currentPassword" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditInputLabelBox>새 비밀번호</EditInputLabelBox>
+            <EditInput placeholder="새 비밀번호를 입력해주세요" type="password" name="newPassword" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditInputLabelBox>새 비밀번호 확인</EditInputLabelBox>
+            <EditInput placeholder="새 비밀번호를 다시 입력해주세요" type="password" name="confirmNewPassword" value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+          </EditInputAreaBox>
+          <EditInputAreaBox>
+            <EditSaveBtn type="submit" onClick={handleSave}>
+              저장하기
+            </EditSaveBtn>
+          </EditInputAreaBox>
         </EditForm>
         <CancleBtn onClick={MainpageMove}>취소</CancleBtn>
       </EditUserInfoBox>

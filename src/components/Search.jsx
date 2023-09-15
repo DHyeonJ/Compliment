@@ -12,20 +12,22 @@ const Search = ({ handleSearchClick }) => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
+      // 엔터 키가 눌렸을 때 검색 실행
       handleSearchClick(value)
     }
   }
-
   return (
-    <SearchBox>
-      <KeywordInput type="text" placeholder="찾고 싶은 이야기를 검색하세요." value={value} onChange={handleSearchChange} onKeyPress={handleKeyPress} />
-      <SearchIcon
-        icon={faMagnifyingGlass}
-        onClick={() => {
-          handleSearchClick(value)
-        }}
-      />
-    </SearchBox>
+    <>
+      <SearchBox>
+        <KeywordInput type="text" placeholder="찾고 싶은 이야기를 검색하세요." value={value} onChange={handleSearchChange} onKeyPress={handleKeyPress} />
+        <SearchIcon
+          icon={faMagnifyingGlass}
+          onClick={() => {
+            handleSearchClick(value)
+          }}
+        />
+      </SearchBox>
+    </>
   )
 }
 
@@ -34,27 +36,37 @@ export default Search
 const SearchBox = styled.div`
   display: flex;
   width: 320px;
-  padding: 0px 8px;
-  align-items: flex-start;
+  padding-left: 0px;
+  justify-content: space-between;
+  align-items: center;
   flex-shrink: 0;
   border-radius: 20px;
   border: 1px solid #d9d9d9;
+  background: #fff;
 `
 const SearchIcon = styled(FontAwesomeIcon)`
+  border-radius: 20px;
+  display: flex;
+  width: 48px;
+  height: 48px;
+  padding: 8px 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
   width: 32px;
-  cursor: pointer;
   height: 32px;
-  color: #404040;
-  margin: 8px;
+  flex-shrink: 0;
 `
 const KeywordInput = styled.input`
-  width: 300px;
+  outline: none;
+  width: 280px;
   height: 28px;
   border: none;
-  margin-left: 10px;
   font-size: 15px;
   z-index: 1;
   position: relative;
+  left: 10px;
   text-align: left;
   margin: auto;
   &::placeholder {

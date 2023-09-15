@@ -8,6 +8,7 @@ import ProgressBar from '../../components/ProgressBar'
 import Tab from '../../components/Tab'
 import userInfoEdit from '../../img/userInfoEdit.png'
 import Loading from '../../components/Loading'
+import MenuNav from '../../components/MenuNav'
 
 function Mypage() {
   const navigator = useNavigate()
@@ -66,25 +67,28 @@ function Mypage() {
         <Loading />
       ) : (
         <div>
+          <MenuNav />
           <MypageBox>
-            <ProfileBox>
-              <ProfileImage alt="프로필 이미지" src={photoImg ?? defaultProfileImage} />
-              <TextBox>
-                <NicknameTextBox>
-                  <Bold>{localStorageUserId}</Bold> 님 <br /> 안녕하세요.
-                </NicknameTextBox>
-                <SignEditBox onClick={EditUserpageMove}>
-                  회원정보 수정
-                  <UserButton src={userInfoEdit} />
-                </SignEditBox>
-              </TextBox>
-            </ProfileBox>
-            <RateBox>
-              <ProgressBar />
-            </RateBox>
-            <ListBox>
-              <Tab />
-            </ListBox>
+            <PageBox>
+              <ProfileBox>
+                <ProfileImage alt="프로필 이미지" src={photoImg ?? defaultProfileImage} />
+                <TextBox>
+                  <NicknameTextBox>
+                    <Bold>{localStorageUserId}</Bold> 님 <br /> 안녕하세요.
+                  </NicknameTextBox>
+                  <SignEditBox onClick={EditUserpageMove}>
+                    회원정보 수정
+                    <UserButton src={userInfoEdit} />
+                  </SignEditBox>
+                </TextBox>
+              </ProfileBox>
+              <RateBox>
+                <ProgressBar />
+              </RateBox>
+              <ListBox>
+                <Tab />
+              </ListBox>
+            </PageBox>
           </MypageBox>
         </div>
       )}
@@ -95,10 +99,22 @@ export default Mypage
 const MypageBox = styled.div`
   display: flex;
   /* height: 100vh; */
-  margin-top: 84px;
+  padding: 32px 240px 48px 240px;
+  /* margin-top: 84px; */
   flex-direction: column;
   align-items: center;
 `
+
+const PageBox = styled.div`
+  display: flex;
+  border-radius: 20px;
+  box-sizing: border-box;
+  padding: 24px 270px;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #d9d9d9;
+`
+
 const ProfileBox = styled.div`
   display: flex;
   width: 784px;

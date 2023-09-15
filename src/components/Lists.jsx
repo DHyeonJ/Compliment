@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
-import HandClap from '../img/hand-clap.png'
+import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
+import LoadingModal from './LoadingModal'
 import defaultProfileImage from '../../src/img/user.png'
 import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
+  const localUserid = JSON.parse(localStorage.getItem('user'))
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
   return (
     <>
@@ -25,10 +29,10 @@ const Lists = ({ data }) => {
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
                     <span>{item.userEmail.split('@')[0]}</span>
                   </User>
-                  <div>
+                  <pre>
                     <ListTitle>{item.title}</ListTitle>
                     <ListComments>{item.comments}</ListComments>
-                  </div>
+                  </pre>
                 </ListContent>
                 <HandClapBox>
                   <ListDate>작성일 </ListDate>
@@ -47,6 +51,7 @@ const Lists = ({ data }) => {
     </>
   )
 }
+
 const ListContentt = styled.div`
   display: flex;
   justify-content: space-between;
@@ -76,6 +81,8 @@ const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
+  /* filter: grayscale(100%); */
+  /* color: black; */
 `
 const Date = styled.div`
   color: #999;
@@ -166,7 +173,7 @@ const ListDate = styled.p`
   font-weight: 500;
   line-height: 28px; /* 200% */
 `
-const ListContent = styled.div`
+const ListContent = styled.pre`
   display: flex;
   width: 1192px;
   height: 120px;

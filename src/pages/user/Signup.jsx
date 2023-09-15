@@ -116,7 +116,7 @@ function Signup() {
     } else {
       setValidpassword('')
     }
-  }, 1000)
+  }, 100)
 
   useEffect(() => {
     debounceValidatePassword(password)
@@ -127,12 +127,13 @@ function Signup() {
   }, [password, confirmPassword])
 
   const debounceValidateConfirmPassword = debounce((password, confirmPassword) => {
-    if (password !== confirmPassword) {
+    if (password !== confirmPassword && confirmPassword.length > 0) {
+      // confirmPassword가 비어있지 않은지 확인합니다.
       setConfirmPasswordError('비밀번호가 일치하지 않습니다')
     } else {
       setConfirmPasswordError('')
     }
-  }, 1000)
+  }, 100)
 
   return (
     <>
@@ -149,17 +150,17 @@ function Signup() {
             <div>
               <SignForm>
                 <SignInputAreaBox>
-                  <SignupInputLabel>이메일</SignupInputLabel>
+                  <SignupInputLabel htmlFor="email">이메일</SignupInputLabel>
                   <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
                   {!validEmail && email.length > 0 && <DebounceTextBox>유효한 이메일이 아닙니다.</DebounceTextBox>}{' '}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
-                  <SignupInputLabel>비밀번호</SignupInputLabel>
+                  <SignupInputLabel htmlFor="password">비밀번호</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="password" value={password} onChange={onChange} />
                   {password.length > 0 && password.length < 6 && <DebounceTextBox>비밀번호는 6자 이상이어야 합니다.</DebounceTextBox>}
                 </SignInputAreaBox>
                 <SignInputAreaBox>
-                  <SignupInputLabel>비밀번호 확인</SignupInputLabel>
+                  <SignupInputLabel htmlFor="confirmPassword">비밀번호 확인</SignupInputLabel>
                   <SignupInput placeholder="비밀번호를 입력해주세요" type="password" name="confirmPassword" value={confirmPassword} onChange={onChange} />
                   {confirmPasswordError && <DebounceTextBox>{confirmPasswordError}</DebounceTextBox>}
                 </SignInputAreaBox>
@@ -276,7 +277,7 @@ const SignInputAreaBox = styled.div`
   margin-right: 128px;
 `
 
-const SignupInputLabel = styled.div`
+const SignupInputLabel = styled.label`
   display: flex;
   align-items: center;
   flex-shrink: 0;

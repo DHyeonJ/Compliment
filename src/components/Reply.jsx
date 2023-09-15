@@ -1,90 +1,67 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { styled } from 'styled-components'
 import defaultProfileImage from '../img/anonymous.png'
 import commentImg from '../img/comment.png'
 import moment from 'moment'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from 'react-query'
 import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
+import { sortData } from '../utils/sort'
 
 function Reply() {
   const { id } = useParams()
   const nowTime = moment().format('YYYY-MM-DD')
 
+  const navigate = useNavigate()
+
+  const [user, setUser] = useState(null)
   const [replyData, setReplyData] = useState([])
-  const [replyContent, setReplyContent] = useState('')
-  const [user, setUser] = useState(null) // 사용자 정보를 저장할 상태 변수
+  const [commentLimit, setCommentLimit] = useState(4)
+  const [totalCount, setTotalCount] = useState(0)
+
+  const [replyContent, setReplyContent] = useState('') // 댓글 입력내용
   const [isEditing, setIsEditing] = useState(false)
   const [editedReplyContent, setEditedReplyContent] = useState('')
   const [editingReplyId, setEditingReplyId] = useState(null)
-  const [commentLimit, setCommentLimit] = useState(4) // 한 번에 가져올 댓글 수
-  const [totalComments, setTotalComments] = useState(0) // 전체 댓글 수
   const [showLoadMoreButton, setShowLoadMoreButton] = useState(true)
 
-  //
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
 
-  useEffect(() => {
-    // Firebase에서 사용자 로그인 상태를 관찰합니다.
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        // 사용자가 로그인한 경우, 사용자 정보를 설정합니다.
-        setUser(user)
-      } else {
-        // 사용자가 로그아웃한 경우, 사용자 정보를 null로 설정합니다.
-        setUser(null)
-      }
-    })
+  const fetchReplyData = useCallback(async () => {
+    if (!id) return
 
-    // 컴포넌트가 언마운트될 때 Firebase 구독을 정리합니다.
-    return () => unsubscribe()
-  }, [])
+    const data = await getReplyApi({ id, count: commentLimit })
+    const allData = await getReplyApi({ id })
+    setReplyData(sortData(data, 'timeSort'))
+    setTotalCount(allData.length)
+  }, [commentLimit])
 
-  const fetchReplyData = async () => {
-    if (id) {
-      const replyRef = collection(db, 'reply')
-      const q = query(replyRef, where('ContentId', '==', id), limit(commentLimit)) // 지정된 한도로 댓글을 가져오도록 쿼리 수정
-
-      try {
-        const querySnapshot = await getDocs(q)
-        const updatedReplyData = []
-        querySnapshot.forEach((doc) => {
-          const replyData = doc.data()
-          replyData.id = doc.id
-          updatedReplyData.push(replyData)
-        })
-        setReplyData(updatedReplyData)
-
-        const totalCommentCount = querySnapshot.size
-        setTotalComments(totalCommentCount)
-      } catch (error) {
-        console.error('댓글 가져오기 오류:', error)
-      }
-    }
-  }
+  const loadMoreComments = () => setCommentLimit(commentLimit + 5)
 
   useEffect(() => {
     fetchReplyData()
-  }, [])
+  }, [fetchReplyData])
 
   const addNewReply = async () => {
     if (!user) {
-      // 사용자가 로그인하지 않은 경우 알림창 표시
       window.alert('댓글을 작성하려면 먼저 로그인하세요.')
+      navigate('/login')
       return
     }
 
     const replyId = Date.now().toString()
+    const timeSort = Date.now()
+
     const newReplyList = {
       id: replyId,
       userEmail: user ? user.email : '', // 사용자의 이메일
       ContentId: id,
       reply: replyContent,
       Date: nowTime,
+      timeSort,
       photoURL: user ? user.photoURL : '', // 사용자의 프로필 사진 URL
       replyId,
     }
@@ -96,9 +73,8 @@ function Reply() {
 
     try {
       await addReply({ newReplyList, replyId })
-      setReplyData([...replyData, newReplyList])
+      await fetchReplyData()
       setReplyContent('')
-      updateTotalComments()
     } catch (error) {
       console.error('문서 추가 오류: ', error)
     }
@@ -119,6 +95,7 @@ function Reply() {
     }
   }
 
+  // reply update
   const onSaveEditHandler = async () => {
     if (editedReplyContent.trim() === '') {
       alert('댓글을 입력해주세요.')
@@ -152,21 +129,12 @@ function Reply() {
     if (shouldDelete) {
       try {
         await deleteReply(replyId)
-        const updatedReplyData = replyData.filter((comment) => comment.id !== replyId)
-        setReplyData(updatedReplyData)
+        await fetchReplyData()
       } catch (error) {
         console.error('댓글 삭제 오류: ', error)
       }
     }
   }
-
-  //
-
-  const loadMoreComments = () => {
-    // 한 번에 가져올 댓글 수를 더 늘립니다.
-    setCommentLimit(commentLimit + 5) // 예를 들어, 추가로 4개의 댓글을 가져올 수 있도록 증가시킵니다.
-  }
-  // ...
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -185,30 +153,26 @@ function Reply() {
     fetchReplyData()
   }, [commentLimit])
 
-  // totalComments를 업데이트할 함수 추가
-  const updateTotalComments = async () => {
-    if (id) {
-      const replyRef = collection(db, 'reply')
-      const q = query(replyRef, where('ContentId', '==', id))
+  // totalCount를 업데이트할 함수 추가
 
-      try {
-        const querySnapshot = await getDocs(q)
-        setTotalComments(querySnapshot.size) // 전체 댓글 수 업데이트
-      } catch (error) {
-        console.error('댓글 가져오기 오류:', error)
-      }
-    }
-  }
+  // useEffect(() => {
+  //   updatetotalCount()
+  // }, [id]) // 게시글 ID가 변경될 때 totalCount를 업데이트합니다.
 
   useEffect(() => {
-    updateTotalComments()
-  }, [id]) // 게시글 ID가 변경될 때 totalComments를 업데이트합니다.
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) setUser(user)
+      else setUser(null)
+    })
+
+    return () => unsubscribe()
+  }, [])
 
   return (
     <>
       <CommentHeaderBox>
         <img src={commentImg} alt="" />
-        칭찬 댓글 ({totalComments}개) {/* totalComments를 추가하여 표시 */}
+        칭찬 댓글 ({totalCount}개) {/* totalCount를 추가하여 표시 */}
       </CommentHeaderBox>
 
       <Boxs>
@@ -250,7 +214,7 @@ function Reply() {
           </CommentBodyBox>
         </CommentBox>
         {/* "더 보기" 버튼 추가 */}
-        {replyData.length < totalComments && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+        {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
 
         <CommentInputAreaBox>
           <CommentInputMiddleBox>

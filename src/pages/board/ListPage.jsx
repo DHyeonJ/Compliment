@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import MenuNav from '../../components/MenuNav'
 import Lists from '../../components/Lists'
 import { styled } from 'styled-components'
@@ -6,156 +6,97 @@ import Search from '../../components/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists, useIsAuthenticated } from '../../api/ListsApi'
-import { useQuery } from 'react-query'
-import moment from 'moment'
-import Loading from '../../components/Loading'
 
 function ListPage() {
   const navigate = useNavigate()
-  const { data: listsData, isLoading } = useQuery(['lists'], getLists)
-
-  // 사용자가 인증되었는지 확인
   const isAuthenticated = useIsAuthenticated()
 
-  // 칭찬순, 최신순이 active할 때를 만들어주는 state
+  const [list, setList] = useState([])
+  const [displayData, setDisplayData] = useState([])
   const [activeSort, setActiveSort] = useState('latest')
 
-  // 검색기능
-  const [searchTerm, setSearchTerm] = useState(listsData)
+  const fetchDate = useCallback(async () => {
+    const fetchData = await getLists()
+    setList(fetchData)
+  }, [])
 
-  // state 하나로 관리
-  const [displayData, setDisplayData] = useState([])
-
-  console.log('listsData!!!!!', listsData)
-  //
-  const [page, setPage] = useState(1)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const searchFiltered = (keyword) => {
-    if (keyword.trim() === '') {
-      setDisplayData(displayData)
-    } else {
-      const filtered = listsData
-      const filteredTime = filtered ? listsData.filter((item) => item.comments.toLowerCase().includes(keyword.toLowerCase())) : []
-      setDisplayData(filteredTime)
-    }
-  }
-
-  const handleSearchClick = (value) => {
-    setSearchTerm(value)
-    searchFiltered(value)
-  }
-
-  const createBoardPageMove = () => {
-    if (isAuthenticated) {
-      // 사용자가 인증된 경우에만 "글쓰기" 페이지로 이동합니다.
-      navigate('/addboard')
-    } else {
-      // 사용자에게 로그인하도록 메시지를 표시하거나 로그인을 요청할 수도 있습니다.
-      alert('로그인 후에 글을 작성할 수 있습니다.')
-    }
-  }
-
-  const loadMoreData = () => {
-    setIsLoadingMore(true)
-    // Simulate loading more data for demonstration purposes
-    setTimeout(() => {
-      if (listsData) {
-        const newData = listsData.slice((page - 1) * 10, page * 10)
-        setDisplayData((prevData) => [...prevData, ...newData])
-        setIsLoadingMore(false)
-        setPage(page + 1)
-      }
-    }, 1000)
-  }
   const likesSort = () => {
     setActiveSort('likes')
-    const likesData = [...listsData]?.sort((a, b) => b.likes - a.likes)
+    const likesData = [...list]?.sort((a, b) => b.likes - a.likes)
     setDisplayData(likesData)
   }
 
-  //
   const latestSort = () => {
     setActiveSort('latest')
-    const news = [...listsData]
-    const orderedData = news?.sort((a, b) => b.timeSort - a.timeSort)
 
-    console.log('here', orderedData)
+    const orderedData = [...list]?.sort((a, b) => b.timeSort - a.timeSort)
     setDisplayData(orderedData)
   }
 
-  useEffect(() => {
-    if (listsData) {
-      latestSort()
-      setIsLoadingMore(false) // 데이터가 로드되면 isLoading을 false로 설정합니다
-    }
-  }, [listsData])
+  const handleSearchClick = (value) => {
+    const temp = list.filter((item) => item.comments.toLowerCase().includes(value.toLowerCase()))
+    setDisplayData(temp)
+  }
 
-  console.log('listsData', listsData)
+  const createBoardPageMove = () => {
+    if (isAuthenticated) return navigate('/addboard')
+    else alert('로그인 후에 글을 작성할 수 있습니다.')
+  }
+
+  useEffect(() => {
+    fetchDate()
+  }, [fetchDate])
+
+  useEffect(() => {
+    setDisplayData(list)
+  }, [list])
+
   return (
-    <>
-      {isLoading ? (
-        <Loading />
-      ) : (
-        <ListPageBox>
-          <MenuNav />
-          <ListBox>
-            <ContentBox>
-              <BannerBox>
-                <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
-                <BannerContentBox>
-                  오늘 하루는 모두에게 어떤 일이 있었을까요?
-                  <br />
-                  일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
-                </BannerContentBox>
-              </BannerBox>
-              <ChoiceBox>
-                <FilterBox>
-                  <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
-                    최신순
-                  </NewSpan>
-                  <BlockBox />
-                  <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
-                    칭찬순
-                  </RankingSpan>
-                </FilterBox>
-                <SerchPlusAreaBox>
-                  <Search handleSearchClick={handleSearchClick} />
-                  <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
-                </SerchPlusAreaBox>
-              </ChoiceBox>
-              <ListContainer>
-                <Lists data={displayData} />
-              </ListContainer>
-            </ContentBox>
-          </ListBox>
-        </ListPageBox>
-      )}
-    </>
+    <ListPageBox>
+      <MenuNav />
+      <ListBox>
+        <ContentBox>
+          <BannerBox>
+            <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
+            <BannerContentBox>
+              오늘 하루는 모두에게 어떤 일이 있었을까요?
+              <br />
+              일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
+            </BannerContentBox>
+          </BannerBox>
+          <ChoiceBox>
+            <FilterBox>
+              <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
+                최신순
+              </NewSpan>
+              <BlockBox />
+              <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
+                칭찬순
+              </RankingSpan>
+            </FilterBox>
+            <SerchPlusAreaBox>
+              <Search handleSearchClick={handleSearchClick} />
+              <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
+            </SerchPlusAreaBox>
+          </ChoiceBox>
+          <ListContainer>
+            <Lists data={displayData} />
+          </ListContainer>
+        </ContentBox>
+      </ListBox>
+    </ListPageBox>
   )
 }
 
 export default ListPage
 
 const ListContainer = styled.div`
-  height: 1660px;
+  // height: 1660px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
   overflow-y: auto;
-  &::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    height: 30%;
-    background: rgba(153, 153, 153, 0.4); /* 원하는 색상으로 변경 */
-    border-radius: 20px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(153, 153, 153, 0.1); /*스크롤바 뒷 배경 색상*/
-  }
 `
 
 const ListPageBox = styled.div`
@@ -163,7 +104,7 @@ const ListPageBox = styled.div`
   align-items: center;
   justify-content: center;
   width: 100vw;
-  height: 2168px;
+  /* height: 2168px; */
   flex-direction: column;
 `
 
@@ -173,13 +114,13 @@ const ListBox = styled.div`
   justify-content: center;
   flex-direction: column;
   width: calc(100vw - 120px);
-  height: 2238px;
+  /* height: 2238px; */
   margin-top: 16px;
 `
 
 const ContentBox = styled.div`
   width: 1520px;
-  height: 2100px;
+  /* height: 2100px; */
   flex-direction: column;
   gap: 42px 0;
 `

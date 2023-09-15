@@ -5,6 +5,7 @@ import { deleteDoc, doc, updateDoc, getDoc } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 import { useParams, useNavigate } from 'react-router-dom'
 import Loading from '../components/Loading'
+import LoadingModal from './LoadingModal'
 import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
@@ -90,7 +91,6 @@ function Detail() {
     try {
       const docRef = doc(db, 'lists', id)
       const docSnap = await getDoc(docRef)
-      console.log(docSnap.data())
       setData(docSnap.data())
       setIsLoading(false) // 데이터를 성공적으로 가져온 후 로딩 상태를 false로 설정
     } catch (error) {
@@ -140,10 +140,17 @@ function Detail() {
       // data가 없는 경우에 대한 처리
       return null
     }
-    if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
+    if (auth.currentUser && auth.currentUser.email === data.userEmail) {
       return (
         <ButtonBox>
           <Button onClick={handleEditMove}>수정</Button>
+          <Button onClick={handleDeleteClick}>삭제</Button>
+        </ButtonBox>
+      )
+    }
+    if (auth.currentUser && auth.currentUser.email === admin) {
+      return (
+        <ButtonBox>
           <Button onClick={handleDeleteClick}>삭제</Button>
         </ButtonBox>
       )
@@ -154,10 +161,11 @@ function Detail() {
   return (
     <>
       {isLoading ? ( // 로딩 중인 경우 로딩 콘텐츠를 렌더링
-        <Loading />
+        <LoadingModal isOpen={true} />
       ) : (
         data && (
           <DetailContentsBox key={data.id}>
+            {/* {renderLikeButton()} */}
             {/* 제목과 작성자 정보 */}
             <HeaderBox>
               <HeaderContentBox>
@@ -179,7 +187,7 @@ function Detail() {
               <BodyContent>{data.comments}</BodyContent>
             </ContentBodyBox>
             {/* "좋아요" 버튼 추가 */}
-            <ButtonCircle onClick={handleLikeButtonClick}>
+            <ButtonCircle onClick={handleLikeButtonClick} isLiked={isLiked}>
               <Hands src={likedImg} alt="" />
               <Likes>{data ? data.likes : 0}</Likes>
               {/* {isLiked ? '칭찬 취소' : '칭찬해요'} */}
@@ -285,30 +293,24 @@ const Button = styled.button`
   }
 `
 
-const DetailAreaBox = styled.div`
-  width: 80%;
-  margin-left: auto;
-  margin-right: auto;
-`
-const ContentImgBox = styled.div`
-  width: 900px;
-  height: 480px;
-`
-
 const ContentDefualtImg = styled.img`
   width: 400px;
   height: auto;
 `
 const DetailContentsBox = styled.div`
   /* display 관련 */
-  width: 100%;
+  margin: 32px 240px 48px;
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
   align-items: center;
   /* margin, padding */
 
   /* background 관련 */
   background: #fff;
+
+  /* floating_shadow */
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
 `
 const HeaderBox = styled.div`
   /* display 관련 */
