@@ -6,190 +6,85 @@ import Search from '../../components/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists, useIsAuthenticated } from '../../api/ListsApi'
-import { useQuery, useInfiniteQuery } from 'react-query'
-import moment from 'moment'
-import Loading from '../../components/Loading'
-import { observe } from 'react-intersection-observer'
-import LoadingModal from '../../components/LoadingModal'
 
 function ListPage() {
   const navigate = useNavigate()
+  const isAuthenticated = useIsAuthenticated()
 
-  const divRef = useRef(null)
-
-  // 실제로 라이브러리에서 제공하는 변수
-  const [isLoading, setLoading] = useState(false)
-  const [hasNext, setHasNext] = useState(true)
-
-  const [count, setCount] = useState(5)
   const [list, setList] = useState([])
+  const [displayData, setDisplayData] = useState([])
+  const [activeSort, setActiveSort] = useState('latest')
 
   const fetchDate = useCallback(async () => {
-    setLoading(true)
-
-    const { fetchData, totalCount } = await getLists(count)
-
-    if (fetchData.length === totalCount) {
-      setHasNext(false)
-    } else {
-      setHasNext(true)
-    }
-
+    const fetchData = await getLists()
     setList(fetchData)
-    setLoading(false)
-  }, [count])
+  }, [])
+
+  const likesSort = () => {
+    setActiveSort('likes')
+    const likesData = [...list]?.sort((a, b) => b.likes - a.likes)
+    setDisplayData(likesData)
+  }
+
+  const latestSort = () => {
+    setActiveSort('latest')
+
+    const orderedData = [...list]?.sort((a, b) => b.timeSort - a.timeSort)
+    setDisplayData(orderedData)
+  }
+
+  const handleSearchClick = (value) => {
+    const temp = list.filter((item) => item.comments.toLowerCase().includes(value.toLowerCase()))
+    setDisplayData(temp)
+  }
+
+  const createBoardPageMove = () => {
+    if (isAuthenticated) return navigate('/addboard')
+    else alert('로그인 후에 글을 작성할 수 있습니다.')
+  }
 
   useEffect(() => {
     fetchDate()
   }, [fetchDate])
-  // 라이브러리에서 대체할 수 있는 코드
 
   useEffect(() => {
-    if (!divRef.current) return
+    setDisplayData(list)
+  }, [list])
 
-    const observer = new IntersectionObserver(
-      ([{ isIntersecting }]) => {
-        if (isIntersecting) {
-          setCount((prev) => prev + 5)
-        }
-      },
-      { root: null, rootMargin: '0px', threshold: 0.5 },
-    )
-
-    observer.observe(divRef.current)
-  }, [])
-
-  const listsData = []
-
-  // const isLoading = false
-
-  // const { data: listsData, isLoading } = useQuery(['lists'], async () => {
-  //   const data = await getLists(10)
-
-  //   return data
-  // })
-
-  // 사용자가 인증되었는지 확인
-  const isAuthenticated = useIsAuthenticated()
-
-  // 칭찬순, 최신순이 active할 때를 만들어주는 state
-  const [activeSort, setActiveSort] = useState('latest')
-
-  // 검색기능
-  const [searchTerm, setSearchTerm] = useState(listsData)
-
-  // state 하나로 관리
-  const [displayData, setDisplayData] = useState([])
-
-  // console.log('listsData!!!!!', listsData)
-  //
-  const [page, setPage] = useState(1)
-  const [isLoadingMore, setIsLoadingMore] = useState(false)
-  const searchFiltered = (keyword) => {
-    if (keyword.trim() === '') {
-      setDisplayData(displayData)
-    } else {
-      const filtered = listsData
-      const filteredTime = filtered ? listsData.filter((item) => item.comments.toLowerCase().includes(keyword.toLowerCase())) : []
-      setDisplayData(filteredTime)
-    }
-  }
-
-  const handleSearchClick = (value) => {
-    setSearchTerm(value)
-    searchFiltered(value)
-  }
-
-  const createBoardPageMove = () => {
-    if (isAuthenticated) {
-      // 사용자가 인증된 경우에만 "글쓰기" 페이지로 이동합니다.
-      navigate('/addboard')
-    } else {
-      // 사용자에게 로그인하도록 메시지를 표시하거나 로그인을 요청할 수도 있습니다.
-      alert('로그인 후에 글을 작성할 수 있습니다.')
-    }
-  }
-
-  const loadMoreData = () => {
-    setIsLoadingMore(true)
-    // Simulate loading more data for demonstration purposes
-    setTimeout(() => {
-      if (listsData) {
-        const newData = listsData.slice((page - 1) * 10, page * 10)
-        setDisplayData((prevData) => [...prevData, ...newData])
-        setIsLoadingMore(false)
-        setPage(page + 1)
-      }
-    }, 1000)
-  }
-  const likesSort = () => {
-    setActiveSort('likes')
-    const likesData = [...listsData]?.sort((a, b) => b.likes - a.likes)
-    setDisplayData(likesData)
-  }
-
-  //
-  const latestSort = () => {
-    setActiveSort('latest')
-    const news = [...listsData]
-    const orderedData = news?.sort((a, b) => b.timeSort - a.timeSort)
-
-    // console.log('here', orderedData)
-    setDisplayData(orderedData)
-  }
-
-  // useEffect(() => {
-  //   if (listsData) {
-  //     latestSort()
-  //     setIsLoadingMore(false) // 데이터가 로드되면 isLoading을 false로 설정합니다
-  //   }
-  // }, [listsData])
-
-  // console.log('listsData', listsData)
   return (
-    <>
-      {
-        <ListPageBox>
-          <MenuNav />
-          <ListBox>
-            <ContentBox>
-              <BannerBox>
-                <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
-                <BannerContentBox>
-                  오늘 하루는 모두에게 어떤 일이 있었을까요?
-                  <br />
-                  일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
-                </BannerContentBox>
-              </BannerBox>
-              <ChoiceBox>
-                <FilterBox>
-                  <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
-                    최신순
-                  </NewSpan>
-                  <BlockBox />
-                  <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
-                    칭찬순
-                  </RankingSpan>
-                </FilterBox>
-                <SerchPlusAreaBox>
-                  <Search handleSearchClick={handleSearchClick} />
-                  <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
-                </SerchPlusAreaBox>
-              </ChoiceBox>
-              <ListContainer>
-                <Lists data={list} />
-                {isLoading && <LoadingModal />}
-                {hasNext && (
-                  <div style={{ border: '3px solid black', height: '50px' }} ref={divRef}>
-                    loading...
-                  </div>
-                )}
-              </ListContainer>
-            </ContentBox>
-          </ListBox>
-        </ListPageBox>
-      }
-    </>
+    <ListPageBox>
+      <MenuNav />
+      <ListBox>
+        <ContentBox>
+          <BannerBox>
+            <BannerTitleSpan>칭찬을 구해요</BannerTitleSpan>
+            <BannerContentBox>
+              오늘 하루는 모두에게 어떤 일이 있었을까요?
+              <br />
+              일상 속의 자랑스럽고 소중한 순간들을 함께 나눠요.
+            </BannerContentBox>
+          </BannerBox>
+          <ChoiceBox>
+            <FilterBox>
+              <NewSpan onClick={latestSort} active={activeSort === 'latest'}>
+                최신순
+              </NewSpan>
+              <BlockBox />
+              <RankingSpan onClick={likesSort} active={activeSort === 'likes'}>
+                칭찬순
+              </RankingSpan>
+            </FilterBox>
+            <SerchPlusAreaBox>
+              <Search handleSearchClick={handleSearchClick} />
+              <PlusButton onClick={createBoardPageMove}>글쓰기</PlusButton>
+            </SerchPlusAreaBox>
+          </ChoiceBox>
+          <ListContainer>
+            <Lists data={displayData} />
+          </ListContainer>
+        </ContentBox>
+      </ListBox>
+    </ListPageBox>
   )
 }
 

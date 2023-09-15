@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import store from './redux/config/confingStore'
 import { Provider } from 'react-redux'
 import { QueryClientProvider, QueryClient } from 'react-query'
+import ScrollToTop from './components/ScrollReset'
 
 const queryClient = new QueryClient()
 const root = ReactDOM.createRoot(document.getElementById('root'))
@@ -13,6 +14,7 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <BrowserRouter>
+        <ScrollToTop />
         <App />
       </BrowserRouter>
     </Provider>
