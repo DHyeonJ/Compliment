@@ -65,6 +65,7 @@ function Layout(): JSX.Element {
     auth.onAuthStateChanged((user) => {
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (user) {
+        console.log('로그인성공')
         setCurrentUser(user.email)
         setPhotoURL(user.photoURL)
         // 로컬스토리지 저장
