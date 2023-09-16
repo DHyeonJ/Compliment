@@ -12,7 +12,6 @@ const Search = ({ handleSearchClick }) => {
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      // 엔터 키가 눌렸을 때 검색 실행
       handleSearchClick(value)
     }
   }

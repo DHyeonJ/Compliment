@@ -1,7 +1,7 @@
 /* eslint-disable array-callback-return */
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { getLists, getMyFriends, getMyLikeFriends } from '../api/ListsApi'
+import { getLists, getMyFriends, getMyLikeFriends } from '../api/listsApi'
 import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
 import HandClap from '../img/hand-clap.png'
