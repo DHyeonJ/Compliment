@@ -11,10 +11,8 @@ const GetMyListapi = async () => {
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
       const myLists = docSnap.data()
-      console.log(myLists)
       return myLists
     } else {
-      console.log('Document does not exist.')
       return null
     }
   } catch (error) {

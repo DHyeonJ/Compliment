@@ -244,6 +244,10 @@ const LoginBtn = styled.button`
   line-height: normal;
   letter-spacing: -0.64px;
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 
 const SignWithGoogleBtn = styled.button`
@@ -265,6 +269,10 @@ const SignWithGoogleBtn = styled.button`
   font-weight: 500;
   line-height: 110%; /* 17.6px */
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 const LoginTextArea = styled.div`
   display: block;

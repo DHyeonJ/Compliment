@@ -237,7 +237,7 @@ const CancelContainerBox = styled.div`
   gap: 0.75rem; /* px에서 rem으로 변경 */
 
   /* size 관련 */
-  height: 2.75rem; /* px에서 rem으로 변경 */
+  height: 2.75rem;
 
   /* margin, padding */
   padding: 0 1.5rem; /* px에서 rem으로 변경 */

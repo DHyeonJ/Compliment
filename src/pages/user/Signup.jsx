@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
-import { current } from '@reduxjs/toolkit'
 import { debounce } from 'lodash'
 
 function Signup() {
@@ -55,12 +54,10 @@ function Signup() {
         // 로그인이 완료되었을 때 사용자 정보 확인
 
         const user = userCredential.user
-        console.log('로그인된 사용자 이메일:', user.email)
         setEmail('')
         setPassword('')
         setConfirmPassword('')
         navigate('/')
-        console.log(userCredential)
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
           alert('이미 사용된 이메일입니다.')
@@ -69,7 +66,6 @@ function Signup() {
         } else if (error.code === 'auth/invalid-email') {
           alert('이메일 형식을 확인 해주세요.')
         } else {
-          console.log(error)
           alert('회원가입에 실패 했습니다.')
         }
       }

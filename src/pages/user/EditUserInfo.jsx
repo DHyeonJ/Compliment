@@ -83,15 +83,14 @@ function EditUserInfo() {
 
     const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
     try {
-      const uploadTask = uploadBytes(storageRef, file) // uploadBytes로 수정
+      const uploadTask = uploadBytes(storageRef, file)
 
       uploadTask.then(
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-          console.log(`Upload is ${progress}% done`)
         },
         (error) => {
-          console.error('Error uploading image:', error)
+          alert('Error uploading image:', error)
         },
       )
 
@@ -103,10 +102,7 @@ function EditUserInfo() {
 
             if (user) {
               await updateProfile(user, { photoURL: downloadURL })
-              console.log('User profile updated.')
             }
-
-            console.log('이미지 주소', downloadURL)
           } catch (downloadError) {
             console.error('Error getting download URL:', downloadError)
           }
@@ -137,8 +133,6 @@ function EditUserInfo() {
       })
 
       setError(null)
-
-      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
       window.alert('프로필 정보를 저장했습니다.')
     } catch (error) {
       console.error('프로필 정보 저장 실패:', error.message)
@@ -286,6 +280,10 @@ const ProfileImageBtn = styled.button`
   border-bottom-width: 0;
   color: #69535f;
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 
 const EditForm = styled.form`
@@ -366,6 +364,10 @@ const EditSaveBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 const CancleBtn = styled.button`
   display: flex;
@@ -385,6 +387,10 @@ const CancleBtn = styled.button`
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 const TextBox = styled.div`
   width: 480px;
