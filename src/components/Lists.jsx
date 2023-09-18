@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
@@ -9,12 +9,12 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
+  const email = localUserid?.email || ''
 
+  const memoizedData = React.useMemo(() => data || [], [data])
   return (
     <>
-      {data?.map((item) => {
+      {memoizedData?.map((item) => {
         return (
           <List
             key={item.id}
@@ -42,7 +42,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image || defualtContentsImg} alt="" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" loading="lazy" />
               </div>
             </ListContentt>
           </List>
@@ -54,19 +54,21 @@ const Lists = ({ data }) => {
 
 const ListContentt = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   flex: 1 0 0;
-  width: 1376px;
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Contents = styled.div`
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Likes = styled.span`
   color: #999;
@@ -75,38 +77,39 @@ const Likes = styled.span`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
-  /* filter: grayscale(100%); */
-  /* color: black; */
 `
 const Date = styled.div`
+  margin-left: 8px;
+  margin-right: 16px;
   color: #999;
   text-align: right;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
   margin-left: 8px;
   margin-right: 16px;
 `
 const HandClapBox = styled.div`
-  padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-left: 24px;
 `
 const List = styled.div`
   display: flex;
-  min-width: 800px;
-  max-width: 1440px;
+  /* min-width: 800px;
+  max-width: 1440px; */
   padding: 16px 32px;
-  align-items: flex-start;
+  margin-left: auto;
+  margin-right: auto;
   gap: 24px;
   align-self: stretch;
   margin-bottom: 12px;
@@ -117,21 +120,25 @@ const List = styled.div`
   }
 `
 const UserImg = styled.img`
+  flex-shrink: 0;
   height: 32px;
   width: 32px;
-  flex-shrink: 0;
+  margin-right: 8px;
   background-image: url(${(props) => props.src});
   background-size: cover;
   border-radius: 50%;
-  margin-right: 8px;
 `
 const User = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px; /* 175% */
+  line-height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,15 +157,16 @@ const ListTitle = styled.h1`
   text-overflow: ellipsis;
 `
 const ListComments = styled.p`
+  align-self: stretch;
   width: 1000px;
   height: 44px;
-  align-self: stretch;
+  margin-top: 8px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   margin-top: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -171,18 +179,18 @@ const ListDate = styled.p`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const ListContent = styled.pre`
   display: flex;
-  width: 1192px;
-  height: 120px;
-  padding: 0px 24px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  border-radius: 20px;
+  width: 1192px;
+  height: 120px;
+  padding: 0px 24px;
   margin-bottom: 8px;
+  border-radius: 20px;
 `
 const Thumbnail = styled.img`
   width: 160px;
@@ -190,4 +198,4 @@ const Thumbnail = styled.img`
   border-radius: 8px;
   background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
 `
-export default Lists
+export default React.memo(Lists)

@@ -1,16 +1,21 @@
 import React from 'react'
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebase.js'
+
 function Alert() {
   return <></>
 }
 
 export default Alert
 
-export const LoginComplite = () => {
+export const loginComplite = () => {
   Swal.fire({
-    position: 'top-end',
-    icon: '성공',
-    title: '로그인이 완료되었습니다.',
+    // position: 'top-end',
+    icon: 'success',
+    title: ' 성공 ',
+    text: '로그인이 완료되었습니다.',
     showConfirmButton: false,
     timer: 1500,
   })
@@ -128,7 +133,7 @@ export const needLogin = () => {
     icon: 'success',
     title: ' 로그인 해주세요 ',
     text: ' 잠시후 다시 시도해주세요. ',
-    timer: 800,
+    // timer: 800,
   })
 }
 
@@ -141,17 +146,144 @@ export const editSuccess = () => {
   })
 }
 
-export const Logout = () => {
+export const logout = () => {
   Swal.fire({
     title: '로그아웃하시겠습니까?',
     icon: 'question',
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!',
+    confirmButtonText: '로그아웃',
+    cancelButtonText: '취소',
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      Swal.fire('로그아웃되었습니다.', '', 'success')
+      try {
+        await signOut(auth)
+        Swal.fire('로그아웃되었습니다.', '', 'success')
+      } catch (error) {
+        Swal.fire('로그아웃 중 오류가 발생했습니다.', '', 'error')
+      }
+    }
+  })
+}
+
+export const confirmDelete = (onDelete) => {
+  Swal.fire({
+    title: '정말로 삭제하시겠습니까?',
+    text: '한 번 삭제하면 되돌릴 수 없습니다!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '삭제',
+    cancelButtonText: '취소',
   }).then((result) => {
     if (result.isConfirmed) {
-      Swal.fire('Deleted!', 'Your file has been deleted.', 'success')
+      onDelete()
     }
+  })
+}
+
+export const confirmEdit = (onEdit) => {
+  Swal.fire({
+    title: '게시글 수정',
+    text: '정말로 이 게시글을 수정하시겠습니까?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '수정',
+    cancelButtonText: '취소',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      onEdit()
+    }
+  })
+}
+
+export const pleaseWrite = () => {
+  Swal.fire({
+    icon: 'info',
+    title: '작성해 주세요',
+    text: '내용을 입력해 주세요.',
+  })
+}
+
+export const confirmEditComment = (onEdit) => {
+  Swal.fire({
+    title: '댓글 수정',
+    text: '댓글을 수정하시겠습니까?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: '수정',
+    cancelButtonText: '취소',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      onEdit()
+    }
+  })
+}
+
+export const newConfirmPWError = () => {
+  Swal.fire({
+    icon: 'error',
+    title: ' 비밀번호 오류! ',
+    text: '새비밀번호가 일치하지 않습니다. ',
+  })
+}
+
+export const needPwe = () => {
+  Swal.fire({
+    icon: 'error',
+    title: ' 비밀번호를 입력하세요 ',
+    text: ' 잠시후 다시 시도해주세요. ',
+  })
+}
+
+export const worngPwe = () => {
+  Swal.fire({
+    icon: 'error',
+    title: ' 비밀번호가 올바르지 않습니다 ',
+    text: ' 잠시후 다시 시도해주세요. ',
+  })
+}
+
+export const imgSize = () => {
+  Swal.fire({
+    icon: 'error',
+    title: ' 이미지 오류 ',
+    text: ' 이미지 크기는 5MB를 초과할 수 없습니다. ',
+  })
+}
+
+export const notFound = () => {
+  Swal.fire({
+    icon: 'error',
+    title: '사용자 정보',
+    text: '가입된 정보가 확인 되지 않습니다.',
+  })
+}
+
+export const editUserSuccess = () => {
+  // const navigate = useNavigate()
+  Swal.fire({
+    icon: 'error',
+    title: '변경 완료',
+    text: '회원 정보 변경 완료',
+    // }).then(() => {
+    //   navigate('/')
+  })
+}
+
+export const needReauthentication = () => {
+  Swal.fire({
+    icon: 'info',
+    title: '재로그인 필요',
+    text: '비밀번호 변경을 위해서는 재로그인이 필요합니다.',
+  })
+}
+
+export const notEditPwe = () => {
+  Swal.fire({
+    icon: 'error',
+    title: ' 비밀번호 변경 실패',
+    text: '비밀번호 변경을 실패 하였습니다.',
   })
 }

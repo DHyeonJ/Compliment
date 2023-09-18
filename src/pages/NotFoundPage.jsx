@@ -1,12 +1,16 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo_NotFound from '../img/logo_NotFound.png'
+
 import { styled } from 'styled-components'
+
+import logo_NotFound from '../img/logo_NotFound.webp'
+
 function NotFoundPage() {
   const navigator = useNavigate()
   const mainPageMove = () => {
     navigator('/')
   }
+
   return (
     <>
       <NotFoundBox>
@@ -17,9 +21,7 @@ function NotFoundPage() {
             <br></br>입력하신 주소나 해당하는 링크가 정확한 지 다시 한번만 확인해 주세요.
             <br></br> 빠른 시일 내에 원인을 파악하여 더 나은 경험을 하실 수 있게 개선하겠습니다. :D
           </NotFoundTextBox>
-          <div>
-            <NotFoundImg onClick={mainPageMove} src={logo_NotFound}></NotFoundImg>
-          </div>
+          <NotFoundImg onClick={mainPageMove} src="logo_NotFound" type="image/webp" />
         </NotFoundTextAreaBox>
       </NotFoundBox>
     </>
@@ -30,21 +32,29 @@ export default NotFoundPage
 
 const NotFoundBox = styled.div`
   display: flex;
-  height: 918px;
-  flex-shrink: 0;
-  display: flex;
   flex-direction: column;
-  align-items: center;
+
   margin-top: 16px;
 `
+
 const NotFoundTextAreaBox = styled.div`
-  height: 240px;
-  padding: 48px 72px 48px 46px;
-  align-items: center;
   align-self: stretch;
+
+  padding: 48px 72px 48px 46px;
   margin-left: auto;
   margin-right: auto;
+
+  @media (max-width: 320px) {
+    // 0px ~320px
+    margin: 0 auto;
+  }
+
+  @media (max-width: 768px) {
+    // 321px ~ 720px
+    margin: 0 auto;
+  }
 `
+
 const NotFoundTitleBox = styled.div`
   color: #404040;
   font-family: LINE Seed Sans KR;
@@ -53,26 +63,35 @@ const NotFoundTitleBox = styled.div`
   font-weight: 700;
   line-height: normal;
 `
+
 const NotFoundTextBox = styled.div`
+  margin-top: 16px;
+
   color: #404040;
   font-family: LINE Seed Sans KR;
   font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: 32px; /* 160% */
-  margin-top: 16px;
 `
-const NotFoundImgBox = styled.div`
-  cursor: pointer;
-`
+
 const NotFoundImg = styled.img`
-  width: 288px;
-  height: 200.325px;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  width: 200px;
+
   margin-top: 60px;
   margin-left: auto;
   margin-right: auto;
+
+  @media (max-width: 320px) {
+    // 0px ~320px
+    width: 100%; /* Example adjustment to make the image responsive */
+  }
+  @media (max-width: 768px) {
+    // 321px ~ 720px
+    width: 100%; /* Example adjustment to make the image responsive */
+  }
 `
