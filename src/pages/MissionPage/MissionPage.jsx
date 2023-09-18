@@ -104,8 +104,7 @@ const HugBox = styled.div`
 
   width: 1200px;
 
-  margin: 0 auto;
-  padding-top: 16px;
+  margin: 10px auto 50px;
 
   box-sizing: border-box;
 `

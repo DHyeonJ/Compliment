@@ -35,6 +35,7 @@ const TextBox = styled.div`
   border-radius: 8px;
 `
 const RateTitleBox = styled.div`
+  width: 150px;
   color: #333333;
   font-family: Pretendard;
   font-size: 16px;

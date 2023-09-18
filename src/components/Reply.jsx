@@ -208,9 +208,14 @@ function Reply() {
                     <DateBox>작성일 {comment.Date}</DateBox>
 
                     <BtnAreaBox>
-                      {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
+                      {user && user.email === comment.userEmail && (
                         <UserBtnBox>
                           <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
+                          <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
+                        </UserBtnBox>
+                      )}
+                      {user && user.email === 'admin@admin.com' && (
+                        <UserBtnBox>
                           <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
                         </UserBtnBox>
                       )}
