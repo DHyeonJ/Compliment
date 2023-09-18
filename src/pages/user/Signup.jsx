@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } f
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
 import { debounce } from 'lodash'
+import { emptyEmailError, emptyPWError, confirmPWError, validEmailError, signupSuccess, alreadyInUseEmailError, failedError, weakPWError } from '../../components/Alert.jsx'
 
 function Signup() {
   const navigate = useNavigate()
@@ -35,11 +36,11 @@ function Signup() {
   const signup = async (e) => {
     e.preventDefault()
     if (email.length === 0) {
-      alert('이메일을 입력해주세요')
+      emptyEmailError()
     } else if (password.length === 0 || confirmPassword.length === 0) {
-      alert('비밀번호를 입력해주세요')
+      emptyPWError()
     } else if (password !== confirmPassword) {
-      alert('비밀번호가 일치하지 않습니다')
+      confirmPWError()
     }
 
     if (password === confirmPassword) {
@@ -49,7 +50,7 @@ function Signup() {
         // The provider which was used to authenticate the user.
         // await setMissionCard(userCredential.user.uid)
 
-        alert('회원가입에 성공했습니다.')
+        signupSuccess()
 
         // 로그인이 완료되었을 때 사용자 정보 확인
 
@@ -60,13 +61,14 @@ function Signup() {
         navigate('/')
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
-          alert('이미 사용된 이메일입니다.')
+          alreadyInUseEmailError()
         } else if (error.code === 'auth/weak-password') {
-          alert('비밀번호가 6자리 이하입니다.')
+          weakPWError()
         } else if (error.code === 'auth/invalid-email') {
-          alert('이메일 형식을 확인 해주세요.')
+          validEmailError()
         } else {
-          alert('회원가입에 실패 했습니다.')
+          console.log(error)
+          failedError()
         }
       }
     }
@@ -200,8 +202,6 @@ const LogoImg = styled.img`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  /* width: 120px; */
-  /* width: 20vw; */
   height: 75px;
   margin-left: 10vw;
   margin-right: 10vw;
@@ -247,19 +247,6 @@ const SignupAreaBox = styled.div`
   margin-bottom: 15px;
   margin-left: 10vw;
   margin-right: 10vw;
-`
-
-const SignupImgBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-  width: 36px;
-  height: 75px;
-  margin-left: 308px;
-  margin-bottom: 10px;
-  margin-right: 308px;
-  padding: 24px 43px 25px 41px;
 `
 
 const SignForm = styled.form`

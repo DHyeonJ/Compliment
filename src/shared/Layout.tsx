@@ -17,6 +17,7 @@ import { auth } from '../firebase.js'
 import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
+import { logout } from '../components/Alert.jsx'
 interface User {
   uid: string | null
   email: string | null
@@ -54,14 +55,7 @@ function Layout(): JSX.Element {
   const localStorageUserId = email?.split('@')[0]
 
   const handleLogout = async () => {
-    const confirmLogout = window.confirm('로그아웃하시겠습니까?')
-    if (confirmLogout) {
-      await signOut(auth)
-      setCurrentUser(null)
-      setPhotoURL(null)
-      localStorage.removeItem('user')
-      navigator('/')
-    }
+    logout()
   }
 
   useEffect(() => {
@@ -395,6 +389,7 @@ const SignUpButton = styled.button`
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   gap: 10px;
 
   height: 44px;
@@ -463,7 +458,6 @@ const InfoBox = styled.div`
 const FooterTitleBox = styled.div`
   display: flex;
   justify-content: center;
-
   color: #999;
   text-align: center;
   font-family: Pretendard;
@@ -483,6 +477,9 @@ const MakeTeamBox = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 160%;
+  color: #999;
+  font-family: Pretendard;
+  font-size: 14px;
 `
 
 const CopyRightBox = styled.div`
