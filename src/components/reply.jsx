@@ -10,7 +10,7 @@ import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/replyApi'
 import { sortData } from '../utils/sort'
 
-function Reply() {
+function reply() {
   const { id } = useParams()
   const nowTime = moment().format('YYYY-MM-DD')
 
@@ -221,7 +221,7 @@ function Reply() {
   )
 }
 
-export default Reply
+export default reply
 
 const Boxs = styled.div`
   display: flex;
