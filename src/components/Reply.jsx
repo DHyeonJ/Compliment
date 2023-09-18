@@ -122,6 +122,17 @@ function Reply() {
     }
   }
 
+  const onCancleEditHandler = () => {
+    const originalReply = replyData.find((comment) => comment.id === editingReplyId)
+
+    if (originalReply) {
+      setEditedReplyContent(originalReply.reply)
+    }
+
+    setIsEditing(false)
+    setEditingReplyId(null)
+  }
+
   const deleteComment = async (replyId) => {
     const shouldDelete = window.confirm('정말로 삭제하시겠습니까?')
     if (shouldDelete) {
@@ -176,7 +187,11 @@ function Reply() {
                       <UserName>{comment.userEmail.split('@')[0]}</UserName>
                     </UserBox>
                     <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
-                    <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
+                    <EditBtnBox>
+                      <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
+                      <EditBtn onClick={onCancleEditHandler}>취소</EditBtn>
+                    </EditBtnBox>
+
                     <DateBox>작성일 {comment.Date}</DateBox>
                   </div>
                 ) : (
@@ -222,6 +237,15 @@ function Reply() {
 }
 
 export default Reply
+
+const EditBtnBox = styled.div`
+  display: flex;
+  height: 32px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 8px;
+  display: flex;
+`
 
 const Boxs = styled.div`
   display: flex;
@@ -433,14 +457,25 @@ const UserBtnBox = styled.div`
 `
 
 const EditInput = styled.input`
-  margin-top: 10px;
+  /* margin-top: 10px;
   margin-bottom: 12px;
   width: 100%;
   height: 600%;
   border: 1px solid #d9d9d9;
   margin-right: 30px;
   font-size: 16px;
-  border-radius: 8px;
+  border-radius: 8px; */
+  width: 880px;
+  height: 88px;
+  display: flex;
+  padding: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  margin-bottom: 20px;
 
   padding: 3px 15px 3px 15px;
   &:focus {
@@ -449,7 +484,7 @@ const EditInput = styled.input`
   }
 `
 const EditBtn = styled.button`
-  margin-right: 8px;
+  margin-right: 6px;
   display: flex;
   width: 80px;
   height: 32px;
