@@ -21,16 +21,15 @@ function ListPage() {
   }, [])
 
   const likesSort = () => {
-    if (activeSort === 'likes') return
     setActiveSort('likes')
-    const likesData = [...list].sort((a, b) => b.likes - a.likes)
+    const likesData = [...list]?.sort((a, b) => b.likes - a.likes)
     setDisplayData(likesData)
   }
 
   const latestSort = () => {
-    if (activeSort === 'latest') return
     setActiveSort('latest')
-    const orderedData = [...list].sort((a, b) => b.timeSort - a.timeSort)
+
+    const orderedData = [...list]?.sort((a, b) => b.timeSort - a.timeSort)
     setDisplayData(orderedData)
   }
 
@@ -46,8 +45,11 @@ function ListPage() {
 
   useEffect(() => {
     fetchDate()
+  }, [fetchDate])
+
+  useEffect(() => {
     setDisplayData(list)
-  }, [fetchDate, list, activeSort])
+  }, [list])
 
   return (
     <ListPageBox>
@@ -86,7 +88,7 @@ function ListPage() {
   )
 }
 
-export default React.memo(ListPage)
+export default ListPage
 
 const ListContainer = styled.div`
   display: flex;
@@ -100,7 +102,6 @@ const ListPageBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100vw;
   flex-direction: column;
 `
 
@@ -109,12 +110,12 @@ const ListBox = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: calc(100vw - 120px);
   margin-top: 16px;
 `
 
 const ContentBox = styled.div`
-  width: 1520px;
+  width: 1200px;
+  margin: 0 auto;
   flex-direction: column;
   gap: 42px 0;
 `
@@ -179,7 +180,6 @@ const BannerTitleSpan = styled.span`
   font-size: 36px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
 `
 const BannerContentBox = styled.span`
   width: 483px;
@@ -188,19 +188,17 @@ const BannerContentBox = styled.span`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px;
 `
 
 const PlusButton = styled.div`
   display: flex;
-  width: 140px;
   height: 44px;
   padding: 0px 48px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 12px;
   cursor: pointer;
+  gap: 12px;
   border-radius: 8px;
   background: #69535f;
   color: #fff;
@@ -209,7 +207,6 @@ const PlusButton = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
 `
 const SerchPlusAreaBox = styled.div`
   display: flex;

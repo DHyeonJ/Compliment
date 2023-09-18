@@ -9,7 +9,6 @@ import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/replyApi'
 import { sortData } from '../utils/sort'
-import { confirmDelete, needLogin, pleaseWrite, confirmEditComment, editSuccess } from './Alert'
 
 function Reply() {
   const { id } = useParams()
@@ -48,7 +47,7 @@ function Reply() {
 
   const addNewReply = async () => {
     if (!user) {
-      needLogin()
+      window.alert('댓글을 작성하려면 먼저 로그인하세요.')
       navigate('/login')
       return
     }
@@ -68,7 +67,7 @@ function Reply() {
     }
 
     if (replyContent.trim() === '') {
-      pleaseWrite()
+      alert('댓글을 입력해주세요.')
       return
     }
 
@@ -77,7 +76,7 @@ function Reply() {
       await fetchReplyData()
       setReplyContent('')
     } catch (error) {
-      // console.error('문서 추가 오류: ', error)
+      console.error('문서 추가 오류: ', error)
     }
   }
 
@@ -86,145 +85,167 @@ function Reply() {
   }
 
   const onEditHandler = (replyId) => {
-    confirmEditComment(() => {
-      setIsEditing(true)
-      setEditingReplyId(replyId)
+    setIsEditing(true)
+    setEditingReplyId(replyId)
 
-      const editedComment = replyData.find((comment) => comment.id === replyId)
-      if (editedComment) {
-        setEditedReplyContent(editedComment.reply)
+    const editedComment = replyData.find((comment) => comment.id === replyId)
+    if (editedComment) {
+      setEditedReplyContent(editedComment.reply)
+    }
+  }
+
+  const onSaveEditHandler = async () => {
+    if (editedReplyContent.trim() === '') {
+      alert('댓글을 입력해주세요.')
+      return
+    }
+
+    try {
+      await updateReply({
+        targetId: editingReplyId,
+        editedReply: editedReplyContent,
+      })
+
+      const updatedReplyData = replyData.map((comment) => {
+        if (comment.id === editingReplyId) {
+          return { ...comment, reply: editedReplyContent }
+        }
+        return comment
+      })
+
+      setReplyData(updatedReplyData)
+
+      setIsEditing(false)
+      setEditingReplyId(null)
+    } catch (error) {
+      console.error('댓글 수정에 실패했습니다.', error)
+    }
+  }
+
+  const onCancleEditHandler = () => {
+    const originalReply = replyData.find((comment) => comment.id === editingReplyId)
+
+    if (originalReply) {
+      setEditedReplyContent(originalReply.reply)
+    }
+
+    setIsEditing(false)
+    setEditingReplyId(null)
+  }
+
+  const deleteComment = async (replyId) => {
+    const shouldDelete = window.confirm('정말로 삭제하시겠습니까?')
+    if (shouldDelete) {
+      try {
+        await deleteReply(replyId)
+        await fetchReplyData()
+      } catch (error) {
+        console.error('댓글 삭제 오류: ', error)
       }
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      addNewReply()
+    }
+  }
+
+  useEffect(() => {
+    fetchReplyData()
+  }, [commentLimit])
+
+  useEffect(() => {
+    fetchReplyData()
+  }, [commentLimit])
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) setUser(user)
+      else setUser(null)
     })
 
-    const onSaveEditHandler = async () => {
-      if (editedReplyContent.trim() === '') {
-        alert('댓글을 입력해주세요.')
-        return
-      }
+    return () => unsubscribe()
+  }, [])
 
-      try {
-        await updateReply({
-          targetId: editingReplyId,
-          editedReply: editedReplyContent,
-        })
+  return (
+    <>
+      <CommentHeaderBox>
+        <img src={commentImg} alt="" />
+        칭찬 댓글 ({totalCount}개)
+      </CommentHeaderBox>
 
-        const updatedReplyData = replyData.map((comment) => {
-          if (comment.id === editingReplyId) {
-            return { ...comment, reply: editedReplyContent }
-          }
-          return comment
-        })
-
-        setReplyData(updatedReplyData)
-
-        setIsEditing(false)
-        setEditingReplyId(null)
-        editSuccess()
-      } catch (error) {
-        // console.error('댓글 수정에 실패했습니다.', error)
-      }
-    }
-
-    const deleteComment = async (replyId) => {
-      confirmDelete(async () => {
-        try {
-          await deleteReply(replyId)
-          await fetchReplyData()
-        } catch (error) {
-          console.error('댓글 삭제 오류: ', error)
-        }
-      })
-    }
-
-    const handleKeyPress = (e) => {
-      if (e.key === 'Enter') {
-        addNewReply()
-      }
-    }
-
-    useEffect(() => {
-      fetchReplyData()
-    }, [commentLimit])
-
-    useEffect(() => {
-      fetchReplyData()
-    }, [commentLimit])
-
-    useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        if (user) setUser(user)
-        else setUser(null)
-      })
-
-      return () => unsubscribe()
-    }, [])
-
-    return (
-      <>
-        <CommentHeaderBox>
-          <img src={commentImg} alt="" />
-          칭찬 댓글 ({totalCount}개)
-        </CommentHeaderBox>
-
-        <Boxs>
-          <CommentBox>
-            <CommentBodyBox>
-              {replyData?.map((comment) => (
-                <CommentAreaBox key={comment.id}>
-                  {isEditing && editingReplyId === comment.id ? (
-                    <div>
-                      <UserBox>
-                        <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                        <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                      </UserBox>
-                      <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
+      <Boxs>
+        <CommentBox>
+          <CommentBodyBox>
+            {replyData?.map((comment) => (
+              <CommentAreaBox key={comment.id}>
+                {isEditing && editingReplyId === comment.id ? (
+                  <div>
+                    <UserBox>
+                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                    </UserBox>
+                    <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
+                    <EditBtnBox>
                       <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
-                      <DateBox>작성일 {comment.Date}</DateBox>
-                    </div>
-                  ) : (
-                    <>
-                      <UserBox>
-                        <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                        <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                      </UserBox>
-                      <CommentTextBox>{comment.reply}</CommentTextBox>
-                      <DateBox>작성일 {comment.Date}</DateBox>
+                      <EditBtn onClick={onCancleEditHandler}>취소</EditBtn>
+                    </EditBtnBox>
 
-                      <BtnAreaBox>
-                        {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
-                          <UserBtnBox>
-                            <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
-                            <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
-                          </UserBtnBox>
-                        )}
-                      </BtnAreaBox>
-                    </>
-                  )}
-                </CommentAreaBox>
-              ))}
-            </CommentBodyBox>
-          </CommentBox>
-          {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+                    <DateBox>작성일 {comment.Date}</DateBox>
+                  </div>
+                ) : (
+                  <>
+                    <UserBox>
+                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                    </UserBox>
+                    <CommentTextBox>{comment.reply}</CommentTextBox>
+                    <DateBox>작성일 {comment.Date}</DateBox>
 
-          <CommentInputAreaBox>
-            <CommentInputMiddleBox>
-              <UserBox>
-                <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
-                <UserName>{user?.email.split('@')[0]}</UserName>
-              </UserBox>
-              <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
-              <ButtonBox>
-                <Button onClick={addNewReply}>등록</Button>
-              </ButtonBox>
-            </CommentInputMiddleBox>
-          </CommentInputAreaBox>
-        </Boxs>
-      </>
-    )
-  }
+                    <BtnAreaBox>
+                      {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
+                        <UserBtnBox>
+                          <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
+                          <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
+                        </UserBtnBox>
+                      )}
+                    </BtnAreaBox>
+                  </>
+                )}
+              </CommentAreaBox>
+            ))}
+          </CommentBodyBox>
+        </CommentBox>
+        {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+
+        <CommentInputAreaBox>
+          <CommentInputMiddleBox>
+            <UserBox>
+              <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
+              <UserName>{user?.email.split('@')[0]}</UserName>
+            </UserBox>
+            <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
+            <ButtonBox>
+              <Button onClick={addNewReply}>등록</Button>
+            </ButtonBox>
+          </CommentInputMiddleBox>
+        </CommentInputAreaBox>
+      </Boxs>
+    </>
+  )
 }
 
 export default Reply
+
+const EditBtnBox = styled.div`
+  display: flex;
+  height: 32px;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 8px;
+  display: flex;
+`
 
 const Boxs = styled.div`
   display: flex;
@@ -234,30 +255,21 @@ const Boxs = styled.div`
 `
 
 const LoadMoreButton = styled.button`
+  margin-right: 8px;
   display: flex;
+  width: 80px;
+  height: 32px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: 80px;
-  height: 32px;
-  margin-right: 8px;
-  margin-bottom: 20px;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
   color: #666666;
   background-color: transparent;
+  margin-bottom: 20px;
 
   &:hover {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    width: 80px;
-    height: 32px;
-    border-radius: 8px;
-    border: 1px solid #986c6c;
     background-color: transparent;
     color: #986c6c;
     font-family: Pretendard;
@@ -438,52 +450,55 @@ const BtnAreaBox = styled.div`
 
 const UserBtnBox = styled.div`
   display: flex;
+
   position: absolute;
   right: 0rem;
   bottom: 0rem;
 `
 
 const EditInput = styled.input`
+  /* margin-top: 10px;
+  margin-bottom: 12px;
   width: 100%;
   height: 600%;
-  padding: 3px 15px 3px 15px;
-  margin-top: 10px;
-  margin-bottom: 12px;
-  margin-right: 30px;
-  border-radius: 8px;
   border: 1px solid #d9d9d9;
+  margin-right: 30px;
   font-size: 16px;
+  border-radius: 8px; */
+  width: 880px;
+  height: 88px;
+  display: flex;
+  padding: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 4px;
+  border: 1px solid #d9d9d9;
+  margin-bottom: 20px;
 
+  padding: 3px 15px 3px 15px;
   &:focus {
     outline: none;
     border-radius: 8px;
   }
 `
 const EditBtn = styled.button`
+  margin-right: 6px;
   display: flex;
+  width: 80px;
+  height: 32px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
-  width: 80px;
-  height: 32px;
-  margin-right: 8px;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
   color: #666666;
   background-color: transparent;
 
   &:hover {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    width: 80px;
-    height: 32px;
     background-color: transparent;
-    border-radius: 8px;
-    border: 1px solid #986c6c;
     color: #986c6c;
     font-family: Pretendard;
     font-size: 14px;

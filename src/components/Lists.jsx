@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
@@ -9,12 +9,12 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email || ''
+  const email = localUserid?.email
+  const localStorageUserId = email.split('@')[0]
 
-  const memoizedData = React.useMemo(() => data || [], [data])
   return (
     <>
-      {memoizedData?.map((item) => {
+      {data?.map((item) => {
         return (
           <List
             key={item.id}
@@ -27,7 +27,7 @@ const Lists = ({ data }) => {
                 <ListContent>
                   <User>
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
-                    <span>{item.userEmail.split('@')[0]}</span>
+                    <span>{localStorageUserId}</span>
                   </User>
                   <pre>
                     <ListTitle>{item.title}</ListTitle>
@@ -42,7 +42,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image || defualtContentsImg} alt="" loading="lazy" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" />
               </div>
             </ListContentt>
           </List>
@@ -54,21 +54,19 @@ const Lists = ({ data }) => {
 
 const ListContentt = styled.div`
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-start;
   flex: 1 0 0;
-  min-width: 560px;
-  max-width: 1194px;
+  width: 1376px;
 `
 const Contents = styled.div`
   display: flex;
+  min-width: 560px;
+  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
-  min-width: 560px;
-  max-width: 1194px;
 `
 const Likes = styled.span`
   color: #999;
@@ -77,39 +75,38 @@ const Likes = styled.span`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px;
+  line-height: 28px; /* 200% */
 `
 const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
+  /* filter: grayscale(100%); */
+  /* color: black; */
 `
 const Date = styled.div`
-  margin-left: 8px;
-  margin-right: 16px;
   color: #999;
   text-align: right;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px;
+  line-height: 28px; /* 200% */
   margin-left: 8px;
   margin-right: 16px;
 `
 const HandClapBox = styled.div`
+  padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-left: 24px;
 `
 const List = styled.div`
   display: flex;
-  /* min-width: 800px;
-  max-width: 1440px; */
+  min-width: 800px;
+  max-width: 1440px;
   padding: 16px 32px;
-  margin-left: auto;
-  margin-right: auto;
+  align-items: flex-start;
   gap: 24px;
   align-self: stretch;
   margin-bottom: 12px;
@@ -120,25 +117,21 @@ const List = styled.div`
   }
 `
 const UserImg = styled.img`
-  flex-shrink: 0;
   height: 32px;
   width: 32px;
-  margin-right: 8px;
+  flex-shrink: 0;
   background-image: url(${(props) => props.src});
   background-size: cover;
   border-radius: 50%;
+  margin-right: 8px;
 `
 const User = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px;
+  line-height: 28px; /* 175% */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,16 +150,15 @@ const ListTitle = styled.h1`
   text-overflow: ellipsis;
 `
 const ListComments = styled.p`
-  align-self: stretch;
   width: 1000px;
   height: 44px;
-  margin-top: 8px;
+  align-self: stretch;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 22px; /* 137.5% */
   margin-top: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -179,18 +171,18 @@ const ListDate = styled.p`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px;
+  line-height: 28px; /* 200% */
 `
 const ListContent = styled.pre`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
   width: 1192px;
   height: 120px;
   padding: 0px 24px;
-  margin-bottom: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
   border-radius: 20px;
+  margin-bottom: 8px;
 `
 const Thumbnail = styled.img`
   width: 160px;
@@ -198,4 +190,4 @@ const Thumbnail = styled.img`
   border-radius: 8px;
   background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
 `
-export default React.memo(Lists)
+export default Lists

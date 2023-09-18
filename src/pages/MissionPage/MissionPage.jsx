@@ -102,8 +102,10 @@ const HugBox = styled.div`
   align-items: center;
   gap: 48px;
 
+  width: 1200px;
+
   margin: 0 auto;
-  padding: 16px 240px 48px;
+  padding-top: 16px;
 
   box-sizing: border-box;
 `
@@ -170,6 +172,8 @@ const MissionCardAllBox = styled.div`
   align-self: stretch;
 
   box-sizing: border-box;
+  border-radius: 12px;
+  margin-bottom: 20px;
 `
 
 const DailyMissionAllBox = styled.div`
@@ -202,7 +206,7 @@ const MissionCardsBox = styled.div`
   justify-content: space-between;
   align-self: stretch;
   align-items: center;
-  gap: 64px;
+  gap: 27px;
 
   width: 100%;
 

@@ -11,8 +11,8 @@ import { styled } from 'styled-components'
 import { auth, storage, db } from '../../firebase'
 import { useNavigate } from 'react-router-dom'
 import { updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth'
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { doc, updateDoc } from 'firebase/firestore'
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { getFirestore, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import defaultImg from '../../img/user.png'
 import { needPwe, newConfirmPWError, notEditPwe, worngPwe, imgSize, notFound, editUserSuccess, needReauthentication } from '../../components/Alert'
 function EditUserInfo() {
@@ -30,34 +30,27 @@ function EditUserInfo() {
   const [nickname, setNickname] = useState('')
   const handlePasswordUpdate = async (event) => {
     event.preventDefault()
-
     if (!currentPassword) {
       needPwe()
       return
     }
-
     try {
       if (!user) {
         notFound()
         return
       }
-
       const credentials = EmailAuthProvider.credential(loggedInUserEmail, currentPassword) // 현재 이메일과 비밀번호를 사용하여 자격 증명(credential)을 생성합니다.
       await reauthenticateWithCredential(user, credentials) // 현재 비밀번호가 올바른지 확인합니다.
-
       // 다시 인증이 성공하면 비밀번호를 업데이트합니다.
       if (newPassword !== confirmNewPassword) {
         newConfirmPWError()
         return
       }
-
       await updatePassword(user, newPassword)
-
       editUserSuccess()
       navigate('/mypage')
     } catch (error) {
       console.error('회원 정보 변경 오류:', error)
-
       if (error.code === 'auth/wrong-password') {
         // 잘못된 현재 비밀번호 처리
         worngPwe()
@@ -69,23 +62,19 @@ function EditUserInfo() {
       }
     }
   }
-
   const handleImageUpload = async (event) => {
     const file = event.target.files[0]
     if (!file) {
       return
     }
-
     if (file.size > 5 * 1024 * 1024) {
       // 5MB를 초과하는 경우
       imgSize()
       return
     }
-
-    const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
+    const storageRef = ref(storage, `profileImages/${user.uid}/[0]`)
     try {
-      const uploadTask = uploadBytes(storageRef, file) // uploadBytes로 수정
-
+      const uploadTask = uploadBytes(storageRef, file)
       uploadTask.then(
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
@@ -93,52 +82,64 @@ function EditUserInfo() {
         },
         (error) => {
           console.error('Error uploading image:', error)
+          // 이미지 업로드 실패 시 사용자에게 알림을 표시할 수 있습니다.
+          window.alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.')
         },
       )
-
       uploadTask
         .then(async () => {
           try {
             const downloadURL = await getDownloadURL(storageRef)
             setImageUrl(downloadURL)
-
             if (user) {
               await updateProfile(user, { photoURL: downloadURL })
               console.log('User profile updated.')
             }
-
             console.log('이미지 주소', downloadURL)
           } catch (downloadError) {
             console.error('Error getting download URL:', downloadError)
+            // 이미지 업로드 실패 시 사용자에게 알림을 표시할 수 있습니다.
+            window.alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.')
           }
         })
         .catch((uploadError) => {
           console.error('Error uploading image:', uploadError)
+          // 이미지 업로드 실패 시 사용자에게 알림을 표시할 수 있습니다.
+          window.alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.')
         })
     } catch (uploadError) {
       console.error('Error uploading image:', uploadError)
+      // 이미지 업로드 실패 시 사용자에게 알림을 표시할 수 있습니다.
+      window.alert('프로필 이미지 업로드에 실패했습니다. 다시 시도해주세요.')
     }
   }
-
   const handleSave = async () => {
     if (!imageUrl) {
       setError('프로필 이미지를 업로드해주세요.')
       return
     }
-    const updateInfoRef = doc(db, 'profileImages', user.uid)
+    const firestore = getFirestore() // Firestore 모듈을 가져옵니다.
+    const updateInfoRef = doc(firestore, 'profileImages', user.uid) // Firestore 문서 참조를 생성합니다.
     if (!(await docExists(updateInfoRef))) {
       await setDoc(updateInfoRef, {})
     }
     try {
-      const updateInfoRef = doc(db, 'profileImages', user.uid)
-
-      await updateDoc(updateInfoRef, {
-        name: loggedInUserEmail,
-        imgfile: imageUrl,
-      })
-
+      // getDoc 함수를 사용하여 문서를 가져옵니다.
+      const docSnap = await getDoc(updateInfoRef)
+      if (docSnap.exists()) {
+        // 문서가 존재하는 경우 업데이트합니다.
+        await updateDoc(updateInfoRef, {
+          name: loggedInUserEmail,
+          imgfile: imageUrl,
+        })
+      } else {
+        // 문서가 존재하지 않는 경우 새로 생성합니다.
+        await setDoc(updateInfoRef, {
+          name: loggedInUserEmail,
+          imgfile: imageUrl,
+        })
+      }
       setError(null)
-
       console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
       window.alert('프로필 정보를 저장했습니다.')
     } catch (error) {
@@ -150,7 +151,6 @@ function EditUserInfo() {
     const docSnap = await getDoc(docRef)
     return docSnap.exists()
   }
-
   return (
     <>
       <EditUserInfoBox>
@@ -206,9 +206,7 @@ function EditUserInfo() {
     </>
   )
 }
-
 export default EditUserInfo
-
 const EditUserInfoBox = styled.div`
   flex-direction: column;
   align-items: center;
@@ -222,7 +220,6 @@ const EditUserInfoBox = styled.div`
   margin-top: 15px;
   margin-bottom: 15px;
 `
-
 const EditTitleBox = styled.div`
   text-align: center;
   margin-bottom: 8px;
@@ -232,7 +229,6 @@ const EditTitleBox = styled.div`
   font-style: normal;
   font-weight: 700;
 `
-
 const EditTextBox = styled.div`
   color: #404040;
   text-align: center;
@@ -252,14 +248,12 @@ const ProfileImagePreview = styled.img`
   border-radius: 100px;
   border: 5px solid #dad7d7;
 `
-
 const ProfileImageBox = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
 `
-
 const ProfileImageBoxBtn = styled.div`
   cursor: pointer;
   color: var(--text01_404040, #404040);
@@ -273,11 +267,9 @@ const ProfileImageBoxBtn = styled.div`
     color: #69535f;
   }
 `
-
 const ProfileImageInput = styled.input`
   display: none;
 `
-
 const ProfileImageBtn = styled.button`
   display: none;
   background-color: white;
@@ -288,20 +280,17 @@ const ProfileImageBtn = styled.button`
   color: #69535f;
   cursor: pointer;
 `
-
 const EditForm = styled.form`
   align-items: center;
   text-align: left;
   flex-direction: column;
   margin-top: 20px;
 `
-
 const EditInputAreaBox = styled.div`
   width: 480px;
   margin-left: 128px;
   margin-right: 128px;
 `
-
 const EditInputLabelBox = styled.div`
   display: flex;
   align-items: center;
@@ -312,7 +301,6 @@ const EditInputLabelBox = styled.div`
   margin-top: 32px;
   color: #404040;
 `
-
 const EditIdBox = styled.div`
   display: flex;
   align-items: flex-start;
@@ -327,7 +315,6 @@ const EditIdBox = styled.div`
   border-bottom-width: 1;
   color: #d9d9d9;
 `
-
 const EditInput = styled.input`
   display: flex;
   flex-direction: column;
@@ -342,7 +329,6 @@ const EditInput = styled.input`
   border-bottom-width: 1;
   color: #d9d9d9;
 `
-
 const EditSaveBtn = styled.button`
   display: flex;
   justify-content: center;
