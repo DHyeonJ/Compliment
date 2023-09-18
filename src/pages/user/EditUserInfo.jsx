@@ -41,9 +41,10 @@ function EditUserInfo() {
         return
       }
 
-      const credentials = EmailAuthProvider.credential(loggedInUserEmail, currentPassword)
-      await reauthenticateWithCredential(user, credentials)
+      const credentials = EmailAuthProvider.credential(loggedInUserEmail, currentPassword) // 현재 이메일과 비밀번호를 사용하여 자격 증명(credential)을 생성합니다.
+      await reauthenticateWithCredential(user, credentials) // 현재 비밀번호가 올바른지 확인합니다.
 
+      // 다시 인증이 성공하면 비밀번호를 업데이트합니다.
       if (newPassword !== confirmNewPassword) {
         alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
         return
@@ -82,36 +83,73 @@ function EditUserInfo() {
 
     const storageRef = ref(storage, `profileImages/${user.uid}/${file.name}`)
     try {
-      const uploadTask = uploadBytesResumable(storageRef, file)
+      const uploadTask = uploadBytes(storageRef, file) // uploadBytes로 수정
 
-      uploadTask.on(
-        'state_changed',
+      uploadTask.then(
         (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           console.log(`Upload is ${progress}% done`)
         },
         (error) => {
-          alert('Error uploading image:', error)
-        },
-        () => {
-          // 업로드가 완료되면 실행되는 부분
-          getDownloadURL(storageRef)
-            .then(async (downloadURL) => {
-              setImageUrl(downloadURL)
-
-              if (user) {
-                await updateProfile(user, { photoURL: downloadURL })
-              }
-            })
-            .catch((downloadError) => {
-              console.error('Error getting download URL:', downloadError)
-            })
+          console.error('Error uploading image:', error)
         },
       )
+
+      uploadTask
+        .then(async () => {
+          try {
+            const downloadURL = await getDownloadURL(storageRef)
+            setImageUrl(downloadURL)
+
+            if (user) {
+              await updateProfile(user, { photoURL: downloadURL })
+              console.log('User profile updated.')
+            }
+
+            console.log('이미지 주소', downloadURL)
+          } catch (downloadError) {
+            console.error('Error getting download URL:', downloadError)
+          }
+        })
+        .catch((uploadError) => {
+          console.error('Error uploading image:', uploadError)
+        })
     } catch (uploadError) {
       console.error('Error uploading image:', uploadError)
     }
   }
+
+  const handleSave = async () => {
+    if (!imageUrl) {
+      setError('프로필 이미지를 업로드해주세요.')
+      return
+    }
+    const updateInfoRef = doc(db, 'profileImages', user.uid)
+    if (!(await docExists(updateInfoRef))) {
+      await setDoc(updateInfoRef, {})
+    }
+    try {
+      const updateInfoRef = doc(db, 'profileImages', user.uid)
+
+      await updateDoc(updateInfoRef, {
+        name: loggedInUserEmail,
+        imgfile: imageUrl,
+      })
+
+      setError(null)
+
+      console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
+      window.alert('프로필 정보를 저장했습니다.')
+    } catch (error) {
+      console.error('프로필 정보 저장 실패:', error.message)
+      setError('프로필 정보 저장에 실패했습니다. 다시 시도해주세요.')
+    }
+  }
+  async function docExists(docRef) {
+    const docSnap = await getDoc(docRef)
+    return docSnap.exists()
+  }
+
   return (
     <>
       <EditUserInfoBox>
@@ -248,10 +286,6 @@ const ProfileImageBtn = styled.button`
   border-bottom-width: 0;
   color: #69535f;
   cursor: pointer;
-  &:hover {
-    /* 호버 스타일 */
-    transform: scale(1.02);
-  }
 `
 
 const EditForm = styled.form`
@@ -332,10 +366,6 @@ const EditSaveBtn = styled.button`
   font-style: normal;
   font-weight: 500;
   cursor: pointer;
-  &:hover {
-    /* 호버 스타일 */
-    transform: scale(1.02);
-  }
 `
 const CancleBtn = styled.button`
   display: flex;
@@ -355,10 +385,6 @@ const CancleBtn = styled.button`
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
-  &:hover {
-    /* 호버 스타일 */
-    transform: scale(1.02);
-  }
 `
 const TextBox = styled.div`
   width: 480px;
