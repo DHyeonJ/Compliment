@@ -8,9 +8,6 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 
 const Lists = ({ data }) => {
   const navigate = useNavigate()
-  const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
 
   return (
     <>
@@ -27,7 +24,7 @@ const Lists = ({ data }) => {
                 <ListContent>
                   <User>
                     <UserImg src={item.photoURL ?? defaultProfileImage} alt="" />
-                    <span>{localStorageUserId}</span>
+                    <span>{item.userEmail.split('@')[0]}</span>
                   </User>
                   <pre>
                     <ListTitle>{item.title}</ListTitle>

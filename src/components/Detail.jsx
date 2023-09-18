@@ -10,6 +10,7 @@ import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
 import likedImg from '../img/hand-clap.png'
+import { confirmDelete, confirmEdit, needLogin } from './Alert'
 
 function Detail() {
   const [data, setData] = useState(null)
@@ -19,11 +20,6 @@ function Detail() {
   const [isLiked, setIsLiked] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const admin = 'admin@admin.com'
-
-  //
-  const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
 
   // 좋아요 상태 초기화를 위한 useEffect
   useEffect(() => {
@@ -79,7 +75,7 @@ function Detail() {
         console.error('좋아요 토글 중 오류:', error)
       }
     } else {
-      alert('이 항목을 좋아하려면 로그인하세요.')
+      needLogin()
     }
   }
 
@@ -113,25 +109,18 @@ function Detail() {
       } catch (error) {
         console.error('문서 삭제 중 오류: ', error)
       }
-    } else {
-      alert('이 게시물을 삭제할 권한이 없습니다.')
     }
   }
   const handleDeleteClick = () => {
-    const shouldDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
-    if (shouldDelete) {
-      handleDelete().catch((error) => {
-        console.error('오류 발생: ', error)
-      })
-    }
+    confirmDelete(handleDelete)
   }
 
   // 수정 페이지 이동
   const handleEditMove = () => {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
-      navigate(`/editboard/${id}`)
-    } else {
-      alert('게시물을 수정할 권한이 없습니다.')
+      confirmEdit(() => {
+        navigate(`/editboard/${id}`)
+      })
     }
   }
   // 게시물을 작성한 이메일과 로그인한 사용자의 이메일이 같은 경우에만 수정과 삭제 버튼을 보여줍니다.
@@ -165,7 +154,6 @@ function Detail() {
       ) : (
         data && (
           <DetailContentsBox key={data.id}>
-            {/* {renderLikeButton()} */}
             {/* 제목과 작성자 정보 */}
             <HeaderBox>
               <HeaderContentBox>
@@ -173,7 +161,7 @@ function Detail() {
                 <MidleTitleBox>
                   <UserBox>
                     <UserImg src={data.photoURL ?? defaultProfileImage} alt="" />
-                    <UserName>{localStorageUserId}</UserName>
+                    <UserName>{data.userEmail.split('@')[0]}</UserName>
                     <DateBox>작성일 {data.Date}</DateBox>
                   </UserBox>
                   {renderEditDeleteButtons()}
@@ -225,7 +213,6 @@ const ButtonCircle = styled.button`
   background-color: ${({ isLiked }) => (isLiked ? '#986C6C' : 'transparent')};
   border: 1px solid #986c6c;
   margin-bottom: 44px;
-  color: white;
   background-color: #986c6c;
   /* animation 관련 */
   &:hover {
@@ -298,16 +285,13 @@ const ContentDefualtImg = styled.img`
   height: auto;
 `
 const DetailContentsBox = styled.div`
-  /* display 관련 */
-  /* margin: 32px 240px 48px; */
-  margin: 10px auto 50px;
-  width: 1200px;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
   align-items: center;
   /* margin, padding */
-
+  margin: 10px auto 50px;
+  width: 1200px;
   /* background 관련 */
   background: #fff;
 
@@ -320,7 +304,7 @@ const HeaderBox = styled.div`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  padding: 0 16.875rem;
+  /* padding: 0 16.875rem; */
 `
 const HeaderContentBox = styled.div`
   /* display 관련 */
@@ -422,7 +406,7 @@ const ContentBodyBox = styled.pre`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  padding: 0 16.875rem;
+  /* padding: 0 16.875rem; */
   /* width: 1440px; */
   /* border: 1px solid black; */
 `
@@ -453,7 +437,7 @@ const CommentAreaBox = styled.div`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  padding: 0 16.875rem;
+  /* padding: 0 16.875rem; */
   /* width: 1440px; */
   /* border: 1px solid black; */
 `

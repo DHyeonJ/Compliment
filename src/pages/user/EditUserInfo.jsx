@@ -141,7 +141,6 @@ function EditUserInfo() {
       }
       setError(null)
       console.log('프로필 정보 저장 성공:', loggedInUserEmail, imageUrl)
-      window.alert('프로필 정보를 저장했습니다.')
     } catch (error) {
       console.error('프로필 정보 저장 실패:', error.message)
       setError('프로필 정보 저장에 실패했습니다. 다시 시도해주세요.')

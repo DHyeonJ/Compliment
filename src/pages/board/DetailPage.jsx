@@ -20,4 +20,5 @@ const DetailPageBox = styled.div`
   flex-direction: column;
   align-items: flex-start;
   background: #fff;
+  width: 100%;
 `

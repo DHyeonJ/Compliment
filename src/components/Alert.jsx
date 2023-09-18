@@ -12,8 +12,6 @@ export default Alert
 
 export const loginComplite = () => {
   Swal.fire({
-    // position: 'top-end',
-    icon: 'success',
     title: ' 성공 ',
     text: '로그인이 완료되었습니다.',
     showConfirmButton: false,
@@ -63,8 +61,6 @@ export const confirmPWError = () => {
 
 export const signupSuccess = () => {
   Swal.fire({
-    position: 'top-end',
-    icon: 'success',
     title: '회원가입이 완료되었습니다!',
     showConfirmButton: false,
     timer: 1500,
@@ -121,7 +117,6 @@ export const emptyEmailError = () => {
 
 export const deleteSuccess = () => {
   Swal.fire({
-    icon: 'success',
     title: ' 삭제 완료 ',
     text: '마이페이지로 이동합니다!! ',
     timer: 800,
@@ -130,19 +125,15 @@ export const deleteSuccess = () => {
 
 export const needLogin = () => {
   Swal.fire({
-    icon: 'success',
     title: ' 로그인 해주세요 ',
-    text: ' 잠시후 다시 시도해주세요. ',
-    // timer: 800,
+    text: ' 로그인 후 다시 시도해주세요. ',
   })
 }
 
 export const editSuccess = () => {
   Swal.fire({
-    icon: 'success',
     title: ' 수정 완료 ',
     text: '수정이 완료되었습니다!! ',
-    timer: 800,
   })
 }
 
@@ -157,10 +148,10 @@ export const logout = () => {
     cancelButtonText: '취소',
   }).then(async (result) => {
     if (result.isConfirmed) {
-      Swal.fire('로그아웃되었습니다.', '', 'success')
+      Swal.fire('로그아웃되었습니다.', '')
       try {
         await signOut(auth)
-        Swal.fire('로그아웃되었습니다.', '', 'success')
+        Swal.fire('로그아웃되었습니다.', '')
       } catch (error) {
         Swal.fire('로그아웃 중 오류가 발생했습니다.', '', 'error')
       }
@@ -195,6 +186,14 @@ export const confirmEdit = (onEdit) => {
     if (result.isConfirmed) {
       onEdit()
     }
+  })
+}
+
+export const pleaseTitle = () => {
+  Swal.fire({
+    icon: 'info',
+    title: ' 작성해 주세요',
+    text: '제목을 입력해 주세요.',
   })
 }
 
@@ -262,13 +261,9 @@ export const notFound = () => {
 }
 
 export const editUserSuccess = () => {
-  // const navigate = useNavigate()
   Swal.fire({
-    icon: 'error',
     title: '변경 완료',
     text: '회원 정보 변경 완료',
-    // }).then(() => {
-    //   navigate('/')
   })
 }
 
