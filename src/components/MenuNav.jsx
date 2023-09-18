@@ -1,6 +1,8 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import styled from 'styled-components'
+
 import { auth } from '../firebase.js'
 
 export default function MenuNav() {
@@ -33,38 +35,35 @@ export default function MenuNav() {
     </NavBox>
   )
 }
+
 const NavBox = styled.div`
-  width: calc(100vw - 1456px);
   display: flex;
-  height: 52px;
-  align-items: center;
-  padding: 4px 726px 0px 730px;
-  justify-content: center;
   gap: 200px;
+  justify-content: center;
+  align-items: center;
+
+  width: calc(100vw - 1456px);
+  height: 52px;
+
+  padding: 4px 726px 0px 730px;
 `
 
 const ListBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
   width: 131px;
   height: 49px;
-
-  border-bottom: ${({ isActive }) => (isActive ? '2px solid #69535f' : 'none')};
-`
-const MissionBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 85px;
-  height: 48px;
 
   border-bottom: ${({ isActive }) => (isActive ? '2px solid #69535f' : 'none')};
 `
 const ListTextBox = styled.div`
   width: 90px;
   height: 48px;
-  color: #404040;
+
+  margin-top: 20px;
+
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
@@ -72,15 +71,28 @@ const ListTextBox = styled.div`
   font-weight: 700;
   line-height: normal;
   color: ${({ isActive }) => (isActive ? '#404040' : '#a0a0a0')};
-  cursor: pointer;
   text-decoration: none;
-  margin-top: 20px;
+
+  cursor: pointer;
+`
+
+const MissionBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 85px;
+  height: 48px;
+
+  border-bottom: ${({ isActive }) => (isActive ? '2px solid #69535f' : 'none')};
 `
 
 const MissionTextBox = styled.div`
   width: 90px;
   height: 48px;
-  color: #404040;
+
+  margin-top: 20px;
+
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
@@ -88,7 +100,7 @@ const MissionTextBox = styled.div`
   font-weight: 700;
   line-height: normal;
   color: ${({ isActive }) => (isActive ? '#404040' : '#a0a0a0')};
-  cursor: pointer;
   text-decoration: none;
-  margin-top: 20px;
+
+  cursor: pointer;
 `

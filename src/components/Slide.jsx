@@ -1,11 +1,14 @@
 import React, { useState, Component } from 'react'
+
 import styled from 'styled-components'
-import mainBanner1Image from '../img/mainBanner1.png'
-import mainBanner2Image from '../img/mainBanner2.png'
-import mainBanner3Image from '../img/mainBanner3.png'
+
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import Slider from 'react-slick'
+
+import mainBanner1Image from '../img/mainBanner1.png'
+import mainBanner2Image from '../img/mainBanner2.png'
+import mainBanner3Image from '../img/mainBanner3.png'
 
 function Slide() {
   const settings = {
@@ -16,28 +19,24 @@ function Slide() {
     slidesToShow: 1,
     slidesToScroll: 1,
     draggable: true,
-    autoplay: true, // 자동 스크롤 사용 여부
-    autoplaySpeed: 5000, // 자동 스크롤 시 다음으로 넘어가는데 걸리는 시간 (ms)
+    autoplay: true,
+    autoplaySpeed: 5000,
     responsive: [
-      // 반응형 웹 구현 옵션
       {
         breakpoint: 960, // 화면 사이즈 960px일 때
         settings: {
-          // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
           slidesToShow: 1,
         },
       },
       {
         breakpoint: 768, // 화면 사이즈 768px일 때
         settings: {
-          // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
           slidesToShow: 1,
         },
       },
       {
-        breakpoint: 350, // 화면 사이즈 768px일 때
+        breakpoint: 320, // 화면 사이즈 320px일 때
         settings: {
-          // 위에 옵션이 디폴트 , 여기에 추가하면 그걸로 변경
           slidesToShow: 1,
         },
       },
@@ -69,12 +68,12 @@ function Slide() {
       {data?.map((item, index) => (
         <div key={index}>
           <Box>
-            <BannerContents>
-              <BannerTitle>{item.title}</BannerTitle>
-              <BannermiddleTitle>{item.middeleTitle}</BannermiddleTitle>
-              <BannerContent>{item.content}</BannerContent>
-            </BannerContents>
-            <ImgInfo url={item.img} alt={`Slide ${index + 1}`} />
+            <BannerContentsBox>
+              <BannerTitleBox>{item.title}</BannerTitleBox>
+              <BannermiddleTitleBox>{item.middeleTitle}</BannermiddleTitleBox>
+              <BannerContentBox>{item.content}</BannerContentBox>
+            </BannerContentsBox>
+            <ImgInfoBox url={item.img} alt={`Slide ${index + 1}`} />
           </Box>
         </div>
       ))}
@@ -88,38 +87,54 @@ const StyledSlider = styled(Slider)`
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 20px;
-  background: #f4f1e9;
-  height: 450px;
+
   width: 100%;
+  height: 450px;
+
+  background: #f4f1e9;
+
+  border-radius: 20px;
+
   .slick-slide {
     margin: 0 auto;
   }
+
   .slick-list {
     width: 1280px;
   }
+
   .slick-dots {
     position: absolute;
     bottom: 25px;
+
     display: block;
+
     width: 100%;
-    padding: 0;
+
     margin: 0;
+    padding: 0;
+
     list-style: none;
     text-align: center;
   }
+
   .slick-dots li button {
     width: 10px;
     height: 10px;
-    border-radius: 70%;
+
     background-size: cover;
+
+    border-radius: 70%;
+
     :active {
       background-color: #000;
     }
   }
+
   .slick-dots li {
     transition: transform 0.3s ease-in-out;
   }
+
   .slick-dots li.slick-active {
     transform: scale(1.2);
   }
@@ -130,11 +145,50 @@ const Box = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
   width: 100%;
+
   margin: 0 auto;
 `
 
-const BannerContent = styled.div`
+const BannerContentsBox = styled.div`
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  justify-content: center;
+
+  height: 450px;
+
+  padding-left: 44px;
+
+  box-sizing: border-box;
+`
+
+const BannerTitleBox = styled.div`
+  height: 64px;
+
+  color: #000;
+  font-family: LINE Seed Sans KR;
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`
+
+const BannermiddleTitleBox = styled.div`
+  height: 36px;
+
+  color: #000;
+  font-family: LINE Seed Sans KR;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 36px; /* 150% */
+`
+
+const BannerContentBox = styled.div`
   color: #000;
   font-family: LINE Seed Sans KR;
   font-size: 18px;
@@ -144,44 +198,15 @@ const BannerContent = styled.div`
   white-space: pre-line;
 `
 
-const BannermiddleTitle = styled.div`
-  height: 36px;
-  color: #000;
-  font-family: LINE Seed Sans KR;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 36px; /* 150% */
-`
-
-const BannerTitle = styled.div`
-  height: 64px;
-  color: #000;
-  font-family: LINE Seed Sans KR;
-  font-size: 48px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-`
-
-const BannerContents = styled.div`
-  flex: 1;
+const ImgInfoBox = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  justify-content: center;
-  height: 450px;
-  padding-left: 44px;
-  box-sizing: border-box;
-`
-
-const ImgInfo = styled.div`
-  height: 450px;
   flex: 1;
+  justify-content: center;
+
+  height: 450px;
+
   background-image: ${(props) => `url(${props.url})`};
   background-repeat: no-repeat;
-  display: flex;
-  justify-content: center;
+
   border-radius: 20px;
 `
