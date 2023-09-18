@@ -194,6 +194,7 @@ export default Detail
 
 const Likes = styled.div`
   padding: 0;
+  color: white;
 `
 
 const ButtonCircle = styled.button`
@@ -304,7 +305,7 @@ const HeaderBox = styled.div`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  /* padding: 0 16.875rem; */
+  padding: 0 16.875rem;
 `
 const HeaderContentBox = styled.div`
   /* display 관련 */
@@ -406,7 +407,7 @@ const ContentBodyBox = styled.pre`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  /* padding: 0 16.875rem; */
+  padding: 0 16.875rem;
   /* width: 1440px; */
   /* border: 1px solid black; */
 `
@@ -414,8 +415,8 @@ const ContentImg = styled.img`
   /* size 관련 */
   /* width: 60.8125rem;
   height: 32rem; */
-  width: 100%;
-  height: 100%;
+  /* width: 100%;
+  height: 100%; */
   object-fit: cover;
 `
 const BodyContent = styled.div`
@@ -437,7 +438,7 @@ const CommentAreaBox = styled.div`
   flex-direction: column;
   align-items: center;
   /* margin, padding */
-  /* padding: 0 16.875rem; */
+  padding: 0 16.875rem;
   /* width: 1440px; */
   /* border: 1px solid black; */
 `
