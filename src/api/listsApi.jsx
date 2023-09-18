@@ -1,7 +1,7 @@
 import { collection, getDocs, setDoc, updateDoc, deleteDoc, doc, query, where, limit, startAt } from 'firebase/firestore'
 import { db, useAuth } from '../firebase'
 
-const getLists = async () => {
+const getlists = async () => {
   const temp = collection(db, 'lists')
 
   const q = query(temp)
