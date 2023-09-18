@@ -107,6 +107,8 @@ function Detail() {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
       try {
         await deleteDoc(doc(db, 'lists', id))
+        console.log('문서가 성공적으로 삭제되었습니다!')
+        // 삭제 후 추가적인 정리 작업 또는 네비게이션 로직을 처리합니다.
         navigate('/listpage') // 삭제 후에 /listpage로 이동
       } catch (error) {
         console.error('문서 삭제 중 오류: ', error)
@@ -179,6 +181,7 @@ function Detail() {
               </HeaderContentBox>
             </HeaderBox>
             {/* 내용과 이미지 */}
+            {/* 등록된 이미지가 없을 경우 디폴트 이미지가 보여지도록 수정하였습니다.  */}
             <ContentBodyBox>
               {data && data.image ? <ContentImg src={data.image} alt="" /> : <ContentDefualtImg src={defualtContentsImg} alt="" />}
               <BodyContent>{data.comments}</BodyContent>
@@ -304,6 +307,7 @@ const DetailContentsBox = styled.div`
   /* margin, padding */
 
   /* background 관련 */
+  background: #fff;
 
   /* floating_shadow */
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
@@ -417,7 +421,7 @@ const ContentBodyBox = styled.pre`
   align-items: center;
   /* margin, padding */
   padding: 0 16.875rem;
-  width: 65%;
+  /* width: 1440px; */
   /* border: 1px solid black; */
 `
 const ContentImg = styled.img`

@@ -9,7 +9,7 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
+  const email = localUserid?.email || ''
 
   const memoizedData = React.useMemo(() => data || [], [data])
   return (
@@ -63,12 +63,12 @@ const ListContentt = styled.div`
 `
 const Contents = styled.div`
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Likes = styled.span`
   color: #999;
@@ -85,6 +85,8 @@ const Img = styled.img`
   margin-right: 4px;
 `
 const Date = styled.div`
+  margin-left: 8px;
+  margin-right: 16px;
   color: #999;
   text-align: right;
   font-family: Pretendard;
@@ -96,10 +98,10 @@ const Date = styled.div`
   margin-right: 16px;
 `
 const HandClapBox = styled.div`
-  padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-left: 24px;
 `
 const List = styled.div`
   display: flex;
@@ -118,15 +120,19 @@ const List = styled.div`
   }
 `
 const UserImg = styled.img`
+  flex-shrink: 0;
   height: 32px;
   width: 32px;
-  flex-shrink: 0;
+  margin-right: 8px;
   background-image: url(${(props) => props.src});
   background-size: cover;
   border-radius: 50%;
-  margin-right: 8px;
 `
 const User = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
@@ -151,9 +157,10 @@ const ListTitle = styled.h1`
   text-overflow: ellipsis;
 `
 const ListComments = styled.p`
+  align-self: stretch;
   width: 1000px;
   height: 44px;
-  align-self: stretch;
+  margin-top: 8px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
@@ -176,14 +183,14 @@ const ListDate = styled.p`
 `
 const ListContent = styled.pre`
   display: flex;
-  width: 1192px;
-  height: 120px;
-  padding: 0px 24px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  border-radius: 20px;
+  width: 1192px;
+  height: 120px;
+  padding: 0px 24px;
   margin-bottom: 8px;
+  border-radius: 20px;
 `
 const Thumbnail = styled.img`
   width: 160px;

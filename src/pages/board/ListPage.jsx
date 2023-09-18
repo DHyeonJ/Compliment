@@ -21,16 +21,15 @@ function ListPage() {
   }, [])
 
   const likesSort = () => {
-    if (activeSort === 'likes') return
     setActiveSort('likes')
-    const likesData = [...list].sort((a, b) => b.likes - a.likes)
+    const likesData = [...list]?.sort((a, b) => b.likes - a.likes)
     setDisplayData(likesData)
   }
 
   const latestSort = () => {
-    if (activeSort === 'latest') return
     setActiveSort('latest')
-    const orderedData = [...list].sort((a, b) => b.timeSort - a.timeSort)
+
+    const orderedData = [...list]?.sort((a, b) => b.timeSort - a.timeSort)
     setDisplayData(orderedData)
   }
 
@@ -46,8 +45,11 @@ function ListPage() {
 
   useEffect(() => {
     fetchDate()
+  }, [fetchDate])
+
+  useEffect(() => {
     setDisplayData(list)
-  }, [fetchDate, list, activeSort])
+  }, [list])
 
   return (
     <ListPageBox>
@@ -86,9 +88,10 @@ function ListPage() {
   )
 }
 
-export default React.memo(ListPage)
+export default ListPage
 
 const ListContainer = styled.div`
+  // height: 1660px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -101,6 +104,7 @@ const ListPageBox = styled.div`
   align-items: center;
   justify-content: center;
   width: 100vw;
+  /* height: 2168px; */
   flex-direction: column;
 `
 
@@ -110,11 +114,13 @@ const ListBox = styled.div`
   justify-content: center;
   flex-direction: column;
   width: calc(100vw - 120px);
+  /* height: 2238px; */
   margin-top: 16px;
 `
 
 const ContentBox = styled.div`
   width: 1520px;
+  /* height: 2100px; */
   flex-direction: column;
   gap: 42px 0;
 `
@@ -188,7 +194,7 @@ const BannerContentBox = styled.span`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px;
+  line-height: 24px; /* 150% */
 `
 
 const PlusButton = styled.div`

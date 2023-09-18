@@ -29,10 +29,10 @@ function Edit() {
           setContent(docSnapshot.data().comments)
           setImgUrl(docSnapshot.data().image)
         } else {
-          console.log('Document not found!')
+          // console.log('Document not found!')
         }
       } catch (error) {
-        console.error('Error fetching document:', error)
+        // console.error('Error fetching document:', error)
         // 에러 처리 추가
       }
     }
@@ -181,89 +181,58 @@ const ImagePreview = styled.img`
   margin-top: 10px;
 `
 const CancelAndAddContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   justify-content: flex-end;
   align-items: flex-start;
-  gap: 1rem; /* px에서 rem으로 변경 */
+  gap: 1rem;
 `
 
 const EditListContainerBox = styled.div`
-  /* position 관련 */
-
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.75rem; /* px에서 rem으로 변경 */
-
-  /* size 관련 */
-  height: 2.75rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
-  padding: 0 1.5rem; /* px에서 rem으로 변경 */
-
-  /* background 관련 */
+  gap: 0.75rem;
+  height: 2.75rem;
+  padding: 0 1.5rem;
   background: #69535f;
-
-  /* border 관련 */
-  border-radius: 0.5rem; /* px에서 rem으로 변경 */
-  line-height: 1.375rem; /* px에서 rem으로 변경 */
-
-  /* font 관련 */
+  border-radius: 0.5rem;
+  line-height: 1.375rem;
   color: #fff;
   text-align: center;
   font-family: Pretendard;
-  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-
-  /* animation 관련 */
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 
   &:hover {
-    /* 호버 스타일 */
     transform: scale(1.02);
   }
 `
 const CancelContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.75rem; /* px에서 rem으로 변경 */
-
-  /* size 관련 */
+  gap: 0.75rem;
   height: 2.75rem;
-
-  /* margin, padding */
-  padding: 0 1.5rem; /* px에서 rem으로 변경 */
-
-  /* background 관련 */
+  padding: 0 1.5rem;
   background: #fff;
-
-  /* border 관련 */
-  border-radius: 0.5rem; /* px에서 rem으로 변경 */
+  border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
-  line-height: 1.375rem; /* px에서 rem으로 변경 */
-
-  /* font 관련 */
+  line-height: 1.375rem;
   color: var(--text-01404040, #404040);
   text-align: center;
   font-family: Pretendard;
-  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-
-  /* animation 관련 */
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 
   &:hover {
-    /* 호버 스타일 */
     transform: scale(1.02);
   }
 `
@@ -282,37 +251,25 @@ const CancelContainerBox = styled.div`
 // `
 
 const CustomFileInputLabel = styled.label`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 0.75rem; /* px에서 rem으로 변경 */
-
-  /* size 관련 */
+  gap: 0.75rem;
   height: 2.75rem;
   width: 9.375rem;
-
-  /* margin, padding */
-  padding: 0 1.25rem; /* px에서 rem으로 변경 */
-
-  /* background 관련 */
+  padding: 0 1.25rem;
   background: #fff;
-
-  /* border 관련 */
-  border-radius: 0.5rem; /* px에서 rem으로 변경 */
+  border-radius: 0.5rem;
   border: 1px solid #69535f;
-  line-height: 1.375rem; /* px에서 rem으로 변경 */
-
-  /* font 관련 */
+  line-height: 1.375rem;
   color: #69535f;
   text-align: center;
   font-family: Pretendard;
-  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
 
-  /* animation 관련 */
   cursor: pointer;
 `
 
@@ -323,76 +280,53 @@ const Line = styled.div`
   height: 1px;
 `
 const CustomFileInput = styled.input`
-  /* display 관련 */
   display: none;
 `
 
 const ContainerPageBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* margin, padding */
-  margin: 2rem 15rem 3rem; /* px에서 rem으로 변경 */
-
-  /* background 관련 */
+  margin: 2rem 15rem 3rem;
   background: #fff;
-  /* border 관련 */
-  border-radius: 1.25rem; /* px에서 rem으로 변경 */
+  border-radius: 1.25rem;
   box-shadow: 0px 0.25rem 1rem 0px rgba(0, 0, 0, 0.14);
 `
 
 const ContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.625rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
-  padding: 2rem 15rem 3rem 15rem; /* px에서 rem으로 변경 */
+  gap: 0.625rem;
+  padding: 2rem 15rem 3rem 15rem;
 `
 
 const ButtonsBox = styled.div`
-  /* display 관련 */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  width: 57rem;
+  height: 3.25rem;
 
-  /* size 관련 */
-  width: 57rem; /* px에서 rem으로 변경 */
-  height: 3.25rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
-  padding: 0.25rem 1.5rem; /* px에서 rem으로 변경 */
+  padding: 0.25rem 1.5rem;
 `
 
 const CommentInputBox = styled.textarea`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem; /* px에서 rem으로 변경 */
+  gap: 1rem;
   align-self: stretch;
-
-  /* size 관련 */
-  width: 57rem; /* px에서 rem으로 변경 */
-  height: 17.75rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
-  padding: 1rem 1.5rem; /* px에서 rem으로 변경 */
-  line-height: 1.75rem; /* px에서 rem으로 변경 */
-
-  /* border 관련 */
+  width: 57rem;
+  height: 17.75rem;
+  padding: 1rem 1.5rem;
+  line-height: 1.75rem;
   border: none;
   outline: none;
   resize: none;
-
-  /* font 관련 */
   color: #999;
   font-family: Pretendard;
-  font-size: 1rem; /* px에서 rem으로 변경 */
+  font-size: 1rem;
   font-style: normal;
   font-weight: 400;
 `
@@ -408,65 +342,41 @@ const CommentInputBox = styled.textarea`
 // `
 
 const CommentContainerBox = styled.pre`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* size 관련 */
-  width: 90rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
-  padding: 0 16.875rem; /* px에서 rem으로 변경 */
+  width: 90rem;
+  padding: 0 16.875rem;
   margin: 3rem 0;
 `
 
 const TitleContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-
-  /* margin, padding */
   padding: 2rem 15rem 3rem;
-
-  /* border 관련 */
-  /* border-bottom: 1px solid #999; */
 `
 
 const ListContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* size 관련 */
-  width: 90rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
+  width: 90rem;
   padding: 0 16.875rem;
 `
 
 const TitleContainerInput = styled.input`
-  /* size 관련 */
-  width: 57rem; /* px에서 rem으로 변경 */
-
-  /* margin, padding */
+  width: 57rem;
   line-height: normal;
-
-  /* border 관련 */
   border: none;
   outline: none;
-
-  /* font 관련 */
   color: #999;
   font-family: LINE Seed Sans KR;
-  font-size: 2.25rem; /* px에서 rem으로 변경 */
+  font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;
   padding: 1rem 1.5rem;
-  /* animation 관련 */
   &::placeholder {
     transition: opacity 0.1s ease-in-out;
     color: #999999;

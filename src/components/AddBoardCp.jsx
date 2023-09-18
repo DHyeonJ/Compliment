@@ -56,7 +56,7 @@ const AddBoardCp = () => {
         timeSort,
       })
     } catch (error) {
-      console.error('Error adding document: ', error)
+      // console.error('Error adding document: ', error)
     }
   }
 
@@ -197,81 +197,54 @@ const CancelAndAddBox = styled.div`
 `
 
 const AddListBoxBtn = styled.button`
-  /* display 관련 */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 0.75rem; /* 변경 */
-
-  /* size 관련 */
+  gap: 0.75rem;
   width: 130px;
-  height: 2.75rem; /* 변경 */
-
-  /* margin, padding */
-  padding: 0 2rem; /* 변경 */
-  line-height: 1.375rem; /* 변경 */
-
-  /* background 관련 */
+  height: 2.75rem;
+  padding: 0 2rem;
+  line-height: 1.375rem;
   background: #69535f;
-
-  /* border 관련 */
-  border-radius: 0.5rem; /* 변경 */
+  border-radius: 0.5rem;
   border: none;
-  /* font 관련 */
   color: #fff;
   text-align: center;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-
-  /* animation 관련 */
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 
   &:hover {
-    /* 호버 스타일 */
     transform: scale(1.02);
   }
 `
 const CancelBoxBtn = styled.button`
-  /* display 관련 */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  gap: 0.75rem; /* 변경 */
-
-  /* size 관련 */
+  gap: 0.75rem;
   width: 124px;
   height: 2.75rem;
-
-  /* margin, padding */
-  padding: 0 2rem; /* 변경 */
-  line-height: 1.375rem; /* 변경 */
-
-  /* background 관련 */
+  padding: 0 2rem;
+  line-height: 1.375rem;
   background: #fff;
-
-  /* border 관련 */
   border: 1px solid #d9d9d9;
-  border-radius: 0.5rem; /* 변경 */
-
-  /* font 관련 */
+  border-radius: 0.5rem;
   color: var(--text-01404040, #404040);
   text-align: center;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
-
-  /* animation 관련 */
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
 
   &:hover {
-    /* 호버 스타일 */
     transform: scale(1.02);
   }
 `
@@ -290,42 +263,28 @@ const CancelBoxBtn = styled.button`
 // `
 
 const CustomFileInputLabel = styled.label`
-  /* display 관련 */
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   gap: 0.75rem;
-
-  /* size 관련 */
   height: 2.75rem;
   width: 9.375rem;
-
-  /* margin, padding */
   padding: 0 1.25rem;
   line-height: 1.375rem;
-
-  /* background 관련 */
   background: #fff;
-
-  /* border 관련 */
   border-radius: 0.5rem;
   border: 1px solid #69535f;
-
-  /* font 관련 */
   color: #69535f;
   text-align: center;
   font-family: Pretendard;
   font-size: 1rem;
   font-style: normal;
   font-weight: 400;
-
-  /* animation 관련 */
   cursor: pointer;
 `
 
 const CustomFileInput = styled.input`
-  /* display 관련 */
   display: none;
   width: 240px;
   height: 44px;
@@ -340,16 +299,11 @@ const CustomFileInput = styled.input`
 `
 
 const ContainerPageBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* margin, padding */
-  margin: 2rem 15rem 3rem; /* 변경 */
-
-  /* background 관련 */
+  margin: 2rem 15rem 3rem;
   background: #fff;
-  /* border 관련 */
   border-radius: 1.25rem;
   box-shadow: 0 0.25rem 1rem 0 rgba(0, 0, 0, 0.14);
 `
@@ -362,55 +316,41 @@ const Line = styled.div`
 `
 
 const ContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  padding: 2rem 15rem 3rem; /* 변경 */
+  padding: 2rem 15rem 3rem;
 `
 
 const ButtonsBox = styled.div`
-  /* display 관련 */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
-  /* size 관련 */
-  width: 57rem; /* 변경 */
-  height: 3.25rem; /* 변경 */
-
-  /* margin, padding */
-  padding: 0.25rem 1.5rem; /* 변경 */
+  width: 57rem;
+  height: 3.25rem;
+  padding: 0.25rem 1.5rem;
 `
 
 const TitleContainerInput = styled.input`
-  /* size 관련 */
-  width: 57rem; /* 변경 */
-
-  /* border 관련 */
+  width: 57rem;
   line-height: normal;
   border: none;
   outline: none;
-
-  /* font 관련 */
   color: #181818;
-
   font-family: LINE Seed Sans KR;
-  font-size: 2.25rem; /* 변경 */
+  font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;
-
-  padding: 1rem 1.5rem; /* 변경 */
+  padding: 1rem 1.5rem;
   input::placeholder {
     color: #999999;
     font-family: LINE Seed Sans KR;
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
-    line-height: normal; /* 원하는 색상으로 변경하세요 */
+    line-height: normal;
   }
-  /* animation 관련 */
   &::placeholder {
     transition: opacity 0.1s ease-in-out;
   }
@@ -421,27 +361,18 @@ const TitleContainerInput = styled.input`
 `
 
 const CommentInputBox = styled.textarea`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
   align-self: stretch;
-
-  /* size 관련 */
-  width: 57rem; /* 변경 */
-  height: 17.75rem; /* 변경 */
-
-  /* margin, padding */
-  padding: 1rem 1.5rem; /* 변경 */
-
-  /* border 관련 */
-  line-height: 1.75rem; /* 변경 */
+  width: 57rem;
+  height: 17.75rem;
+  padding: 1rem 1.5rem;
+  line-height: 1.75rem;
   border: none;
   outline: none;
   resize: none;
-
-  /* font 관련 */
   color: #181818;
   font-family: Pretendard;
   font-size: 1rem;
@@ -469,41 +400,25 @@ const CommentInputBox = styled.textarea`
 // `
 
 const CommentContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* size 관련 */
-  width: 90rem; /* 변경 */
-
-  /* margin, padding */
-  padding: 0 16.875rem; /* 변경 */
-  margin: 3rem 0; /* 변경 */
+  width: 90rem;
+  padding: 0 16.875rem;
+  margin: 3rem 0;
 `
 
 const TitleContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-
-  /* margin, padding */
-  padding: 2rem 15rem 3rem; /* 변경 */
-
-  /* border 관련 */
-  /* border-bottom: 1px solid #999; */
+  padding: 2rem 15rem 3rem;
 `
 const ListContainerBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  /* size 관련 */
-  width: 90rem; /* 변경 */
-
-  /* margin, padding */
-  padding: 0 16.875rem; /* 변경 */
+  width: 90rem;
+  padding: 0 16.875rem;
 `

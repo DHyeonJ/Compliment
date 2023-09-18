@@ -98,43 +98,41 @@ function Mypage() {
 export default Mypage
 const MypageBox = styled.div`
   display: flex;
-  /* height: 100vh; */
-  padding: 32px 240px 48px 240px;
-  /* margin-top: 84px; */
   flex-direction: column;
   align-items: center;
+  padding: 32px 240px 48px 240px;
 `
 
 const PageBox = styled.div`
   display: flex;
-  border-radius: 20px;
-  box-sizing: border-box;
-  padding: 24px 270px;
   flex-direction: column;
   align-items: center;
+  padding: 24px 270px;
   border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  box-sizing: border-box;
 `
 
 const ProfileBox = styled.div`
   display: flex;
-  width: 784px;
-  height: 150px;
-  padding: 0px 24px;
   justify-content: center;
   align-items: flex-start;
   gap: 64px;
   flex-shrink: 0;
+  width: 784px;
+  height: 150px;
+  padding: 0px 24px;
 `
 const ProfileImage = styled.img`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
   width: 100px;
   height: 100px;
-  box-shadow: 5px 3px 7px 3px #c4c4c4;
-  border-radius: 50%;
   margin-right: 10px;
-  gap: 16px;
+  border-radius: 50%;
+  box-shadow: 5px 3px 7px 3px #c4c4c4;
 `
 const TextBox = styled.div`
   display: flex;
@@ -151,15 +149,16 @@ const NicknameTextBox = styled.div`
   line-height: normal;
 `
 const SignEditBox = styled.div`
-  color: #666;
   text-align: center;
   display: flex;
+  margin-top: 14px;
+  color: #666;
   font-family: Pretendard;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  margin-top: 14px;
+
   cursor: pointer;
 `
 const Bold = styled.span`
@@ -167,80 +166,24 @@ const Bold = styled.span`
 `
 const UserButton = styled.img`
   display: flex;
-  width: 20px;
-  height: 20px;
   justify-content: center;
   align-items: center;
+  width: 20px;
+  height: 20px;
 `
 const RateBox = styled.div`
   display: flex;
-  width: 880px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  width: 880px;
   margin-top: 36px;
 `
 const ListBox = styled.div`
   display: flex;
-  /* width: 880px;
-  height: 812px; */
-  padding: 0px 88px;
   justify-content: center;
   align-items: flex-start;
   gap: 32px;
   margin-top: 48px;
-`
-const DetailListBox = styled.button`
-  display: flex;
-  height: 56px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex: 1 0 0;
-  color: #404040;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 110%;
-  border: none;
-  outline: none;
-  background-color: white;
-  cursor: pointer;
-  &.highlighted {
-    /* text-decoration: underline; */
-    border-bottom: 2px solid black;
-    /* background-color: #F0F0F0; */
-  }
-  &:hover {
-    /* text-decoration: underline; */
-    /* background-color: #F0F0F0; */
-  }
-`
-const CommentListBox = styled.button`
-  display: flex;
-  height: 56px;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  flex: 1 0 0;
-  color: #404040;
-  font-family: Pretendard;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: 110%;
-  border: none;
-  outline: none;
-  background-color: white;
-  cursor: pointer;
-  &.highlighted {
-    /* text-decoration: underline; */
-    border-bottom: 2px solid black;
-    /* background-color: #F0F0F0; */
-  }
-  &:hover {
-    /* text-decoration: underline; */
-    /* background-color: #F0F0F0; */
-  }
+  padding: 0px 88px;
 `

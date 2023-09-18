@@ -11,6 +11,8 @@ import defaultProfileImage from '../img/anonymous.png'
 import { collection, getDocs, orderBy, limit, query, where } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
 
+import { needLogin } from '../components/Alert'
+
 interface Images {
   userEmail: string
   id: string
@@ -128,8 +130,7 @@ function Main() {
     if (auth.currentUser) {
       navigate('/missionpage')
     } else {
-      alert('로그인 후에 확인 하실 수 있습니다.')
-      navigate('/login')
+      needLogin()
     }
   }
 
