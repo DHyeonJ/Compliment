@@ -354,7 +354,6 @@ const UserImg = styled.img`
   border-radius: 60px;
 `
 const UserName = styled.div`
-  /* border 관련 */
   margin-right: 1.5rem;
   /* border 관련 */
   line-height: 1.75rem;
@@ -382,25 +381,6 @@ const ButtonBox = styled.div`
   display: flex;
   gap: 1rem;
 `
-
-const LikeButton = styled.button`
-  width: 154px;
-  height: 3.25rem;
-  border-radius: 0.5rem;
-  margin-bottom: 5px;
-  color: ${({ isLiked }) => (isLiked ? '#FFFBF3' : ' #69535F;')};
-  border: ${({ isLiked }) => (isLiked ? 'none' : '1px solid #69535F;')};
-  background-color: ${({ isLiked }) => (isLiked ? '#69535F' : 'none')};
-  &:hover {
-    cursor: pointer;
-    border: 3px solid #c7c3b8;
-  }
-`
-
-const BtnSpan = styled.span`
-  display: inline-block;
-  margin-right: 10px;
-`
 const ContentBodyBox = styled.pre`
   /* display 관련 */
   display: flex;
@@ -408,15 +388,11 @@ const ContentBodyBox = styled.pre`
   align-items: center;
   /* margin, padding */
   padding: 0 16.875rem;
-  /* width: 1440px; */
-  /* border: 1px solid black; */
 `
 const ContentImg = styled.img`
   /* size 관련 */
-  /* width: 60.8125rem;
-  height: 32rem; */
-  /* width: 100%;
-  height: 100%; */
+  width: 560px;
+  height: auto;
   object-fit: cover;
 `
 const BodyContent = styled.div`
@@ -439,6 +415,4 @@ const CommentAreaBox = styled.div`
   align-items: center;
   /* margin, padding */
   padding: 0 16.875rem;
-  /* width: 1440px; */
-  /* border: 1px solid black; */
 `
