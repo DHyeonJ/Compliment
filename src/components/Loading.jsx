@@ -1,6 +1,8 @@
 import React from 'react'
-import LoadingImg from '../img/loading animation.gif'
+
 import { styled } from 'styled-components'
+
+import LoadingImg from '../img/loading animation.gif'
 
 function Loading() {
   return (
@@ -23,9 +25,11 @@ function Loading() {
 }
 
 export default Loading
+
 const LoadingPageBox = styled.div`
   display: flex;
   flex-direction: column;
+
   min-height: 59.5vh;
 `
 
@@ -34,7 +38,9 @@ const LoadingTextBox = styled.div`
   flex-direction: column;
   align-items: left;
   align-self: stretch;
+
   padding: 48px 72px 48px 46px;
+
   margin-left: 300px;
 `
 
@@ -45,6 +51,7 @@ const LoadingTitleBox = styled.div`
 
 const LoadingContentBox = styled.div`
   margin-top: 32px;
+
   font-size: 20px;
   font-style: normal;
 `

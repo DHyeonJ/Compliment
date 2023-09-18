@@ -1,12 +1,13 @@
 import React from 'react'
 import Swal from 'sweetalert2'
+
 function Alert() {
   return <></>
 }
 
 export default Alert
 
-export const LoginComplite = () => {
+export const loginComplite = () => {
   Swal.fire({
     position: 'top-end',
     icon: '성공',
@@ -141,7 +142,7 @@ export const editSuccess = () => {
   })
 }
 
-export const Logout = () => {
+export const logout = () => {
   Swal.fire({
     title: '로그아웃하시겠습니까?',
     icon: 'question',
