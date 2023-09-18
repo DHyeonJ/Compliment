@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from 'react-query'
 import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
-import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
+import { addReply, deleteReply, getReplyApi, updateReply } from '../api/replyApi'
 import { sortData } from '../utils/sort'
 
 function Reply() {
@@ -21,7 +21,7 @@ function Reply() {
   const [commentLimit, setCommentLimit] = useState(4)
   const [totalCount, setTotalCount] = useState(0)
 
-  const [replyContent, setReplyContent] = useState('') // 댓글 입력내용
+  const [replyContent, setReplyContent] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editedReplyContent, setEditedReplyContent] = useState('')
   const [editingReplyId, setEditingReplyId] = useState(null)
@@ -57,12 +57,12 @@ function Reply() {
 
     const newReplyList = {
       id: replyId,
-      userEmail: user ? user.email : '', // 사용자의 이메일
+      userEmail: user ? user.email : '',
       ContentId: id,
       reply: replyContent,
       Date: nowTime,
       timeSort,
-      photoURL: user ? user.photoURL : '', // 사용자의 프로필 사진 URL
+      photoURL: user ? user.photoURL : '',
       replyId,
     }
 
@@ -88,14 +88,12 @@ function Reply() {
     setIsEditing(true)
     setEditingReplyId(replyId)
 
-    // 수정 중인 댓글을 찾고 텍스트 영역에 해당 내용을 설정합니다.
     const editedComment = replyData.find((comment) => comment.id === replyId)
     if (editedComment) {
       setEditedReplyContent(editedComment.reply)
     }
   }
 
-  // reply update
   const onSaveEditHandler = async () => {
     if (editedReplyContent.trim() === '') {
       alert('댓글을 입력해주세요.')
@@ -138,26 +136,17 @@ function Reply() {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      // 엔터 키를 누르면 댓글을 등록합니다.
       addNewReply()
     }
   }
 
   useEffect(() => {
     fetchReplyData()
-  }, [commentLimit]) // commentLimit가 변경될 때 fetchReplyData 함수를 호출합니다.
-
-  //
+  }, [commentLimit])
 
   useEffect(() => {
     fetchReplyData()
   }, [commentLimit])
-
-  // totalCount를 업데이트할 함수 추가
-
-  // useEffect(() => {
-  //   updatetotalCount()
-  // }, [id]) // 게시글 ID가 변경될 때 totalCount를 업데이트합니다.
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -172,7 +161,7 @@ function Reply() {
     <>
       <CommentHeaderBox>
         <img src={commentImg} alt="" />
-        칭찬 댓글 ({totalCount}개) {/* totalCount를 추가하여 표시 */}
+        칭찬 댓글 ({totalCount}개)
       </CommentHeaderBox>
 
       <Boxs>
@@ -213,7 +202,6 @@ function Reply() {
             ))}
           </CommentBodyBox>
         </CommentBox>
-        {/* "더 보기" 버튼 추가 */}
         {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
 
         <CommentInputAreaBox>
@@ -264,14 +252,14 @@ const LoadMoreButton = styled.button`
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
+    line-height: 22px;
     display: flex;
     color: #986c6c;
     font-family: Pretendard;
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
+    line-height: 22px;
     width: 80px;
     height: 32px;
     flex-direction: column;
@@ -280,31 +268,26 @@ const LoadMoreButton = styled.button`
     gap: 12px;
     border-radius: 8px;
     border: 1px solid #986c6c;
-    cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
+    cursor: pointer;
   }
 `
 
 const UserBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 10px;
 `
 const UserImg = styled.img`
-  /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 60px;
   margin-right: 8px;
 `
 const UserName = styled.div`
-  /* border 관련 */
   margin-right: 1.5rem;
-  /* border 관련 */
   line-height: 1.75rem;
   border-radius: 50%;
-  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 1rem;
@@ -325,12 +308,10 @@ const CommentTextBox = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
 `
 const DateBox = styled.div`
-  /* border 관련 */
   line-height: 1.75rem;
-  /* font 관련 */
   color: var(--text01_404040, #999999);
   font-family: Pretendard;
   font-size: 1rem;
@@ -339,12 +320,10 @@ const DateBox = styled.div`
   margin-top: 12px;
 `
 const ButtonBox = styled.div`
-  /* display 관련 */
   display: flex;
   gap: 1rem;
 `
 const Button = styled.button`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -352,15 +331,11 @@ const Button = styled.button`
   position: absolute;
   right: 1rem;
   bottom: 2rem;
-  /* size 관련 */
   width: 6rem;
   height: 2.25rem;
-  /* background 관련 */
   background: #fff;
-  /* border 관련 */
   border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
-  /* animation 관련 */
   &:hover {
     cursor: pointer;
     border-radius: 8px;
@@ -371,19 +346,14 @@ const Button = styled.button`
 `
 
 const CommentHeaderBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   gap: 1rem;
-  /* size 관련 */
   width: 57rem;
-  /* margin, padding */
   padding: 1.5rem;
-  /* border 관련 */
   line-height: 1.375rem;
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
-  /* font 관련 */
   color: #404040;
   font-family: Pretendard;
   font-size: 1.25rem;
@@ -391,22 +361,18 @@ const CommentHeaderBox = styled.div`
   font-weight: 400;
 `
 const CommentBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
   align-self: stretch;
-  /* size 관련 */
   width: 57rem;
   min-width: 50rem;
   max-width: 90rem;
-  /* margin, padding */
   padding: 1rem 1.5rem;
 `
 
 const CommentBodyBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -415,49 +381,38 @@ const CommentBodyBox = styled.div`
   margin-bottom: 10px;
 `
 const CommentInputAreaBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   position: relative;
-  /* size 관련 */
   width: 57rem;
   height: 200px;
-  /* margin, padding */
   padding: 1rem;
   margin-bottom: 15px;
-  /* background 관련 */
   background: #fff;
-  /* border 관련 */
   border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
 `
 const CommentInputMiddleBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  /* size 관련 */
   min-width: 50rem;
   max-width: 90rem;
-  /* margin, padding */
   padding: 1rem 1.5rem;
 `
 const CommentInputBox = styled.input`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   flex: 1 0 0;
   border: none;
-  /* size 관련 */
 
   min-width: 35rem;
   max-width: 74.625rem;
-  /* margin, padding */
   padding: 1.5rem 0;
   margin-left: 2rem;
   &:focus {
@@ -514,14 +469,14 @@ const EditBtn = styled.button`
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
+    line-height: 22px;
     display: flex;
     color: #986c6c;
     font-family: Pretendard;
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
+    line-height: 22px;
     width: 80px;
     height: 32px;
     flex-direction: column;
@@ -530,6 +485,6 @@ const EditBtn = styled.button`
     gap: 12px;
     border-radius: 8px;
     border: 1px solid #986c6c;
-    cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
+    cursor: pointer;
   }
 `

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
@@ -11,9 +11,10 @@ const Lists = ({ data }) => {
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email
 
+  const memoizedData = React.useMemo(() => data || [], [data])
   return (
     <>
-      {data?.map((item) => {
+      {memoizedData?.map((item) => {
         return (
           <List
             key={item.id}
@@ -41,7 +42,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image || defualtContentsImg} alt="" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" loading="lazy" />
               </div>
             </ListContentt>
           </List>
@@ -76,14 +77,12 @@ const Likes = styled.span`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
-  /* filter: grayscale(100%); */
-  /* color: black; */
 `
 const Date = styled.div`
   color: #999;
@@ -92,7 +91,7 @@ const Date = styled.div`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
   margin-left: 8px;
   margin-right: 16px;
 `
@@ -133,7 +132,7 @@ const User = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px; /* 175% */
+  line-height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -160,7 +159,7 @@ const ListComments = styled.p`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
   margin-top: 8px;
   white-space: nowrap;
   overflow: hidden;
@@ -173,7 +172,7 @@ const ListDate = styled.p`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const ListContent = styled.pre`
   display: flex;
@@ -192,4 +191,4 @@ const Thumbnail = styled.img`
   border-radius: 8px;
   background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
 `
-export default Lists
+export default React.memo(Lists)
