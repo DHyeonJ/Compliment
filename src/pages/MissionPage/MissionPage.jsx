@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { styled } from 'styled-components'
-import MenuNav from '../../components/MenuNav'
-import { getMissionCards, updateMissionCard, getMyMissionCard } from '../../api/MissionCardsApi'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
-import { auth } from '../../firebase'
+
+import { styled } from 'styled-components'
+
+import MenuNav from '../../components/MenuNav'
+import Loading from '../../components/Loading'
+
+import { getMissionCards, updateMissionCard, getMyMissionCard } from '../../api/missionCardsApi'
+
 import missionCard from '../../img/missionCard.png'
 import missionCardActive from '../../img/missionCardActive.png'
-import Loading from '../../components/Loading'
 import MissionProgressBar from '../../components/MissionProgressBar'
+
+import { auth } from '../../firebase'
 
 const MissionPage = () => {
   const user = auth.currentUser
@@ -45,81 +50,89 @@ const MissionPage = () => {
   return (
     <>
       <MenuNav />
-      <Hug>
+      <HugBox>
         <BannerBox>
-          <BannerContainer>
-            <BannerTitle>미션 도착!</BannerTitle>
-            <BannerContent>
+          <BannerContainerBox>
+            <BannerTitleBox>미션 도착!</BannerTitleBox>
+            <BannerContentBox>
               매일 칭찬 미션이 도착합니다. <br /> 수행하면서, 칭찬에 대한 영감을 얻고 긍정의 에너지를 나눠보세요.
               <br /> 오늘 하루 미션 성공에 도전해보세요! <br /> 미션 달성률은 마이페이지에서도 확인하실 수 있습니다.
-            </BannerContent>
-          </BannerContainer>
+            </BannerContentBox>
+          </BannerContainerBox>
         </BannerBox>
         <RateBox>
           <MissionProgressBar completedMissionCards={myMissionCards.data.cards.filter((card) => card.checked)} totalMissionCards={myMissionCards.data.cards.length} />
         </RateBox>
-        <MissionCardBox>
-          <DailyMissionBox>
-            <DailyMission>
+        <MissionCardAllBox>
+          <DailyMissionAllBox>
+            <DailyMissionBox>
               오늘의 미션! <p>미션 수행 후, 카드를 클릭하면 미션 제출이 됩니다.</p>
-            </DailyMission>
-          </DailyMissionBox>
-          <MissionCards>
+            </DailyMissionBox>
+          </DailyMissionAllBox>
+          <MissionCardsBox>
             {myMissionCards.data.cards?.map((item) => {
               const [cardData] = missionData.filter((mission) => mission.id === item.id)
               return (
-                <MissionCard key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={item.checked}>
-                  <MissionCardFrame isSelected={item.checked}>
-                    <MissionCardTitle isSelected={item.checked}>{cardData.title}</MissionCardTitle>
+                <MissionCardBox key={item.id} onClick={async () => await handleCardClick(item.id)} isSelected={item.checked}>
+                  <MissionCardFrameBox isSelected={item.checked}>
+                    <MissionCardTitleBox isSelected={item.checked}>{cardData.title}</MissionCardTitleBox>
                     <LogoBox isSelected={item.checked}>
-                      <LogoImg src={item.checked ? missionCardActive : missionCard} alt={item.checked ? 'Active Mission Card' : 'Inactive Mission Card'} />
+                      <picture>
+                        <LogoImg src={item.checked ? missionCardActive : missionCard} alt={item.checked ? 'Active Mission Card' : 'Inactive Mission Card'} />
+                      </picture>
                     </LogoBox>
-                    <MissionCardContents isSelected={item.checked}>{cardData.content}</MissionCardContents>
-                  </MissionCardFrame>
-                </MissionCard>
+                    <MissionCardContentsBox isSelected={item.checked}>{cardData.content}</MissionCardContentsBox>
+                  </MissionCardFrameBox>
+                </MissionCardBox>
               )
             })}
-          </MissionCards>
-        </MissionCardBox>
-      </Hug>
+          </MissionCardsBox>
+        </MissionCardAllBox>
+      </HugBox>
     </>
   )
 }
 
 export default MissionPage
 
-const Hug = styled.div`
+const HugBox = styled.div`
   display: flex;
-  padding: 16px 240px 48px;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: 48px;
-  box-sizing: border-box;
+
   margin: 0 auto;
+  padding: 16px 240px 48px;
+
+  box-sizing: border-box;
 `
 
 const BannerBox = styled.div`
   display: flex;
-  padding: 48px 56px;
-  width: 100%;
-  flex-direction: column;
   align-items: flex-start;
+  flex-direction: column;
   gap: 10px;
+
+  width: 100%;
+
+  padding: 48px 56px;
+
+  background: #fcfbe6;
+
   border-radius: 20px;
   box-sizing: border-box;
-  background: #fcfbe6;
 `
-const BannerContainer = styled.div`
+
+const BannerContainerBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
 `
 
-const BannerTitle = styled.div`
+const BannerTitleBox = styled.div`
   color: #404040;
-
   font-family: LINE Seed Sans KR;
   font-size: 36px;
   font-style: normal;
@@ -127,7 +140,7 @@ const BannerTitle = styled.div`
   line-height: normal;
 `
 
-const BannerContent = styled.div`
+const BannerContentBox = styled.div`
   color: #404040;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
@@ -135,87 +148,109 @@ const BannerContent = styled.div`
   font-weight: 700;
   line-height: 24px; /* 150% */
 `
+
 const RateBox = styled.div`
   display: flex;
-  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   gap: 15px;
+
+  width: 100%;
+
   padding: 0 0 0 50px;
+
   box-sizing: border-box;
 `
-const MissionCardBox = styled.div`
+
+const MissionCardAllBox = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
+
   box-sizing: border-box;
 `
-const DailyMissionBox = styled.div`
+
+const DailyMissionAllBox = styled.div`
   display: flex;
-  height: 48px;
-  padding: 0px 0px 0px 50px;
   align-items: flex-start;
   align-self: stretch;
+
+  height: 48px;
+
+  padding: 0px 0px 0px 50px;
 `
 
-const DailyMission = styled.div`
+const DailyMissionBox = styled.div`
   color: #000;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
   line-height: 160%; /* 25.6px */
+
   p {
     display: inline;
+
     box-shadow: inset 0 -2px 0 #f6b000;
   }
 `
-const MissionCards = styled.div`
+
+const MissionCardsBox = styled.div`
   display: flex;
-  padding: 0px 64px;
   justify-content: space-between;
-  align-items: center;
   align-self: stretch;
+  align-items: center;
   gap: 64px;
+
   width: 100%;
+
+  padding: 0px 64px;
+
   box-sizing: border-box;
 `
-const MissionCard = styled.div`
+
+const MissionCardBox = styled.div`
   display: flex;
-  cursor: pointer;
-  width: 236px;
-  height: 368px;
-  padding: 8px;
   justify-content: space-between;
   align-items: flex-start;
+
+  width: 236px;
+  height: 368px;
+
+  padding: 8px;
+
+  background: ${(props) => (props.isSelected ? ' #AD7D83' : '#fefbf3')};
+
   border-radius: 20px;
   border: 2px solid #f5f1e6;
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.08);
-  background: ${(props) => (props.isSelected ? ' #AD7D83' : '#fefbf3')};
+
+  cursor: pointer;
 `
 
-const MissionCardFrame = styled.div`
+const MissionCardFrameBox = styled.div`
+  display: flex;
   flex: 1 0 0;
   align-self: stretch;
-  border-radius: 16px;
-  border: ${(props) => (props.isSelected ? '2px solid #F5F1E6' : '2px solid #c5b2bc')};
-  display: flex;
+  align-items: center;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+
+  border-radius: 16px;
+  border: ${(props) => (props.isSelected ? '2px solid #F5F1E6' : '2px solid #c5b2bc')};
 `
-const MissionCardTitle = styled.div`
+const MissionCardTitleBox = styled.div`
+  margin: 0px auto;
+
   color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 20px;
   font-style: normal;
-
   font-weight: 700;
   line-height: 160%; /* 32px */
-  margin: 0px auto;
 `
 
 const LogoBox = styled.div`
@@ -225,7 +260,9 @@ const LogoImg = styled.img`
   height: 78px;
 `
 
-const MissionCardContents = styled.div`
+const MissionCardContentsBox = styled.div`
+  margin: 0px auto;
+
   color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
   font-family: LINE Seed Sans KR;
@@ -233,5 +270,4 @@ const MissionCardContents = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 148%; /* 20.72px */
-  margin: 0px auto;
 `
