@@ -21,7 +21,7 @@ function NotFoundPage() {
             <br></br>입력하신 주소나 해당하는 링크가 정확한 지 다시 한번만 확인해 주세요.
             <br></br> 빠른 시일 내에 원인을 파악하여 더 나은 경험을 하실 수 있게 개선하겠습니다. :D
           </NotFoundTextBox>
-          <NotFoundImg onClick={mainPageMove} src={logo_NotFound} type="image/webp" />
+          <NotFoundImg onClick={mainPageMove} src="logo_NotFound" type="image/webp" />
         </NotFoundTextAreaBox>
       </NotFoundBox>
     </>
