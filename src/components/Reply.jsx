@@ -9,6 +9,7 @@ import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/replyApi'
 import { sortData } from '../utils/sort'
+import { pleaseWrite, needLogin, confirmDelete, confirmEditComment, editSuccess } from './Alert'
 
 function Reply() {
   const { id } = useParams()
@@ -47,8 +48,9 @@ function Reply() {
 
   const addNewReply = async () => {
     if (!user) {
-      window.alert('댓글을 작성하려면 먼저 로그인하세요.')
-      navigate('/login')
+      needLogin(() => {
+        navigate('/login')
+      })
       return
     }
 
@@ -67,7 +69,7 @@ function Reply() {
     }
 
     if (replyContent.trim() === '') {
-      alert('댓글을 입력해주세요.')
+      pleaseWrite()
       return
     }
 
@@ -85,8 +87,10 @@ function Reply() {
   }
 
   const onEditHandler = (replyId) => {
-    setIsEditing(true)
-    setEditingReplyId(replyId)
+    confirmEditComment(() => {
+      setIsEditing(true)
+      setEditingReplyId(replyId)
+    })
 
     const editedComment = replyData.find((comment) => comment.id === replyId)
     if (editedComment) {
@@ -96,7 +100,7 @@ function Reply() {
 
   const onSaveEditHandler = async () => {
     if (editedReplyContent.trim() === '') {
-      alert('댓글을 입력해주세요.')
+      pleaseWrite()
       return
     }
 
@@ -117,6 +121,7 @@ function Reply() {
 
       setIsEditing(false)
       setEditingReplyId(null)
+      editSuccess()
     } catch (error) {
       console.error('댓글 수정에 실패했습니다.', error)
     }
@@ -134,15 +139,14 @@ function Reply() {
   }
 
   const deleteComment = async (replyId) => {
-    const shouldDelete = window.confirm('정말로 삭제하시겠습니까?')
-    if (shouldDelete) {
+    confirmDelete(async () => {
       try {
         await deleteReply(replyId)
         await fetchReplyData()
       } catch (error) {
         console.error('댓글 삭제 오류: ', error)
       }
-    }
+    })
   }
 
   const handleKeyPress = (e) => {

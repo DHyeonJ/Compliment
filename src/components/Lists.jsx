@@ -10,7 +10,7 @@ const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
+  const localStorageUserId = email ? email.split('@')[0] : 'AnonymousUser'
 
   return (
     <>

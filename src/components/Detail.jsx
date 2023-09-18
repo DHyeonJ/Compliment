@@ -10,6 +10,7 @@ import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
 import likedImg from '../img/hand-clap.png'
+import { confirmDelete, confirmEdit, needLogin } from './Alert'
 
 function Detail() {
   const [data, setData] = useState(null)
@@ -23,7 +24,7 @@ function Detail() {
   //
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
+  const localStorageUserId = email ? email.split('@')[0] : 'AnonymousUser'
 
   // 좋아요 상태 초기화를 위한 useEffect
   useEffect(() => {
@@ -79,7 +80,7 @@ function Detail() {
         console.error('좋아요 토글 중 오류:', error)
       }
     } else {
-      alert('이 항목을 좋아하려면 로그인하세요.')
+      needLogin()
     }
   }
 
@@ -118,18 +119,15 @@ function Detail() {
     }
   }
   const handleDeleteClick = () => {
-    const shouldDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
-    if (shouldDelete) {
-      handleDelete().catch((error) => {
-        console.error('오류 발생: ', error)
-      })
-    }
+    confirmDelete(handleDelete)
   }
 
   // 수정 페이지 이동
   const handleEditMove = () => {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
-      navigate(`/editboard/${id}`)
+      confirmEdit(() => {
+        navigate(`/editboard/${id}`)
+      })
     } else {
       alert('게시물을 수정할 권한이 없습니다.')
     }

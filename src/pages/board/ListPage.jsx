@@ -6,6 +6,7 @@ import Search from '../../components/Search'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useNavigate } from 'react-router-dom'
 import { getLists, useIsAuthenticated } from '../../api/listsApi'
+import { needLogin } from '../../components/Alert'
 
 function ListPage() {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ function ListPage() {
 
   const createBoardPageMove = () => {
     if (isAuthenticated) return navigate('/addboard')
-    else alert('로그인 후에 글을 작성할 수 있습니다.')
+    else needLogin()
   }
 
   useEffect(() => {
