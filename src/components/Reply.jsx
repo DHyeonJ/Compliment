@@ -9,6 +9,7 @@ import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
 import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
 import { sortData } from '../utils/sort'
+import { confirmDelete, needLogin, pleaseWrite, confirmEditComment, editSuccess } from './Alert'
 
 function Reply() {
   const { id } = useParams()
@@ -47,7 +48,7 @@ function Reply() {
 
   const addNewReply = async () => {
     if (!user) {
-      window.alert('댓글을 작성하려면 먼저 로그인하세요.')
+      needLogin()
       navigate('/login')
       return
     }
@@ -67,7 +68,7 @@ function Reply() {
     }
 
     if (replyContent.trim() === '') {
-      alert('댓글을 입력해주세요.')
+      pleaseWrite()
       return
     }
 
@@ -76,7 +77,7 @@ function Reply() {
       await fetchReplyData()
       setReplyContent('')
     } catch (error) {
-      console.error('문서 추가 오류: ', error)
+      // console.error('문서 추가 오류: ', error)
     }
   }
 
@@ -85,14 +86,16 @@ function Reply() {
   }
 
   const onEditHandler = (replyId) => {
-    setIsEditing(true)
-    setEditingReplyId(replyId)
+    confirmEditComment(() => {
+      setIsEditing(true)
+      setEditingReplyId(replyId)
 
-    // 수정 중인 댓글을 찾고 텍스트 영역에 해당 내용을 설정합니다.
-    const editedComment = replyData.find((comment) => comment.id === replyId)
-    if (editedComment) {
-      setEditedReplyContent(editedComment.reply)
-    }
+      // 수정 중인 댓글을 찾고 텍스트 영역에 해당 내용을 설정합니다.
+      const editedComment = replyData.find((comment) => comment.id === replyId)
+      if (editedComment) {
+        setEditedReplyContent(editedComment.reply)
+      }
+    })
   }
 
   // reply update
@@ -119,21 +122,21 @@ function Reply() {
 
       setIsEditing(false)
       setEditingReplyId(null)
+      editSuccess()
     } catch (error) {
-      console.error('댓글 수정에 실패했습니다.', error)
+      // console.error('댓글 수정에 실패했습니다.', error)
     }
   }
 
   const deleteComment = async (replyId) => {
-    const shouldDelete = window.confirm('정말로 삭제하시겠습니까?')
-    if (shouldDelete) {
+    confirmDelete(async () => {
       try {
         await deleteReply(replyId)
         await fetchReplyData()
       } catch (error) {
         console.error('댓글 삭제 오류: ', error)
       }
-    }
+    })
   }
 
   const handleKeyPress = (e) => {
@@ -243,21 +246,30 @@ const Boxs = styled.div`
 `
 
 const LoadMoreButton = styled.button`
-  margin-right: 8px;
   display: flex;
-  width: 80px;
-  height: 32px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
+  width: 80px;
+  height: 32px;
+  margin-right: 8px;
+  margin-bottom: 20px;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
   color: #666666;
   background-color: transparent;
-  margin-bottom: 20px;
 
   &:hover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    width: 80px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
     background-color: transparent;
     color: #986c6c;
     font-family: Pretendard;
@@ -265,46 +277,26 @@ const LoadMoreButton = styled.button`
     font-style: normal;
     font-weight: 700;
     line-height: 22px; /* 157.143% */
-    display: flex;
-    color: #986c6c;
-    font-family: Pretendard;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 22px; /* 157.143% */
-    width: 80px;
-    height: 32px;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    border-radius: 8px;
-    border: 1px solid #986c6c;
     cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
   }
 `
 
 const UserBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   gap: 1.5rem;
   margin-bottom: 10px;
 `
 const UserImg = styled.img`
-  /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 60px;
   margin-right: 8px;
 `
 const UserName = styled.div`
-  /* border 관련 */
   margin-right: 1.5rem;
-  /* border 관련 */
   line-height: 1.75rem;
   border-radius: 50%;
-  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 1rem;
@@ -328,9 +320,7 @@ const CommentTextBox = styled.div`
   line-height: 22px; /* 137.5% */
 `
 const DateBox = styled.div`
-  /* border 관련 */
   line-height: 1.75rem;
-  /* font 관련 */
   color: var(--text01_404040, #999999);
   font-family: Pretendard;
   font-size: 1rem;
@@ -339,12 +329,10 @@ const DateBox = styled.div`
   margin-top: 12px;
 `
 const ButtonBox = styled.div`
-  /* display 관련 */
   display: flex;
   gap: 1rem;
 `
 const Button = styled.button`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -352,15 +340,12 @@ const Button = styled.button`
   position: absolute;
   right: 1rem;
   bottom: 2rem;
-  /* size 관련 */
   width: 6rem;
   height: 2.25rem;
-  /* background 관련 */
   background: #fff;
-  /* border 관련 */
   border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
-  /* animation 관련 */
+
   &:hover {
     cursor: pointer;
     border-radius: 8px;
@@ -371,19 +356,14 @@ const Button = styled.button`
 `
 
 const CommentHeaderBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   gap: 1rem;
-  /* size 관련 */
   width: 57rem;
-  /* margin, padding */
   padding: 1.5rem;
-  /* border 관련 */
   line-height: 1.375rem;
   border-top: 1px solid #d9d9d9;
   border-bottom: 1px solid #d9d9d9;
-  /* font 관련 */
   color: #404040;
   font-family: Pretendard;
   font-size: 1.25rem;
@@ -391,22 +371,18 @@ const CommentHeaderBox = styled.div`
   font-weight: 400;
 `
 const CommentBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1.5rem;
   align-self: stretch;
-  /* size 관련 */
   width: 57rem;
   min-width: 50rem;
   max-width: 90rem;
-  /* margin, padding */
   padding: 1rem 1.5rem;
 `
 
 const CommentBodyBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -415,49 +391,37 @@ const CommentBodyBox = styled.div`
   margin-bottom: 10px;
 `
 const CommentInputAreaBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1rem;
   position: relative;
-  /* size 관련 */
   width: 57rem;
   height: 200px;
-  /* margin, padding */
   padding: 1rem;
   margin-bottom: 15px;
-  /* background 관련 */
   background: #fff;
-  /* border 관련 */
   border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
 `
 const CommentInputMiddleBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   align-self: stretch;
-  /* size 관련 */
   min-width: 50rem;
   max-width: 90rem;
-  /* margin, padding */
   padding: 1rem 1.5rem;
 `
 const CommentInputBox = styled.input`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
   flex: 1 0 0;
   border: none;
-  /* size 관련 */
-
   min-width: 35rem;
   max-width: 74.625rem;
-  /* margin, padding */
   padding: 1.5rem 0;
   margin-left: 2rem;
   &:focus {
@@ -471,65 +435,59 @@ const BtnAreaBox = styled.div`
 
 const UserBtnBox = styled.div`
   display: flex;
-
   position: absolute;
   right: 0rem;
   bottom: 0rem;
 `
 
 const EditInput = styled.input`
-  margin-top: 10px;
-  margin-bottom: 12px;
   width: 100%;
   height: 600%;
-  border: 1px solid #d9d9d9;
-  margin-right: 30px;
-  font-size: 16px;
-  border-radius: 8px;
-
   padding: 3px 15px 3px 15px;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  margin-right: 30px;
+  border-radius: 8px;
+  border: 1px solid #d9d9d9;
+  font-size: 16px;
+
   &:focus {
     outline: none;
     border-radius: 8px;
   }
 `
 const EditBtn = styled.button`
-  margin-right: 8px;
   display: flex;
-  width: 80px;
-  height: 32px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 12px;
+  width: 80px;
+  height: 32px;
+  margin-right: 8px;
   border-radius: 8px;
   border: 1px solid #d9d9d9;
   color: #666666;
   background-color: transparent;
 
   &:hover {
-    background-color: transparent;
-    color: #986c6c;
-    font-family: Pretendard;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 22px; /* 157.143% */
     display: flex;
-    color: #986c6c;
-    font-family: Pretendard;
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 22px; /* 157.143% */
-    width: 80px;
-    height: 32px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 12px;
+    width: 80px;
+    height: 32px;
+    background-color: transparent;
     border-radius: 8px;
     border: 1px solid #986c6c;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px; /* 157.143% */
+
     cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
   }
 `

@@ -14,7 +14,7 @@ import logoImg from '../img/logo.png'
 import footerLogoImg from '../img/footer_logo.png'
 import defaultProfileImage from '../img/user.png'
 import { faArrowRightFromBracket, faCircleUser } from '@fortawesome/free-solid-svg-icons'
-import { Logout } from '../components/Alert.jsx'
+import { logout } from '../components/Alert.jsx'
 interface User {
   uid: string | null
   email: string | null
@@ -51,14 +51,7 @@ function Layout(): JSX.Element {
   const email = localUserid?.email
   const localStorageUserId = email?.split('@')[0]
   const handleLogout = async () => {
-    const confirmLogout = window.confirm('로그아웃하시겠습니까?')
-    if (confirmLogout) {
-      await signOut(auth)
-      setCurrentUser(null)
-      setPhotoURL(null)
-      localStorage.removeItem('user')
-      navigator('/')
-    }
+    logout()
   }
 
   useEffect(() => {
@@ -143,11 +136,10 @@ export default Layout
 const ButtonsBox = styled.div`
   display: flex;
   position: absolute;
-  right: 56px;
   gap: 12px;
-  /* height: 44px; */
   justify-content: center;
   align-items: center;
+  right: 56px;
 `
 
 const LayOutBox = styled.div`
@@ -156,13 +148,11 @@ const LayOutBox = styled.div`
 `
 const HeaderAllBox = styled.div`
   display: flex;
-  /* height: 56px; */
-  /* width: 100vw; */
-  padding: 12px 0px;
   justify-content: center;
   align-items: center;
   background: #fff;
   position: relative;
+  padding: 12px 0px;
   border-bottom: 1px solid #feedcd;
   background: #fff;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
@@ -199,12 +189,11 @@ const TitleSpan = styled.span`
 
 const LoginButton = styled.button`
   display: inline-flex;
-  /* height: 44px; */
-  padding: 14px 28px;
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  padding: 14px 28px;
   border-radius: 8px;
   background: #69535f;
   color: #ffffff;
@@ -227,14 +216,14 @@ const LoginButton = styled.button`
 `
 const SignUpButton = styled.button`
   display: inline-flex;
-  height: 44px;
-  padding: 14px 28px;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
   gap: 10px;
+  height: 44px;
+  padding: 14px 28px;
   border-radius: 8px;
   border: 1px solid #69535f;
-  flex-shrink: 0;
   color: #69535f;
   text-align: center;
   background-color: #ffffff;
@@ -257,11 +246,9 @@ const FooterBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  background-color: #f4f1e9;
-
   width: 100vw;
   height: 18.5rem;
+  background-color: #f4f1e9;
 `
 
 const ContentBox = styled.div`
@@ -274,16 +261,11 @@ const FooterLogo = styled.img`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  /* width: 57px;
-  height: 40px; */
-
   margin-bottom: 12px;
 `
 const FooterTitleBox = styled.div`
   display: flex;
   justify-content: center;
-
   color: #999;
   text-align: center;
   font-family: Pretendard;
@@ -299,14 +281,14 @@ const InfoBox = styled.div`
 `
 
 const MakeTeamBox = styled.div`
-  color: #999;
-  font-family: Pretendard;
-  font-size: 14px;
   display: flex;
   justify-content: center;
   font-style: normal;
   font-weight: 700;
   line-height: 160%;
+  color: #999;
+  font-family: Pretendard;
+  font-size: 14px;
 `
 const CopyRightBox = styled.div`
   color: #999;
@@ -335,22 +317,22 @@ const DropdownContents = styled.div`
   background-color: #ffffff;
   flex-direction: column;
   align-items: center;
+  right: 0;
+  top: 100%;
   border-radius: 8px;
   border: 1px solid #69535f;
   box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
   transition: display 0.3s; /* 추가: 애니메이션 효과 */
-  right: 0;
-  top: 100%;
+
   &.open {
     display: flex; /* 표시 상태로 변경 */
   }
 `
 const UserNameBox = styled.div`
   display: flex;
-  /* height: 44px; */
-  padding: 10px;
   justify-content: center;
   align-items: center;
+  padding: 10px;
   color: #404040;
   text-align: center;
   font-family: Pretendard;
@@ -383,7 +365,6 @@ const DropDown = styled.div`
   justify-content: center;
   align-items: center;
   gap: 12px;
-  /* height: 58px; */
   cursor: pointer;
 
   &:active ${DropdownContents} {

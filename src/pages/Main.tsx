@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom'
 import { collection, getDocs, orderBy, limit, query, where } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
 import defaultProfileImage from '../img/anonymous.png'
+import { needLogin } from '../components/Alert'
+
 interface Images {
   userEmail: string
   id: string
@@ -123,8 +125,7 @@ function Main() {
     if (auth.currentUser) {
       navigate('/missionpage')
     } else {
-      alert('로그인 후에 확인 하실 수 있습니다.')
-      navigate('/login')
+      needLogin()
     }
   }
 
@@ -187,10 +188,10 @@ const ContentBox = styled.div`
   gap: 80px;
 `
 const RankInfo = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 30px;
+  width: 100%;
 `
 const RankTitleBox = styled.div`
   font-size: 28px;
@@ -212,18 +213,18 @@ const SubTitleBox = styled.div`
   }
 `
 const RankUserBox = styled.div`
-  margin-top: 16px;
-  border-radius: 8px;
   display: flex;
   justify-content: space-around;
   align-items: center;
+  margin-top: 16px;
+  border-radius: 8px;
 `
 const RankUserInfo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 134px;
   flex-direction: column;
+  height: 134px;
 `
 const RankProFileBox = styled.img<{ isOdd: boolean }>`
   display: flex;
@@ -252,15 +253,15 @@ const LinkPageBox = styled.div`
   width: 100%;
 `
 const ListPageBox = styled.div`
-  width: 100%;
-  height: 264.5px;
-  box-sizing: border-box;
-  margin-right: 32px;
   display: flex;
-  padding: 44px;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
+  width: 100%;
+  height: 264.5px;
+  padding: 44px;
+  margin-right: 32px;
+  box-sizing: border-box;
   border-radius: 20px;
   background: #feedcd;
   box-shadow: 5px 5px 5px -5px #333;
@@ -287,14 +288,14 @@ const ListContentSpan = styled.span`
   line-height: 28px; /* 140% */
 `
 const MissionPageBox = styled.div`
-  width: 100%;
-  height: 264.5px;
-  box-sizing: border-box;
   display: flex;
   padding: 44px;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
+  width: 100%;
+  height: 264.5px;
+  box-sizing: border-box;
   border-radius: 20px;
   background-color: #f5f6cd;
   box-shadow: 5px 5px 5px -5px #333;

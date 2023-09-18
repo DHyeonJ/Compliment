@@ -10,6 +10,7 @@ import defaultProfileImage from '../img/user.png'
 import Reply from './Reply'
 import defualtContentsImg from '../img/defaultContentImg.png'
 import likedImg from '../img/hand-clap.png'
+import { confirmDelete, confirmEdit } from './Alert'
 
 function Detail() {
   const [data, setData] = useState(null)
@@ -22,7 +23,7 @@ function Detail() {
 
   //
   const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
+  const email = localUserid?.email || ''
   const localStorageUserId = email.split('@')[0]
 
   // 좋아요 상태 초기화를 위한 useEffect
@@ -41,7 +42,7 @@ function Detail() {
           setIsLiked(userLiked)
           fetchData() // 좋아요 갯수 설정
         } catch (error) {
-          console.error('좋아요 상태 초기화 중 오류:', error)
+          // console.error('좋아요 상태 초기화 중 오류:', error)
         }
       }
       checkLikedStatus()
@@ -76,7 +77,7 @@ function Detail() {
         fetchData() // 좋아요 수를 업데이트
         setIsLiked((prevIsLiked) => !prevIsLiked)
       } catch (error) {
-        console.error('좋아요 토글 중 오류:', error)
+        // console.error('좋아요 토글 중 오류:', error)
       }
     } else {
       alert('이 항목을 좋아하려면 로그인하세요.')
@@ -94,7 +95,7 @@ function Detail() {
       setData(docSnap.data())
       setIsLoading(false) // 데이터를 성공적으로 가져온 후 로딩 상태를 false로 설정
     } catch (error) {
-      console.error('데이터 가져오는 중 오류 발생:', error)
+      // console.error('데이터 가져오는 중 오류 발생:', error)
       setIsLoading(false) // 오류가 발생한 경우 로딩 상태를 false로 설정
     }
   }
@@ -107,29 +108,26 @@ function Detail() {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
       try {
         await deleteDoc(doc(db, 'lists', id))
-        console.log('문서가 성공적으로 삭제되었습니다!')
+        // console.log('문서가 성공적으로 삭제되었습니다!')
         // 삭제 후 추가적인 정리 작업 또는 네비게이션 로직을 처리합니다.
         navigate('/listpage') // 삭제 후에 /listpage로 이동
       } catch (error) {
-        console.error('문서 삭제 중 오류: ', error)
+        // console.error('문서 삭제 중 오류: ', error)
       }
     } else {
       alert('이 게시물을 삭제할 권한이 없습니다.')
     }
   }
   const handleDeleteClick = () => {
-    const shouldDelete = window.confirm('정말로 이 게시물을 삭제하시겠습니까?')
-    if (shouldDelete) {
-      handleDelete().catch((error) => {
-        console.error('오류 발생: ', error)
-      })
-    }
+    confirmDelete(handleDelete)
   }
 
   // 수정 페이지 이동
   const handleEditMove = () => {
     if (auth.currentUser && (auth.currentUser.email === data.userEmail || auth.currentUser.email === admin)) {
-      navigate(`/editboard/${id}`)
+      confirmEdit(() => {
+        navigate(`/editboard/${id}`)
+      })
     } else {
       alert('게시물을 수정할 권한이 없습니다.')
     }
@@ -227,7 +225,7 @@ const ButtonCircle = styled.button`
   margin-bottom: 44px;
   color: white;
   background-color: #986c6c;
-  /* animation 관련 */
+
   &:hover {
     cursor: pointer;
     color: white;
@@ -271,12 +269,10 @@ const Button = styled.button`
   font-style: normal;
   font-weight: 400;
   line-height: 22px; /* 137.5% */
-  /* animation 관련 */
+
   &:hover {
     cursor: pointer;
     display: flex;
-    width: 96px;
-    height: 36px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -298,47 +294,33 @@ const ContentDefualtImg = styled.img`
   height: auto;
 `
 const DetailContentsBox = styled.div`
-  /* display 관련 */
   margin: 32px 240px 48px;
   display: flex;
   flex-direction: column;
   border-radius: 8px;
   align-items: center;
-  /* margin, padding */
-
-  /* background 관련 */
   background: #fff;
-
-  /* floating_shadow */
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.12);
 `
 const HeaderBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* margin, padding */
   padding: 0 16.875rem;
 `
 const HeaderContentBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
   gap: 1.5rem;
-  /* size 관련 */
   width: 57rem;
-  /* margin, padding */
   padding: 0 1.5rem;
   margin: 3rem 0;
 `
 const TitleBox = styled.div`
-  /* display 관련 */
   align-self: stretch;
-  /* border 관련 */
   line-height: normal;
-  /* font 관련 */
   color: #404040;
   font-family: LINE Seed Sans KR;
   font-size: 2.25rem;
@@ -346,33 +328,26 @@ const TitleBox = styled.div`
   font-weight: 400;
 `
 const MidleTitleBox = styled.div`
-  /* display 관련 */
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   align-self: stretch;
-  /* size 관련 */
   height: 2.25rem;
 `
 const UserBox = styled.div`
-  /* display 관련 */
   display: flex;
   align-items: center;
   gap: 1.5rem;
 `
 const UserImg = styled.img`
-  /* size 관련 */
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 60px;
 `
 const UserName = styled.div`
-  /* border 관련 */
   margin-right: 1.5rem;
-  /* border 관련 */
   line-height: 1.75rem;
   border-radius: 50%;
-  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 1rem;
@@ -380,9 +355,7 @@ const UserName = styled.div`
   font-weight: 400;
 `
 const DateBox = styled.div`
-  /* border 관련 */
   line-height: 1.75rem;
-  /* font 관련 */
   color: var(--text01_404040, #404040);
   font-family: Pretendard;
   font-size: 1rem;
@@ -391,7 +364,6 @@ const DateBox = styled.div`
 `
 
 const ButtonBox = styled.div`
-  /* display 관련 */
   display: flex;
   gap: 1rem;
 `
@@ -415,17 +387,14 @@ const BtnSpan = styled.span`
   margin-right: 10px;
 `
 const ContentBodyBox = styled.pre`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* margin, padding */
   padding: 0 16.875rem;
   /* width: 1440px; */
   /* border: 1px solid black; */
 `
 const ContentImg = styled.img`
-  /* size 관련 */
   /* width: 60.8125rem;
   height: 32rem; */
   width: 100%;
@@ -433,20 +402,16 @@ const ContentImg = styled.img`
   object-fit: cover;
 `
 const BodyContent = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  /* size 관련 */
   width: 57rem;
-  /* margin, padding */
   padding: 1rem 1.5rem;
   margin-top: 2rem;
   margin-bottom: 3rem;
 `
 const CommentAreaBox = styled.div`
-  /* display 관련 */
   display: flex;
   flex-direction: column;
   align-items: center;

@@ -14,6 +14,7 @@ import { updatePassword, updateProfile, reauthenticateWithCredential, EmailAuthP
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { doc, updateDoc } from 'firebase/firestore'
 import defaultImg from '../../img/user.png'
+import { needPwe, newConfirmPWError, notEditPwe, worngPwe, imgSize, notFound, editUserSuccess, needReauthentication } from '../../components/Alert'
 function EditUserInfo() {
   const navigate = useNavigate()
   const MainpageMove = () => {
@@ -31,13 +32,13 @@ function EditUserInfo() {
     event.preventDefault()
 
     if (!currentPassword) {
-      alert('현재 비밀번호를 입력해주세요.')
+      needPwe()
       return
     }
 
     try {
       if (!user) {
-        alert('사용자 정보를 가져올 수 없습니다.')
+        notFound()
         return
       }
 
@@ -46,25 +47,25 @@ function EditUserInfo() {
 
       // 다시 인증이 성공하면 비밀번호를 업데이트합니다.
       if (newPassword !== confirmNewPassword) {
-        alert('새 비밀번호와 확인 비밀번호가 일치하지 않습니다.')
+        newConfirmPWError()
         return
       }
 
       await updatePassword(user, newPassword)
 
-      alert('회원 정보 변경 완료')
-      navigate('/')
+      editUserSuccess()
+      navigate('/mypage')
     } catch (error) {
       console.error('회원 정보 변경 오류:', error)
 
       if (error.code === 'auth/wrong-password') {
         // 잘못된 현재 비밀번호 처리
-        alert('현재 비밀번호가 올바르지 않습니다.')
+        worngPwe()
       } else if (error.code === 'auth/requires-recent-login') {
-        alert('비밀번호 변경을 위해선 재로그인이 필요합니다.')
+        needReauthentication()
         navigate('/login')
       } else {
-        alert('비밀번호 변경 실패: ' + error.message)
+        notEditPwe()
       }
     }
   }
@@ -77,7 +78,7 @@ function EditUserInfo() {
 
     if (file.size > 5 * 1024 * 1024) {
       // 5MB를 초과하는 경우
-      alert('이미지 크기는 5MB를 초과할 수 없습니다.')
+      imgSize()
       return
     }
 

@@ -9,7 +9,7 @@ import defualtContentsImg from '../img/defaultContentImg.png'
 const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
-  const email = localUserid?.email
+  const email = localUserid?.email || ''
   const localStorageUserId = email.split('@')[0]
 
   return (
@@ -57,16 +57,16 @@ const ListContentt = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   flex: 1 0 0;
-  width: 1376px;
+  /* width: 1376px; */
 `
 const Contents = styled.div`
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Likes = styled.span`
   color: #999;
@@ -75,40 +75,38 @@ const Likes = styled.span`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const Img = styled.img`
   width: 20px;
   height: 20px;
   margin-right: 4px;
-  /* filter: grayscale(100%); */
-  /* color: black; */
 `
 const Date = styled.div`
+  margin-left: 8px;
+  margin-right: 16px;
   color: #999;
   text-align: right;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
-  margin-left: 8px;
-  margin-right: 16px;
+  line-height: 28px;
 `
 const HandClapBox = styled.div`
-  padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-left: 24px;
 `
 const List = styled.div`
   display: flex;
+  align-self: stretch;
+  align-items: flex-start;
+  gap: 24px;
   min-width: 800px;
   max-width: 1440px;
   padding: 16px 32px;
-  align-items: flex-start;
-  gap: 24px;
-  align-self: stretch;
   margin-bottom: 12px;
   border-bottom: 1.2px solid #d9d9d9;
   cursor: pointer;
@@ -117,25 +115,25 @@ const List = styled.div`
   }
 `
 const UserImg = styled.img`
+  flex-shrink: 0;
   height: 32px;
   width: 32px;
-  flex-shrink: 0;
+  margin-right: 8px;
   background-image: url(${(props) => props.src});
   background-size: cover;
   border-radius: 50%;
-  margin-right: 8px;
 `
 const User = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px; /* 175% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  line-height: 28px;
 `
 const ListTitle = styled.h1`
   width: 884px;
@@ -150,16 +148,16 @@ const ListTitle = styled.h1`
   text-overflow: ellipsis;
 `
 const ListComments = styled.p`
+  align-self: stretch;
   width: 1000px;
   height: 44px;
-  align-self: stretch;
+  margin-top: 8px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
-  margin-top: 8px;
+  line-height: 22px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -171,18 +169,18 @@ const ListDate = styled.p`
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
+  line-height: 28px;
 `
 const ListContent = styled.pre`
   display: flex;
-  width: 1192px;
-  height: 120px;
-  padding: 0px 24px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  border-radius: 20px;
+  width: 1192px;
+  height: 120px;
+  padding: 0px 24px;
   margin-bottom: 8px;
+  border-radius: 20px;
 `
 const Thumbnail = styled.img`
   width: 160px;

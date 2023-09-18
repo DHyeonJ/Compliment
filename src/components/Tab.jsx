@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { getLists, getMyFriends, getMyLikeFriends } from '../api/ListsApi'
 import { useQuery, useQueryClient } from 'react-query'
 import { useNavigate, useParams } from 'react-router-dom'
-import HandClap from '../img/hand-clap.png'
+import HandClap from '../img/hand-clapping.png'
 import { auth, db } from '../firebase'
 import { collection, query, where, getDocs } from 'firebase/firestore'
 import defaultimg from '../img/user.png'
@@ -128,14 +128,11 @@ const Tab = () => {
 export default Tab
 
 const ListContentts = styled.div`
-  /* width: 100%; */
-  /* height: 560px; */
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  /* overflow-y: auto; */
   &::-webkit-scrollbar {
     width: 10px;
   }
@@ -153,21 +150,17 @@ const ListContentts = styled.div`
 
 const TabMenu = styled.ul`
   display: flex;
-  padding: 0px 56px;
   justify-content: center;
   align-items: flex-start;
   gap: 36px;
   align-self: stretch;
+  padding: 0px 56px;
   background: #fff;
   padding: 20px;
 
   .submenu {
-    // 기본 Tabmenu 에 대한 CSS를 구현
     display: flex;
     justify-content: center;
-    /* justify-content: space-between;
-    width: 380px;
-    heigth: 30px; */
     width: calc(100% / 3);
     padding: 10px;
     font-size: 15px;
@@ -177,7 +170,6 @@ const TabMenu = styled.ul`
   }
 
   .focused {
-    //선택된 Tabmenu 에만 적용되는 CSS를 구현
     justify-content: center;
     background-color: rgb(255, 255, 255);
     border-bottom: 2px solid #69535f;
@@ -195,18 +187,18 @@ const Desc = styled.div`
   justify-content: center;
   align-items: flex-start;
   gap: 16px;
-  width: 880px;
   align-self: stretch;
+  width: 880px;
 `
 const ListsData = styled.div`
   display: flex;
-  padding-bottom: 0px;
-  height: 168px;
-  width: 880px;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
   align-self: stretch;
+  height: 168px;
+  width: 880px;
+  padding-bottom: 0px;
   border-bottom: 1px solid #d9d9d9;
   background: #fff;
 `
@@ -220,12 +212,12 @@ const ListContentt = styled.div`
 
 const Contents = styled.div`
   display: flex;
-  min-width: 560px;
-  max-width: 1194px;
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
   flex: 1 0 0;
+  min-width: 560px;
+  max-width: 1194px;
   cursor: pointer;
 `
 
@@ -245,56 +237,56 @@ const Img = styled.img`
 `
 
 const Date = styled.div`
+  margin-left: 8px;
+  margin-right: 16px;
   color: #999;
   text-align: right;
   font-family: Pretendard;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
-  line-height: 28px; /* 200% */
-  margin-left: 8px;
-  margin-right: 16px;
+  line-height: 28px;
 `
 
 const HandClapBox = styled.div`
-  padding-left: 24px;
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-left: 24px;
 `
 
 const List = styled.div`
   position: relative;
   display: flex;
-  min-width: 800px;
-  max-width: 1440px;
-  padding: 16px 32px;
   align-items: flex-start;
   gap: 24px;
   align-self: stretch;
+  min-width: 800px;
+  max-width: 1440px;
+  padding: 16px 32px;
   margin-bottom: 12px;
   border-bottom: 1.2px solid #d9d9d9;
 `
 const UserImg = styled.img`
-  height: 32px;
   flex-shrink: 0;
+  height: 32px;
+  margin-right: 8px;
   background-image: url(${(props) => props.src});
   background-size: cover;
   border-radius: 50%;
-  margin-right: 8px;
 `
 
 const User = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 28px; /* 175% */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+  line-height: 28px;
 `
 
 const ListTitle = styled.h1`
@@ -304,23 +296,22 @@ const ListTitle = styled.h1`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 `
 
 const ListComments = styled.p`
+  align-self: stretch;
   width: 500px;
   height: 44px;
-  align-self: stretch;
+  margin-top: 8px;
   color: var(--text-01404040, #404040);
   font-family: Pretendard;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: 22px; /* 137.5% */
-  margin-top: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -337,14 +328,12 @@ const ListDate = styled.p`
 
 const ListContent = styled.div`
   display: flex;
-  /* width: 1192px;
-  height: 120px; */
-  padding: 0px 24px;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  border-radius: 20px;
+  padding: 0px 24px;
   margin-bottom: 8px;
+  border-radius: 20px;
 `
 const Thumbnail = styled.img`
   position: absolute;

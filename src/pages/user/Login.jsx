@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
 import { debounce } from 'lodash'
-import { LoginComplite } from '../../components/Alert.jsx'
+import { loginComplite, emptyEmailError, invalidEmail, userNotFound, worngPassword, emptyPWError } from '../../components/Alert.jsx'
 function Login() {
   const navigate = useNavigate()
   const mainMove = () => {
@@ -50,25 +50,25 @@ function Login() {
     }
   }
 
-  const emptyEmailError = () => {
-    alert('이메일을 입력해주세요.')
-  }
+  // const emptyEmailError = () => {
+  //   alert('이메일을 입력해주세요.')
+  // }
 
-  const emptyPWError = () => {
-    alert('비밀번호를 입력해주세요.')
-  }
+  // const emptyPWError = () => {
+  //   alert('비밀번호를 입력해주세요.')
+  // }
 
-  const userNotFound = () => {
-    alert('사용자를 찾을 수 없습니다.')
-  }
+  // const userNotFound = () => {
+  //   alert('사용자를 찾을 수 없습니다.')
+  // }
 
-  const worngPassword = () => {
-    alert('비밀번호가 잘못되었습니다.')
-  }
+  // const worngPassword = () => {
+  //   alert('비밀번호가 잘못되었습니다.')
+  // }
 
-  const failedError = () => {
-    alert('로그인에 실패하였습니다.')
-  }
+  // const failedError = () => {
+  //   alert('로그인에 실패하였습니다.')
+  // }
 
   const Signin = async (e) => {
     e.preventDefault()
@@ -82,16 +82,17 @@ function Login() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const userCredential = await signInWithEmailAndPassword(auth, email, password)
-      LoginComplite()
+      loginComplite()
       navigate('/')
     } catch (error) {
       if (error.code === 'auth/user-not-found') {
         userNotFound()
       } else if (error.code === 'auth/wrong-password') {
         worngPassword()
-      } else {
-        failedError()
       }
+      // else {
+      //   invalidEmail()
+      // }
     }
     setEmail('')
     setPassword('')
@@ -151,23 +152,23 @@ function Login() {
 
 export default Login
 const LoginArea = styled.div`
-  margin-top: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  margin-top: 120px;
 `
 const LogoImg = styled.img`
-  margin-left: 308px;
-  margin-right: 308px;
-  width: 36px;
   display: flex;
-  width: 120px;
-  height: 75px;
-  padding: 24px 43px 25px 41px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  width: 120px;
+  height: 75px;
+  padding: 24px 43px 25px 41px;
+  margin-left: 308px;
+  margin-right: 308px;
+
   cursor: pointer;
 `
 const LogoTextBox = styled.div`
@@ -187,29 +188,29 @@ const LoginForm = styled.form`
   margin-top: 48px;
 `
 const LoginInputArea = styled.div`
-  padding-top: 4px;
-  margin-bottom: 48px;
   width: 480px;
   height: 66px;
+  padding-top: 4px;
+  margin-bottom: 48px;
 `
 
 const LoginInputLabel = styled.div`
   display: flex;
+  align-items: center;
+  flex-shrink: 0;
   width: 480px;
   height: 20px;
   padding: 0px 8px;
   margin-top: 32px;
-  align-items: center;
-  flex-shrink: 0;
   color: #404040;
 `
 const LoginInput = styled.input`
   display: flex;
-  width: 480px;
-  height: 42px;
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+  width: 480px;
+  height: 42px;
   border-bottom: 1px solid #d9d9d9;
   border-left-width: 0;
   border-right-width: 0;
@@ -224,17 +225,18 @@ const LoginInput = styled.input`
 `
 const LoginBtn = styled.button`
   display: flex;
-  width: 480px;
-  height: 56px;
-  padding: 13px 32px;
+
   justify-content: center;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  width: 480px;
+  height: 56px;
+  padding: 13px 32px;
+  margin-top: 56px;
   border-radius: 8px;
   border: none;
   background: #69535f;
-  margin-top: 56px;
   color: #fff;
   text-align: center;
   font-family: Pretendard;
@@ -248,13 +250,13 @@ const LoginBtn = styled.button`
 
 const SignWithGoogleBtn = styled.button`
   display: flex;
-  margin-top: 16px;
-  width: 480px;
-  height: 56px;
-  padding: 8px 0px;
   justify-content: center;
   align-items: center;
   gap: 8px;
+  width: 480px;
+  height: 56px;
+  padding: 8px 0px;
+  margin-top: 16px;
   border-radius: 8px;
   border: 1px solid #404040;
   background: var(--white, #fff);
@@ -268,13 +270,13 @@ const SignWithGoogleBtn = styled.button`
 `
 const LoginTextArea = styled.div`
   display: block;
-  width: 480px;
-  height: 19px;
-  margin-top: 50px;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
   flex-shrink: 0;
+  width: 480px;
+  height: 19px;
+  margin-top: 50px;
 `
 
 const LoginText = styled.div`

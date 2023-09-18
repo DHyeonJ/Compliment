@@ -30,18 +30,17 @@ export default NotFoundPage
 
 const NotFoundBox = styled.div`
   display: flex;
-  height: 918px;
   flex-shrink: 0;
-  display: flex;
   flex-direction: column;
   align-items: center;
+  height: 918px;
   margin-top: 16px;
 `
 const NotFoundTextAreaBox = styled.div`
-  height: 240px;
-  padding: 48px 72px 48px 46px;
   align-items: center;
   align-self: stretch;
+  height: 240px;
+  padding: 48px 72px 48px 46px;
   margin-left: auto;
   margin-right: auto;
 `
@@ -62,16 +61,14 @@ const NotFoundTextBox = styled.div`
   line-height: 32px; /* 160% */
   margin-top: 16px;
 `
-const NotFoundImgBox = styled.div`
-  cursor: pointer;
-`
+
 const NotFoundImg = styled.img`
-  width: 288px;
-  height: 200.325px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 288px;
+  height: 200.325px;
   margin-top: 60px;
   margin-left: auto;
   margin-right: auto;
