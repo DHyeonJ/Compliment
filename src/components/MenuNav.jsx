@@ -42,10 +42,8 @@ const NavBox = styled.div`
   justify-content: center;
   align-items: center;
 
-  width: calc(100vw - 1456px);
-  height: 52px;
-
-  padding: 4px 726px 0px 730px;
+  margin: 0 auto;
+  padding-top: 4px;
 `
 
 const ListBox = styled.div`
@@ -54,17 +52,18 @@ const ListBox = styled.div`
   align-items: center;
 
   width: 131px;
-  height: 49px;
+  height: 51px;
 
   border-bottom: ${({ isActive }) => (isActive ? '2px solid #69535f' : 'none')};
 `
 const ListTextBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   width: 90px;
   height: 48px;
 
-  margin-top: 20px;
-
-  text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
   font-style: normal;
@@ -80,20 +79,20 @@ const MissionBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  width: 85px;
-  height: 48px;
+  width: 131px;
+  height: 51px;
 
   border-bottom: ${({ isActive }) => (isActive ? '2px solid #69535f' : 'none')};
 `
 
 const MissionTextBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   width: 90px;
   height: 48px;
 
-  margin-top: 20px;
-
-  text-align: center;
   font-family: LINE Seed Sans KR;
   font-size: 16px;
   font-style: normal;
