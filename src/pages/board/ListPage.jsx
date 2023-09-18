@@ -91,7 +91,6 @@ function ListPage() {
 export default ListPage
 
 const ListContainer = styled.div`
-  // height: 1660px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -103,8 +102,6 @@ const ListPageBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  /* height: 2168px; */
   flex-direction: column;
 `
 
@@ -113,14 +110,12 @@ const ListBox = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  width: calc(100vw - 120px);
-  /* height: 2238px; */
   margin-top: 16px;
 `
 
 const ContentBox = styled.div`
-  width: 1520px;
-  /* height: 2100px; */
+  width: 1200px;
+  margin: 0 auto;
   flex-direction: column;
   gap: 42px 0;
 `
@@ -185,7 +180,6 @@ const BannerTitleSpan = styled.span`
   font-size: 36px;
   font-style: normal;
   font-weight: 700;
-  line-height: normal;
 `
 const BannerContentBox = styled.span`
   width: 483px;
@@ -194,19 +188,17 @@ const BannerContentBox = styled.span`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 24px; /* 150% */
 `
 
 const PlusButton = styled.div`
   display: flex;
-  width: 140px;
   height: 44px;
   padding: 0px 48px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 12px;
   cursor: pointer;
+  gap: 12px;
   border-radius: 8px;
   background: #69535f;
   color: #fff;
@@ -215,7 +207,6 @@ const PlusButton = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px;
 `
 const SerchPlusAreaBox = styled.div`
   display: flex;

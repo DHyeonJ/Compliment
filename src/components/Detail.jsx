@@ -299,7 +299,9 @@ const ContentDefualtImg = styled.img`
 `
 const DetailContentsBox = styled.div`
   /* display 관련 */
-  margin: 32px 240px 48px;
+  /* margin: 32px 240px 48px; */
+  margin: 10px auto 50px;
+  width: 1200px;
   display: flex;
   flex-direction: column;
   border-radius: 8px;

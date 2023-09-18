@@ -6,19 +6,25 @@ const MissionProgressBar = ({ completedMissionCards, totalMissionCards }) => {
 
   return (
     <>
-      <TextBox>
-        <RateTitleBox>미션 달성률 {progress}%</RateTitleBox>
-      </TextBox>
-      <ProgressInfoBox>
-        <ProgressBox>
-          <ProgressColorBox percentage={progress} />
-        </ProgressBox>
-      </ProgressInfoBox>
+      <ProgressBoxs>
+        <TextBox>
+          <RateTitleBox>미션 달성률 ({progress}%)</RateTitleBox>
+        </TextBox>
+        <ProgressInfoBox>
+          <ProgressBox>
+            <ProgressColorBox percentage={progress} />
+          </ProgressBox>
+        </ProgressInfoBox>
+      </ProgressBoxs>
     </>
   )
 }
 
 export default MissionProgressBar
+
+const ProgressBoxs = styled.div`
+  display: flex;
+`
 
 const TextBox = styled.div`
   display: flex;
@@ -40,7 +46,6 @@ const ProgressInfoBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 64px;
   align-self: stretch;
 `
 const ProgressBox = styled.div`
@@ -48,8 +53,8 @@ const ProgressBox = styled.div`
   align-items: flex-start;
   flex-shrink: 0;
   align-self: stretch;
-
-  width: 100%;
+  margin-left: 20px;
+  width: 480px;
 
   border-radius: 20px;
   border: 1px solid #d9d9d9;
