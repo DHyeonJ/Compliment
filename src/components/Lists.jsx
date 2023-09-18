@@ -10,7 +10,6 @@ const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email
-  const localStorageUserId = email.split('@')[0]
 
   const memoizedData = React.useMemo(() => data || [], [data])
   return (
@@ -55,10 +54,12 @@ const Lists = ({ data }) => {
 
 const ListContentt = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   flex: 1 0 0;
-  width: 1376px;
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Contents = styled.div`
   display: flex;
@@ -102,10 +103,11 @@ const HandClapBox = styled.div`
 `
 const List = styled.div`
   display: flex;
-  min-width: 800px;
-  max-width: 1440px;
+  /* min-width: 800px;
+  max-width: 1440px; */
   padding: 16px 32px;
-  align-items: flex-start;
+  margin-left: auto;
+  margin-right: auto;
   gap: 24px;
   align-self: stretch;
   margin-bottom: 12px;
