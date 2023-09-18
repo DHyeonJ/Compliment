@@ -7,6 +7,7 @@ import moment from 'moment'
 import { storage, db, auth } from '../firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import Swal from 'sweetalert2'
+import { pleaseTitle, pleaseWrite, imgSize } from './Alert'
 const AddBoardCp = () => {
   const user = auth.currentUser
   const [title, setTitle] = useState('')
@@ -35,10 +36,10 @@ const AddBoardCp = () => {
 
   const handleSaveClick = async () => {
     if (title.trim() === '') {
-      alert('제목을 입력해주세요.')
+      pleaseTitle()
       return
     } else if (content.trim() === '') {
-      alert('내용을 입력해주세요.')
+      pleaseWrite()
       return
     }
 
@@ -79,7 +80,7 @@ const AddBoardCp = () => {
     // 이미지 크기 체크
     const fileSizeMB = file.size / (1024 * 1024) // 파일 크기를 메가바이트 단위로 변환
     if (fileSizeMB > MAX_FILE_SIZE_MB) {
-      alert(`이미지 파일 크기는 ${MAX_FILE_SIZE_MB}MB 이하여야 합니다.`)
+      imgSize()
       return
     }
 

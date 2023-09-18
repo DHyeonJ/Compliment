@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { auth } from '../firebase.js'
+import { needLogin } from './Alert.jsx'
 
 export default function MenuNav() {
   const navigate = useNavigate()
@@ -16,8 +17,7 @@ export default function MenuNav() {
     if (auth.currentUser) {
       navigate('/missionpage')
     } else {
-      alert('로그인 후에 확인 하실 수 있습니다.')
-      navigate('/login')
+      needLogin()
     }
   }
   return (
