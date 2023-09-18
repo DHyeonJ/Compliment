@@ -1,30 +1,8 @@
-import React, { useState, useEffect } from 'react'
-// 프로그레스 바 스타일을 위한 CSS 파일
+import React from 'react'
 import { styled } from 'styled-components'
-import { auth } from '../firebase'
-import { getProgressData } from '../api/progressApi'
-import { useQuery, useQueryClient } from 'react-query'
 
 const MissionProgressBar = ({ completedMissionCards, totalMissionCards }) => {
-  // const user = auth.currentUser
-  // const { data: mission, isLoading } = useQuery('mission', getProgressData)
-  // const queryClient = useQueryClient()
   const progress = (completedMissionCards.length / totalMissionCards) * 100
-
-  // 유저 정보 불러오기 -> 0
-  // useEffect(() => {
-  //   if (user) {
-  //     getProgressData(user.uid)
-  //       .then((doneMissionCount) => {
-  //         const calculatedProgress = (doneMissionCount / 4) * 100
-  //         queryClient.setQueryData('mission', calculatedProgress)
-  //         queryClient.invalidateQueries('mission')
-  //       })
-  //       .catch((error) => {
-  //         console.error('Error fetching doneMission count:', error)
-  //       })
-  //   }
-  // }, [user, queryClient])
 
   return (
     <>
@@ -45,8 +23,10 @@ export default MissionProgressBar
 const TextBox = styled.div`
   display: flex;
   align-self: stretch;
-  border-radius: 8px;
+
   background: var(--white, #fff);
+
+  border-radius: 8px;
 `
 const RateTitleBox = styled.div`
   color: #333333;
@@ -64,18 +44,23 @@ const ProgressInfoBox = styled.div`
   align-self: stretch;
 `
 const ProgressBox = styled.div`
-  width: 100%;
   display: flex;
   align-items: flex-start;
   flex-shrink: 0;
   align-self: stretch;
+
+  width: 100%;
+
   border-radius: 20px;
   border: 1px solid #d9d9d9;
 `
 const ProgressColorBox = styled.div`
-  height: 16px;
   flex-shrink: 0;
-  border-radius: 20px;
-  background: #d9af88;
+
   width: ${(props) => props.percentage}%;
+  height: 16px;
+
+  background: #d9af88;
+
+  border-radius: 20px;
 `

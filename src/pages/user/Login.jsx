@@ -50,26 +50,6 @@ function Login() {
     }
   }
 
-  // const emptyEmailError = () => {
-  //   alert('이메일을 입력해주세요.')
-  // }
-
-  // const emptyPWError = () => {
-  //   alert('비밀번호를 입력해주세요.')
-  // }
-
-  // const userNotFound = () => {
-  //   alert('사용자를 찾을 수 없습니다.')
-  // }
-
-  // const worngPassword = () => {
-  //   alert('비밀번호가 잘못되었습니다.')
-  // }
-
-  // const failedError = () => {
-  //   alert('로그인에 실패하였습니다.')
-  // }
-
   const Signin = async (e) => {
     e.preventDefault()
 
@@ -246,6 +226,10 @@ const LoginBtn = styled.button`
   line-height: normal;
   letter-spacing: -0.64px;
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 
 const SignWithGoogleBtn = styled.button`
@@ -267,6 +251,10 @@ const SignWithGoogleBtn = styled.button`
   font-weight: 500;
   line-height: 110%; /* 17.6px */
   cursor: pointer;
+  &:hover {
+    /* 호버 스타일 */
+    transform: scale(1.02);
+  }
 `
 const LoginTextArea = styled.div`
   display: block;

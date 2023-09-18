@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from 'react-query'
 import { collection, query, where, getDocs, limit } from 'firebase/firestore'
 import { db, auth } from '../firebase'
-import { addReply, deleteReply, getReplyApi, updateReply } from '../api/ReplyApi'
+import { addReply, deleteReply, getReplyApi, updateReply } from '../api/replyApi'
 import { sortData } from '../utils/sort'
 import { confirmDelete, needLogin, pleaseWrite, confirmEditComment, editSuccess } from './Alert'
 
@@ -22,7 +22,7 @@ function Reply() {
   const [commentLimit, setCommentLimit] = useState(4)
   const [totalCount, setTotalCount] = useState(0)
 
-  const [replyContent, setReplyContent] = useState('') // 댓글 입력내용
+  const [replyContent, setReplyContent] = useState('')
   const [isEditing, setIsEditing] = useState(false)
   const [editedReplyContent, setEditedReplyContent] = useState('')
   const [editingReplyId, setEditingReplyId] = useState(null)
@@ -58,12 +58,12 @@ function Reply() {
 
     const newReplyList = {
       id: replyId,
-      userEmail: user ? user.email : '', // 사용자의 이메일
+      userEmail: user ? user.email : '',
       ContentId: id,
       reply: replyContent,
       Date: nowTime,
       timeSort,
-      photoURL: user ? user.photoURL : '', // 사용자의 프로필 사진 URL
+      photoURL: user ? user.photoURL : '',
       replyId,
     }
 
@@ -90,150 +90,138 @@ function Reply() {
       setIsEditing(true)
       setEditingReplyId(replyId)
 
-      // 수정 중인 댓글을 찾고 텍스트 영역에 해당 내용을 설정합니다.
       const editedComment = replyData.find((comment) => comment.id === replyId)
       if (editedComment) {
         setEditedReplyContent(editedComment.reply)
       }
     })
-  }
 
-  // reply update
-  const onSaveEditHandler = async () => {
-    if (editedReplyContent.trim() === '') {
-      alert('댓글을 입력해주세요.')
-      return
-    }
-
-    try {
-      await updateReply({
-        targetId: editingReplyId,
-        editedReply: editedReplyContent,
-      })
-
-      const updatedReplyData = replyData.map((comment) => {
-        if (comment.id === editingReplyId) {
-          return { ...comment, reply: editedReplyContent }
-        }
-        return comment
-      })
-
-      setReplyData(updatedReplyData)
-
-      setIsEditing(false)
-      setEditingReplyId(null)
-      editSuccess()
-    } catch (error) {
-      // console.error('댓글 수정에 실패했습니다.', error)
-    }
-  }
-
-  const deleteComment = async (replyId) => {
-    confirmDelete(async () => {
-      try {
-        await deleteReply(replyId)
-        await fetchReplyData()
-      } catch (error) {
-        console.error('댓글 삭제 오류: ', error)
+    const onSaveEditHandler = async () => {
+      if (editedReplyContent.trim() === '') {
+        alert('댓글을 입력해주세요.')
+        return
       }
-    })
-  }
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      // 엔터 키를 누르면 댓글을 등록합니다.
-      addNewReply()
+      try {
+        await updateReply({
+          targetId: editingReplyId,
+          editedReply: editedReplyContent,
+        })
+
+        const updatedReplyData = replyData.map((comment) => {
+          if (comment.id === editingReplyId) {
+            return { ...comment, reply: editedReplyContent }
+          }
+          return comment
+        })
+
+        setReplyData(updatedReplyData)
+
+        setIsEditing(false)
+        setEditingReplyId(null)
+        editSuccess()
+      } catch (error) {
+        // console.error('댓글 수정에 실패했습니다.', error)
+      }
     }
+
+    const deleteComment = async (replyId) => {
+      confirmDelete(async () => {
+        try {
+          await deleteReply(replyId)
+          await fetchReplyData()
+        } catch (error) {
+          console.error('댓글 삭제 오류: ', error)
+        }
+      })
+    }
+
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        addNewReply()
+      }
+    }
+
+    useEffect(() => {
+      fetchReplyData()
+    }, [commentLimit])
+
+    useEffect(() => {
+      fetchReplyData()
+    }, [commentLimit])
+
+    useEffect(() => {
+      const unsubscribe = auth.onAuthStateChanged((user) => {
+        if (user) setUser(user)
+        else setUser(null)
+      })
+
+      return () => unsubscribe()
+    }, [])
+
+    return (
+      <>
+        <CommentHeaderBox>
+          <img src={commentImg} alt="" />
+          칭찬 댓글 ({totalCount}개)
+        </CommentHeaderBox>
+
+        <Boxs>
+          <CommentBox>
+            <CommentBodyBox>
+              {replyData?.map((comment) => (
+                <CommentAreaBox key={comment.id}>
+                  {isEditing && editingReplyId === comment.id ? (
+                    <div>
+                      <UserBox>
+                        <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                        <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                      </UserBox>
+                      <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
+                      <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
+                      <DateBox>작성일 {comment.Date}</DateBox>
+                    </div>
+                  ) : (
+                    <>
+                      <UserBox>
+                        <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
+                        <UserName>{comment.userEmail.split('@')[0]}</UserName>
+                      </UserBox>
+                      <CommentTextBox>{comment.reply}</CommentTextBox>
+                      <DateBox>작성일 {comment.Date}</DateBox>
+
+                      <BtnAreaBox>
+                        {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
+                          <UserBtnBox>
+                            <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
+                            <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
+                          </UserBtnBox>
+                        )}
+                      </BtnAreaBox>
+                    </>
+                  )}
+                </CommentAreaBox>
+              ))}
+            </CommentBodyBox>
+          </CommentBox>
+          {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
+
+          <CommentInputAreaBox>
+            <CommentInputMiddleBox>
+              <UserBox>
+                <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
+                <UserName>{user?.email.split('@')[0]}</UserName>
+              </UserBox>
+              <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
+              <ButtonBox>
+                <Button onClick={addNewReply}>등록</Button>
+              </ButtonBox>
+            </CommentInputMiddleBox>
+          </CommentInputAreaBox>
+        </Boxs>
+      </>
+    )
   }
-
-  useEffect(() => {
-    fetchReplyData()
-  }, [commentLimit]) // commentLimit가 변경될 때 fetchReplyData 함수를 호출합니다.
-
-  //
-
-  useEffect(() => {
-    fetchReplyData()
-  }, [commentLimit])
-
-  // totalCount를 업데이트할 함수 추가
-
-  // useEffect(() => {
-  //   updatetotalCount()
-  // }, [id]) // 게시글 ID가 변경될 때 totalCount를 업데이트합니다.
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) setUser(user)
-      else setUser(null)
-    })
-
-    return () => unsubscribe()
-  }, [])
-
-  return (
-    <>
-      <CommentHeaderBox>
-        <img src={commentImg} alt="" />
-        칭찬 댓글 ({totalCount}개) {/* totalCount를 추가하여 표시 */}
-      </CommentHeaderBox>
-
-      <Boxs>
-        <CommentBox>
-          <CommentBodyBox>
-            {replyData?.map((comment) => (
-              <CommentAreaBox key={comment.id}>
-                {isEditing && editingReplyId === comment.id ? (
-                  <div>
-                    <UserBox>
-                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                    </UserBox>
-                    <EditInput value={editedReplyContent} onChange={(e) => setEditedReplyContent(e.target.value)} />
-                    <EditBtn onClick={onSaveEditHandler}>저장</EditBtn>
-                    <DateBox>작성일 {comment.Date}</DateBox>
-                  </div>
-                ) : (
-                  <>
-                    <UserBox>
-                      <UserImg src={comment.photoURL ?? defaultProfileImage} alt="" />
-                      <UserName>{comment.userEmail.split('@')[0]}</UserName>
-                    </UserBox>
-                    <CommentTextBox>{comment.reply}</CommentTextBox>
-                    <DateBox>작성일 {comment.Date}</DateBox>
-
-                    <BtnAreaBox>
-                      {user && (user.email === comment.userEmail || user.email === 'admin@admin.com') && (
-                        <UserBtnBox>
-                          <EditBtn onClick={() => onEditHandler(comment.id)}>수정</EditBtn>
-                          <EditBtn onClick={async () => await deleteComment(comment.id)}>삭제</EditBtn>
-                        </UserBtnBox>
-                      )}
-                    </BtnAreaBox>
-                  </>
-                )}
-              </CommentAreaBox>
-            ))}
-          </CommentBodyBox>
-        </CommentBox>
-        {/* "더 보기" 버튼 추가 */}
-        {replyData.length < totalCount && <LoadMoreButton onClick={loadMoreComments}>더 보기</LoadMoreButton>}
-
-        <CommentInputAreaBox>
-          <CommentInputMiddleBox>
-            <UserBox>
-              <UserImg src={user?.photoURL ?? defaultProfileImage} alt="" />
-              <UserName>{user?.email.split('@')[0]}</UserName>
-            </UserBox>
-            <CommentInputBox value={replyContent} onKeyPress={handleKeyPress} onChange={handleChangeReplyContent} placeholder="사람들의 이야기에 응답해주세요. 한마디의 칭찬은 모두에게 긍정의 힘으로 돌아옵니다." />
-            <ButtonBox>
-              <Button onClick={addNewReply}>등록</Button>
-            </ButtonBox>
-          </CommentInputMiddleBox>
-        </CommentInputAreaBox>
-      </Boxs>
-    </>
-  )
 }
 
 export default Reply
@@ -276,8 +264,23 @@ const LoadMoreButton = styled.button`
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
-    cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
+    line-height: 22px;
+    display: flex;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    width: 80px;
+    height: 32px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
+    cursor: pointer;
   }
 `
 
@@ -317,7 +320,7 @@ const CommentTextBox = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
 `
 const DateBox = styled.div`
   line-height: 1.75rem;
@@ -345,7 +348,6 @@ const Button = styled.button`
   background: #fff;
   border-radius: 0.5rem;
   border: 1px solid #d9d9d9;
-
   &:hover {
     cursor: pointer;
     border-radius: 8px;
@@ -420,6 +422,7 @@ const CommentInputBox = styled.input`
   gap: 0.75rem;
   flex: 1 0 0;
   border: none;
+
   min-width: 35rem;
   max-width: 74.625rem;
   padding: 1.5rem 0;
@@ -486,8 +489,22 @@ const EditBtn = styled.button`
     font-size: 14px;
     font-style: normal;
     font-weight: 700;
-    line-height: 22px; /* 157.143% */
-
-    cursor: pointer; // 선택적으로 추가. 마우스 커서를 포인터로 변경합니다.
+    line-height: 22px;
+    display: flex;
+    color: #986c6c;
+    font-family: Pretendard;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 22px;
+    width: 80px;
+    height: 32px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    border-radius: 8px;
+    border: 1px solid #986c6c;
+    cursor: pointer;
   }
 `

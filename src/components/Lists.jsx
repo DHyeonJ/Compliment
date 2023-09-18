@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { styled } from 'styled-components'
 import HandClap from '../img/hand-clapping.png'
 import { useNavigate } from 'react-router-dom'
@@ -10,11 +10,11 @@ const Lists = ({ data }) => {
   const navigate = useNavigate()
   const localUserid = JSON.parse(localStorage.getItem('user'))
   const email = localUserid?.email || ''
-  const localStorageUserId = email.split('@')[0]
 
+  const memoizedData = React.useMemo(() => data || [], [data])
   return (
     <>
-      {data?.map((item) => {
+      {memoizedData?.map((item) => {
         return (
           <List
             key={item.id}
@@ -42,7 +42,7 @@ const Lists = ({ data }) => {
                 </HandClapBox>
               </Contents>
               <div>
-                <Thumbnail src={item.image || defualtContentsImg} alt="" />
+                <Thumbnail src={item.image || defualtContentsImg} alt="" loading="lazy" />
               </div>
             </ListContentt>
           </List>
@@ -54,10 +54,12 @@ const Lists = ({ data }) => {
 
 const ListContentt = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
   flex: 1 0 0;
-  /* width: 1376px; */
+  min-width: 560px;
+  max-width: 1194px;
 `
 const Contents = styled.div`
   display: flex;
@@ -92,6 +94,8 @@ const Date = styled.div`
   font-style: normal;
   font-weight: 500;
   line-height: 28px;
+  margin-left: 8px;
+  margin-right: 16px;
 `
 const HandClapBox = styled.div`
   display: flex;
@@ -101,12 +105,13 @@ const HandClapBox = styled.div`
 `
 const List = styled.div`
   display: flex;
-  align-self: stretch;
-  align-items: flex-start;
-  gap: 24px;
-  min-width: 800px;
-  max-width: 1440px;
+  /* min-width: 800px;
+  max-width: 1440px; */
   padding: 16px 32px;
+  margin-left: auto;
+  margin-right: auto;
+  gap: 24px;
+  align-self: stretch;
   margin-bottom: 12px;
   border-bottom: 1.2px solid #d9d9d9;
   cursor: pointer;
@@ -134,6 +139,10 @@ const User = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
 `
 const ListTitle = styled.h1`
   width: 884px;
@@ -158,6 +167,7 @@ const ListComments = styled.p`
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
+  margin-top: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -188,4 +198,4 @@ const Thumbnail = styled.img`
   border-radius: 8px;
   background: url(<path-to-image>), lightgray 50% / cover no-repeat, #d9d9d9;
 `
-export default Lists
+export default React.memo(Lists)

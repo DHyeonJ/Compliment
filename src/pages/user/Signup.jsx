@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { styled } from 'styled-components'
 import { auth } from '../../firebase.js'
 import { useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import logoImg from '../../img/logo_big.png'
 import google from '../../img/google.png'
-// import { setMissionCard } from '../../api/MissionCardsApi.jsx'
-import { current } from '@reduxjs/toolkit'
 import { debounce } from 'lodash'
 import { emptyEmailError, emptyPWError, confirmPWError, validEmailError, signupSuccess, alreadyInUseEmailError, failedError, weakPWError } from '../../components/Alert.jsx'
 
@@ -36,6 +34,7 @@ function Signup() {
   }
 
   const signup = async (e) => {
+    e.preventDefault()
     if (email.length === 0) {
       emptyEmailError()
     } else if (password.length === 0 || confirmPassword.length === 0) {
@@ -56,12 +55,10 @@ function Signup() {
         // 로그인이 완료되었을 때 사용자 정보 확인
 
         const user = userCredential.user
-        console.log('로그인된 사용자 이메일:', user.email)
         setEmail('')
         setPassword('')
         setConfirmPassword('')
         navigate('/')
-        console.log(userCredential)
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
           alreadyInUseEmailError()
@@ -149,7 +146,7 @@ function Signup() {
           {/* <button>프로필이미지등록</button> */}
           <div>
             <div>
-              <SignForm>
+              <SignForm onSubmit={signup}>
                 <SignInputAreaBox>
                   <SignupInputLabel htmlFor="email">이메일</SignupInputLabel>
                   <SignupInput placeholder="이메일을 입력해주세요" type="email" name="email" value={email} onChange={onChange} />
@@ -166,12 +163,12 @@ function Signup() {
                   {confirmPasswordError && <DebounceTextBox>{confirmPasswordError}</DebounceTextBox>}
                 </SignInputAreaBox>
                 {/* <SignInputAreaBox>
-                  <SignupInputLabel>닉네임</SignupInputLabel>
-                  <SignupInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" />
-                </SignInputAreaBox> */}
+                   <SignupInputLabel>닉네임</SignupInputLabel>
+                   <SignupInput placeholder="닉네임을 입력해주세요 " type="text" name="nickname" />
+                 </SignInputAreaBox> */}
                 <SignInputAreaBox>
                   {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-                  <SignupBtn isValidEmail={validEmail} onClick={signup} disabled={!validEmail}>
+                  <SignupBtn isValidEmail={validEmail} disabled={!validEmail}>
                     가입하기
                   </SignupBtn>
                 </SignInputAreaBox>

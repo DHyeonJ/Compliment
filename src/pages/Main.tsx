@@ -1,11 +1,16 @@
 /* eslint-disable react/no-unescaped-entities */
 import React, { useEffect, useState } from 'react'
-import { styled } from 'styled-components'
-import Slide from '../components/Slide'
 import { useNavigate } from 'react-router-dom'
+
+import { styled } from 'styled-components'
+
+import Slide from '../components/Slide'
+
+import defaultProfileImage from '../img/anonymous.png'
+
 import { collection, getDocs, orderBy, limit, query, where } from 'firebase/firestore' // query 함수 불러오기 추가
 import { db, auth } from '../firebase.js'
-import defaultProfileImage from '../img/anonymous.png'
+
 import { needLogin } from '../components/Alert'
 
 interface Images {
@@ -21,6 +26,8 @@ interface Reply {
 
 function Main() {
   const [images, setImages] = useState<Images[]>([])
+  const [topUserList, setTopUserList] = useState<Reply[]>([])
+  const combinedUsers: Reply[] = []
 
   useEffect(() => {
     // 'lists' 컬렉션에서 칭찬순으로 상위 10개의 데이터 가져오기
@@ -49,7 +56,6 @@ function Main() {
     fetchData()
   }, [])
 
-  const [topUserList, setTopUserList] = useState<Reply[]>([])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,7 +112,6 @@ function Main() {
     fetchData()
   }, [])
 
-  const combinedUsers: Reply[] = []
   for (let i = 0; i < Math.max(topUserList.length, images.length); i++) {
     if (i < topUserList.length) {
       combinedUsers.push(topUserList[i])
@@ -171,15 +176,19 @@ function Main() {
     </MainBox>
   )
 }
+
 export default Main
+
 const MainBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
   width: 100vw;
   height: 1200px;
 `
+
 const ContentBox = styled.div`
   display: flex;
   justify-content: center;
@@ -187,10 +196,12 @@ const ContentBox = styled.div`
   align-items: center;
   gap: 80px;
 `
+
 const RankInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 30px;
+
   width: 100%;
 `
 const RankTitleBox = styled.div`
@@ -203,10 +214,12 @@ const SubTitleBox = styled.div`
   color: #404040;
   font-weight: 600;
   font-family: pretendard;
+
   .replyRanking {
     color: #d9876d;
     font-weight: bold;
   }
+
   .complimentRanking {
     color: #f6b000;
     font-weight: bold;
@@ -216,7 +229,9 @@ const RankUserBox = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
+
   margin-top: 16px;
+
   border-radius: 8px;
 `
 const RankUserInfo = styled.div`
@@ -224,15 +239,19 @@ const RankUserInfo = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+
   height: 134px;
 `
 const RankProFileBox = styled.img<{ isOdd: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 100px;
   height: 100px;
+
   background-color: #d9d9d9;
+
   border-radius: 50%;
   border: 4px solid ${(props) => (props.isOdd ? '#F6B000' : '#D9876D')};
 `
@@ -240,7 +259,9 @@ const RankNickName = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
   margin-top: 12px;
+
   font-size: 14px;
   color: #000;
   font-family: Pretendard;
@@ -250,27 +271,41 @@ const RankNickName = styled.div`
 `
 const LinkPageBox = styled.div`
   display: flex;
+
   width: 100%;
+
+  @media (max-width: 768px) {
+    // 321px ~ 720px
+    width: 100%;
+    margin: 0 auto;
+  }
 `
 const ListPageBox = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
   gap: 15px;
+  align-items: flex-start;
+
   width: 100%;
   height: 264.5px;
-  padding: 44px;
+
   margin-right: 32px;
+  padding: 44px;
+
   box-sizing: border-box;
   border-radius: 20px;
-  background: #feedcd;
   box-shadow: 5px 5px 5px -5px #333;
+
+  background: #feedcd;
+
   cursor: pointer;
   transition: 0.8s;
+
   &:hover {
     width: 130%;
   }
 `
+
 const ListTitle = styled.h2`
   color: var(--text01_404040, #404040);
   font-family: LINE Seed Sans KR;
@@ -289,18 +324,24 @@ const ListContentSpan = styled.span`
 `
 const MissionPageBox = styled.div`
   display: flex;
-  padding: 44px;
   flex-direction: column;
   align-items: flex-start;
   gap: 15px;
+
   width: 100%;
   height: 264.5px;
+
+  padding: 44px;
+
+  background-color: #f5f6cd;
+
   box-sizing: border-box;
   border-radius: 20px;
-  background-color: #f5f6cd;
   box-shadow: 5px 5px 5px -5px #333;
+
   cursor: pointer;
   transition: 0.8s;
+
   &:hover {
     width: 130%;
   }
