@@ -327,7 +327,7 @@ const TitleBox = styled.div`
   line-height: normal;
   /* font 관련 */
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;

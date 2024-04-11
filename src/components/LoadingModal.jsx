@@ -48,5 +48,5 @@ const ModalContentBox = styled.div`
 const LoadingP = styled.p`
   font-size: 24px;
   font-weight: bold;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
 `

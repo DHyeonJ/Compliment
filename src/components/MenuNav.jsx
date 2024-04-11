@@ -64,7 +64,7 @@ const ListTextBox = styled.div`
   width: 90px;
   height: 48px;
 
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -93,7 +93,7 @@ const MissionTextBox = styled.div`
   width: 90px;
   height: 48px;
 
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;

@@ -137,7 +137,7 @@ const User = styled.div`
 const ListTitle = styled.h1`
   width: 884px;
   color: var(--text-01404040, #404040);
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;

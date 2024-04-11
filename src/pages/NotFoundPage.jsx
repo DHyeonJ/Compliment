@@ -57,7 +57,7 @@ const NotFoundTextAreaBox = styled.div`
 
 const NotFoundTitleBox = styled.div`
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 48px;
   font-style: normal;
   font-weight: 700;
@@ -68,7 +68,7 @@ const NotFoundTextBox = styled.div`
   margin-top: 16px;
 
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 20px;
   font-style: normal;
   font-weight: 400;

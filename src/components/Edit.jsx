@@ -372,7 +372,7 @@ const TitleContainerInput = styled.input`
   border: none;
   outline: none;
   color: #999;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;
@@ -380,7 +380,7 @@ const TitleContainerInput = styled.input`
   &::placeholder {
     transition: opacity 0.1s ease-in-out;
     color: #999999;
-    font-family: LINE Seed Sans KR;
+    font-family: LINESeedSansKR;
     font-size: 36px;
     font-style: normal;
     font-weight: 700;

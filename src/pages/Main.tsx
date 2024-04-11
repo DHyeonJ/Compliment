@@ -308,7 +308,7 @@ const ListPageBox = styled.div`
 
 const ListTitle = styled.h2`
   color: var(--text01_404040, #404040);
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
@@ -348,7 +348,7 @@ const MissionPageBox = styled.div`
 `
 const MissionTitle = styled.h2`
   color: var(--text01_404040, #404040);
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 28px;
   font-style: normal;
   font-weight: 700;
