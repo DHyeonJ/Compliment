@@ -170,7 +170,7 @@ const BannerTitleBox = styled.div`
   height: 64px;
 
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 48px;
   font-style: normal;
   font-weight: 700;
@@ -181,7 +181,7 @@ const BannermiddleTitleBox = styled.div`
   height: 36px;
 
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;
@@ -190,7 +190,7 @@ const BannermiddleTitleBox = styled.div`
 
 const BannerContentBox = styled.div`
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 18px;
   font-style: normal;
   font-weight: 400;

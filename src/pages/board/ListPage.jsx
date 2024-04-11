@@ -177,7 +177,7 @@ const RankingSpan = styled.span`
 
 const BannerTitleSpan = styled.span`
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 36px;
   font-style: normal;
   font-weight: 700;
@@ -185,7 +185,7 @@ const BannerTitleSpan = styled.span`
 const BannerContentBox = styled.span`
   width: 483px;
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;

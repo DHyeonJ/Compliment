@@ -112,7 +112,7 @@ function Layout(): JSX.Element {
           <InfoBox>
             <FooterTitleBox>칭구</FooterTitleBox>
             <MakeTeamBox>Copyright 2023. 팀 해보조 all rights reserved.</MakeTeamBox>
-            <CopyRightBox>Illustration in first home banner slide Designed by Freepik.</CopyRightBox>
+            <CopyRightBox> Copyright 2020-2022 LINE Corporation. Illustration in first home banner slide Designed by Freepik.</CopyRightBox>
           </InfoBox>
           <GitHubIcon icon={faGithub} onClick={openGitHub} />
         </ContentBox>
@@ -157,7 +157,7 @@ const Logo = styled.img`
   height: 75px;
 `
 const TitleSpan = styled.span`
-  font-family: 'LINE SEED Sans KR';
+  font-family: 'LINESeedSansKR';
   font-weight: bold;
   color: #404040;
   font-size: 1.25rem;
@@ -357,7 +357,7 @@ const FooterLogo = styled.img`
 `
 const InfoBox = styled.div`
   width: 368px;
-  height: 66px;
+  height: 80px;
 `
 const FooterTitleBox = styled.div`
   display: flex;

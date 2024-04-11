@@ -225,7 +225,7 @@ const SignupH1Box = styled.div`
   margin-bottom: 15px;
   color: #404040;
   text-align: center;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;

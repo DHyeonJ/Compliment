@@ -158,7 +158,7 @@ const LogoTextBox = styled.div`
 
   color: var(--text-01404040, #404040);
   text-align: center;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 24px;
   font-style: normal;
   font-weight: 400;

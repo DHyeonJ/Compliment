@@ -134,7 +134,7 @@ const BannerContainerBox = styled.div`
 
 const BannerTitleBox = styled.div`
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 36px;
   font-style: normal;
   font-weight: 700;
@@ -143,7 +143,7 @@ const BannerTitleBox = styled.div`
 
 const BannerContentBox = styled.div`
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -187,7 +187,7 @@ const DailyMissionAllBox = styled.div`
 
 const DailyMissionBox = styled.div`
   color: #000;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -249,7 +249,7 @@ const MissionCardTitleBox = styled.div`
 
   color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
@@ -268,7 +268,7 @@ const MissionCardContentsBox = styled.div`
 
   color: ${(props) => (props.isSelected ? '#FEFBF3' : '#69535F')};
   text-align: center;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

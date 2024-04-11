@@ -142,7 +142,7 @@ const TextBox = styled.div`
 `
 const NicknameTextBox = styled.div`
   color: #404040;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 24px;
   font-style: normal;
   font-weight: 700;

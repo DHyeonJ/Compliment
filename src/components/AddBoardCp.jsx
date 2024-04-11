@@ -339,14 +339,14 @@ const TitleContainerInput = styled.input`
   border: none;
   outline: none;
   color: #181818;
-  font-family: LINE Seed Sans KR;
+  font-family: LINESeedSansKR;
   font-size: 2.25rem;
   font-style: normal;
   font-weight: 400;
   padding: 1rem 1.5rem;
   input::placeholder {
     color: #999999;
-    font-family: LINE Seed Sans KR;
+    font-family: LINESeedSansKR;
     font-size: 36px;
     font-style: normal;
     font-weight: 700;
