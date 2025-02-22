@@ -63,7 +63,7 @@
 
   
 ## 프로젝트 브로셔
-[Project Browser : Compliment](https://phantom-feverfew-5f9.notion.site/9ad1e087c07945c6ba4f4dfb774aa769)
+[Project Browser : Compliment](https://luck-cornet-bed.notion.site/110d7877cb5f8038b033d6670ab7af29)
 
 ## 페이지 구성
 
